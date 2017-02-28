@@ -204,7 +204,7 @@ public final class CoordinateSystemTranslator {
     public UtmCoordinate toUtm(final LatLonCoordinate latLonCoordinate) {
         double lat = latLonCoordinate.getLat();
         double lon = latLonCoordinate.getLon();
-        // utmcoords is a 2-D array declared by the calling routine
+
         // note: input of lon = 180 or -180 with zone 60 not allowed; use 179.9999
 
         // Constrain reporting USNG coords to the latitude range [80S .. 84N]

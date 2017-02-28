@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -49,6 +50,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  *
  */
 public final class UsngCoordinate {
+    private static final String USNG_REGEXP =
+            "(\\d\\d?)([CDEFGHJKLMNPQRSTUVWX])\\W?([ABCDEFGHJKLMNPQRSTUVWXYZ][ABCDEFGHJKLMNPQRSTUV])?(\\W\\d{0,5})?(\\W\\d{0,5})?";
+
+    private static final String MGRS_REGEXP =
+            "(\\d\\d?)([CDEFGHJKLMNPQRSTUVWX])\\W?([ABCDEFGHJKLMNPQRSTUVWXYZ][ABCDEFGHJKLMNPQRSTUV])?(\\d{0,5})\\W*(\\d{0,5})\\W*";
+
     private int zoneNumber;
 
     private char latitudeBandLetter;
@@ -168,17 +175,30 @@ public final class UsngCoordinate {
      * @throws ParseException when 'usngStr' isn't in USNG format.
      */
     public static UsngCoordinate parseUsngString(final String usngStr) throws ParseException {
+        return UsngCoordinate.parseCoordinateString(usngStr, USNG_REGEXP);
+    }
+
+    /**
+     * @param mgrsStr a properly formatted MGRS string.
+     * @return a fully parsed UsngCoordinate object.
+     * @throws ParseException when 'msgrsStr' isn't in USNG format.
+     */
+    public static UsngCoordinate parseMgrsString(final String mgrsStr) throws ParseException {
+        return UsngCoordinate.parseCoordinateString(mgrsStr, MGRS_REGEXP);
+    }
+
+    private static UsngCoordinate parseCoordinateString(final String coordinateString, final String regexp)
+        throws ParseException {
         UsngCoordinate result = null;
 
-        String usngRegexp =
-                "(\\d\\d?)([CDEFGHJKLMNPQRSTUVWX])\\W?([ABCDEFGHJKLMNPQRSTUVWXYZ][ABCDEFGHJKLMNPQRSTUV])?(\\W\\d{0,5})?(\\W\\d{0,5})?";
-        Pattern pattern = Pattern.compile(usngRegexp);
-        Matcher m = pattern.matcher(usngStr.toUpperCase());
+
+        Pattern pattern = Pattern.compile(regexp);
+        Matcher m = pattern.matcher(coordinateString.toUpperCase());
 
         if (!m.matches()) {
             String message = String.format(
                     "Supplied argument '%s' is not a valid USNG formatted String.",
-                    usngStr);
+                    coordinateString);
             throw new ParseException(message, 0);
         }
 
@@ -192,7 +212,7 @@ public final class UsngCoordinate {
             char rowLetter = m.group(3)
                     .toCharArray()[1];
 
-            if (m.group(4) != null && m.group(5) != null) {
+            if (! (StringUtils.isEmpty(m.group(4)) || StringUtils.isEmpty(m.group(5))) ) {
                 int easting = Integer.parseInt(m.group(4)
                         .trim());
                 int northing = Integer.parseInt(m.group(5)

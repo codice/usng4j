@@ -126,12 +126,12 @@ public final class UtmCoordinate {
 
     /**
      *
-     * @param utmString a UTM formatted string. e.g. {@code 10Q 1234567 -0123456}
+     * @param utmString a UTM formatted string. e.g. {@code 10Q 123456 -0123456}
      * @return an object representation of 'utmString'
      * @throws ParseException when 'utmString' isn't correctly formatted.
      */
     public static UtmCoordinate parseUtmString(final String utmString) throws ParseException {
-        Pattern utmRegexp = Pattern.compile("(\\d\\d?)(-?[CDEFGHJKLMNPQRSTUVWX]?)(\\W-?\\d{0,7})(\\W-?\\d{0,7})");
+        Pattern utmRegexp = Pattern.compile("(\\d\\d?)(-?[CDEFGHJKLMNPQRSTUVWX]?)(\\W?-?\\d{6})(\\W?-?\\d{7})");
 
         Matcher m = utmRegexp.matcher(utmString);
 

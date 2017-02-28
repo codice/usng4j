@@ -8,7 +8,8 @@ import java.text.ParseException;
 import org.junit.Test;
 
 public class CoordinateSystemTranslatorTest {
-    private CoordinateSystemTranslator coordinateSystemTranslator = new CoordinateSystemTranslator(true);
+    private CoordinateSystemTranslator coordinateSystemTranslator = new CoordinateSystemTranslator(
+            true);
 
     @Test
     public void testGetZoneNumber() {
@@ -181,14 +182,87 @@ public class CoordinateSystemTranslatorTest {
         assertEquals(43292, parts.getNorthing(), 0);
     }
 
+    @Test
+    public void testParseMgrs() throws ParseException {
+        //should return zone=5; letter=Q
+        UsngCoordinate parts = UsngCoordinate.parseMgrsString("5Q");
+        assertEquals(5, parts.getZoneNumber());
+        assertEquals('Q', parts.getLatitudeBandLetter());
+
+        //should return zone=12; letter=S
+        parts = UsngCoordinate.parseMgrsString("12S");
+        assertEquals(12, parts.getZoneNumber());
+        assertEquals('S', parts.getLatitudeBandLetter());
+
+        //should return zone=5; letter=Q; square1=K; square2=B
+
+        parts = UsngCoordinate.parseMgrsString("5QKB");
+        assertEquals(5, parts.getZoneNumber());
+        assertEquals('Q', parts.getLatitudeBandLetter());
+        assertEquals('K',
+                parts.getColumnLetter()
+                        .charValue());
+        assertEquals('B',
+                parts.getRowLetter()
+                        .charValue());
+
+        //should return zone=12; letter=S; square1=V; square2=C
+
+        parts = UsngCoordinate.parseMgrsString("12SVC");
+        assertEquals(12, parts.getZoneNumber());
+        assertEquals('S', parts.getLatitudeBandLetter());
+        assertEquals('V',
+                parts.getColumnLetter()
+                        .charValue());
+        assertEquals('C',
+                parts.getRowLetter()
+                        .charValue());
+
+        //should return zone=5; letter=Q; square1=K; square2=B; easting=42785; northing=31517
+
+        parts = UsngCoordinate.parseMgrsString("5QKB4278531517");
+        assertEquals(5, parts.getZoneNumber());
+        assertEquals('Q', parts.getLatitudeBandLetter());
+        assertEquals('K',
+                parts.getColumnLetter()
+                        .charValue());
+        assertEquals('B',
+                parts.getRowLetter()
+                        .charValue());
+        assertEquals(5,
+                parts.getPrecision()
+                        .getIntValue());
+        assertEquals(42785.0, parts.getEasting(), 0);
+        assertEquals(31517.0, parts.getNorthing(), 0);
+
+        //should return zone=12; letter=S; square1=V; square2=C; easting=12900; northing=43292
+
+        parts = UsngCoordinate.parseMgrsString("12SVC1290043292");
+        assertEquals(12, parts.getZoneNumber());
+        assertEquals('S', parts.getLatitudeBandLetter());
+        assertEquals('V',
+                parts.getColumnLetter()
+                        .charValue());
+        assertEquals('C',
+                parts.getRowLetter()
+                        .charValue());
+        assertEquals(5,
+                parts.getPrecision()
+                        .getIntValue());
+        assertEquals(12900, parts.getEasting(), 0);
+        assertEquals(43292, parts.getNorthing(), 0);
+    }
+
     @Test(expected = ParseException.class)
     public void testParseUtm() throws ParseException {
         //should return zone=5; letter=Q; easting=-00001; northing=2199600
         String utmCoordinateString = "5Q -00001 2199600";
         UtmCoordinate utmCoordinate = UtmCoordinate.parseUtmString(utmCoordinateString);
         assertEquals(5, utmCoordinate.getZoneNumber());
-        assertEquals('Q', utmCoordinate.getLattitudeBand().charValue());
-        assertEquals(-1, utmCoordinate.getEasting(),0);
+        assertEquals('Q',
+                utmCoordinate.getLattitudeBand()
+                        .charValue());
+        assertEquals(-1, utmCoordinate.getEasting(), 0);
         assertEquals(2199600.0, utmCoordinate.getNorthing(), 0);
         assertEquals(CoordinatePrecision.ONE_METER, utmCoordinate.getPrecision());
 
@@ -197,7 +271,7 @@ public class CoordinateSystemTranslatorTest {
         utmCoordinate = UtmCoordinate.parseUtmString(utmCoordinateString);
         assertEquals(5, utmCoordinate.getZoneNumber());
         assertNull(utmCoordinate.getLattitudeBand());
-        assertEquals(-1, utmCoordinate.getEasting(),0);
+        assertEquals(-1, utmCoordinate.getEasting(), 0);
         assertEquals(2199600.0, utmCoordinate.getNorthing(), 0);
         assertEquals(CoordinatePrecision.ONE_METER, utmCoordinate.getPrecision());
 
@@ -225,7 +299,9 @@ public class CoordinateSystemTranslatorTest {
         assertEquals(4306483, Math.floor(coords.getNorthing()), 0);
         assertEquals(323487, Math.floor(coords.getEasting()), 0);
         assertEquals(18, coords.getZoneNumber());
-        assertEquals('S', coords.getLattitudeBand().charValue());
+        assertEquals('S',
+                coords.getLattitudeBand()
+                        .charValue());
 
         //with two digit zone
         //should return north=43292; east=12900; zone=12; letter=S
@@ -235,11 +311,18 @@ public class CoordinateSystemTranslatorTest {
         sq2 = 'C';
         easting = 12900;
         northing = 43292;
-        coords = coordinateSystemTranslator.toUtm(new UsngCoordinate(zone, letter, sq1, sq2, easting, northing));
+        coords = coordinateSystemTranslator.toUtm(new UsngCoordinate(zone,
+                letter,
+                sq1,
+                sq2,
+                easting,
+                northing));
         assertEquals(3743292, Math.floor(coords.getNorthing()), 0);
         assertEquals(412900, Math.floor(coords.getEasting()), 0);
         assertEquals(12, coords.getZoneNumber());
-        assertEquals('S', coords.getLattitudeBand().charValue());
+        assertEquals('S',
+                coords.getLattitudeBand()
+                        .charValue());
     }
 
     @Test
@@ -318,19 +401,13 @@ public class CoordinateSystemTranslatorTest {
         usngString = "12S UD";
         usngCoordinate = UsngCoordinate.parseUsngString(usngString);
         assertEquals(usngCoordinate,
-                coordinateSystemTranslator.toUsng(new BoundingBox(34.55,
-                        34.45,
-                        -112.4,
-                        -112.3)));
+                coordinateSystemTranslator.toUsng(new BoundingBox(34.55, 34.45, -112.4, -112.3)));
 
         //should return 12S UD 7 1
         usngString = "12S UD 7 1";
         usngCoordinate = UsngCoordinate.parseUsngString(usngString);
         assertEquals(usngCoordinate,
-                coordinateSystemTranslator.toUsng(new BoundingBox(34.50,
-                        34.45,
-                        -112.4,
-                        -112.4)));
+                coordinateSystemTranslator.toUsng(new BoundingBox(34.50, 34.45, -112.4, -112.4)));
 
         //should return 12S UD 65 24
         usngString = "12S UD 65 24";
@@ -411,10 +488,7 @@ public class CoordinateSystemTranslatorTest {
         usngString = "38K LV 66 12";
         usngCoordinate = UsngCoordinate.parseUsngString(usngString);
         assertEquals(usngCoordinate,
-                coordinateSystemTranslator.toUsng(new BoundingBox(-23.395,
-                        -23.39,
-                        43.70,
-                        43.695)));
+                coordinateSystemTranslator.toUsng(new BoundingBox(-23.395, -23.39, 43.70, 43.695)));
 
         //should return 54S
         usngString = "54S";
@@ -432,10 +506,7 @@ public class CoordinateSystemTranslatorTest {
         usngString = "54S UE 86 51";
         usngCoordinate = UsngCoordinate.parseUsngString(usngString);
         assertEquals(usngCoordinate,
-                coordinateSystemTranslator.toUsng(new BoundingBox(35.7,
-                        35.7,
-                        139.75,
-                        139.745)));
+                coordinateSystemTranslator.toUsng(new BoundingBox(35.7, 35.7, 139.75, 139.745)));
         //should return 60R
         usngString = "60R";
         usngCoordinate = UsngCoordinate.parseUsngString(usngString);
@@ -550,816 +621,357 @@ public class CoordinateSystemTranslatorTest {
         //around Arizona in the United States
         //should return 12S WC 0 6
         assertEquals("12S WC 0 6",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(34, -111), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(34, -111),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around Prescott/Chino Valley in Arizona
         //should return 12S UD 0 0
         assertEquals("12S UD 6 1",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(34.5, -112.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(34.5, -112.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //immediately around Prescott city in Arizona
         //should return 12S UD 65 23
         assertEquals("12S UD 65 23",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(34.545, -112.465), CoordinatePrecision.ONE_KILOMETER)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(34.545, -112.465),
+                        CoordinatePrecision.ONE_KILOMETER)
                         .toString());
 
         //around Uruguay
         //should return 21H XE 4 0
         assertEquals("21H XE 4 0",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-32.5, -55.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-32.5, -55.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around Buenos Aires city in Argentina
         //should return 21H UB 6 8
         assertEquals("21H UB 6 8",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-34.5, -58.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-34.5, -58.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around Merlo town in Buenos Aires
         //should return 21H UB 41 63
         assertEquals("21H UB 41 63",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-34.66, -58.73), CoordinatePrecision.ONE_KILOMETER)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-34.66, -58.73),
+                        CoordinatePrecision.ONE_KILOMETER)
                         .toString());
 
         //around Madagascar
         //should return 38K PE 5 5
         assertEquals("38K PE 5 5",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-18.5, 46.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-18.5, 46.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around Toliara city in Madagascar
         //should return 38K LA 4 1
         assertEquals("38K LA 4 1",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-22.5, 43.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-22.5, 43.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around Toliara city center in Madagascar
         //should return 38K LA 64 17
         assertEquals("38K LA 45 11",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-22.5, 43.5), CoordinatePrecision.ONE_KILOMETER)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-22.5, 43.5),
+                        CoordinatePrecision.ONE_KILOMETER)
                         .toString());
 
         //around Central Japan
         //should return 54S VF 5 9
         assertEquals("54S VF 5 9",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(37, 140.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(37, 140.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around Tokyo city in Japan
         //should return 54S UE 6 2
         assertEquals("54S UE 6 2",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(35.5, 139.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(35.5, 139.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around Tokyo city center in Japan
         //should return 54S UE 41 63
         assertEquals("54S UE 88 50",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(35.69, 139.77), CoordinatePrecision.ONE_KILOMETER)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(35.69, 139.77),
+                        CoordinatePrecision.ONE_KILOMETER)
                         .toString());
 
         //around the international date line'
         //to the immediate west
         //should return 60R US 5 5
         assertEquals("60R US 5 5",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, 175.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, 175.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //to the immediate east
         //should return 1R FM 4 5
         assertEquals("1R FM 4 5",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, -175.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, -175.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //with date line crossing the middle
         //should return 1R BM 0 5
         assertEquals("1R BM 0 5",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, 180), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, 180),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around the equator
         //to the immediate north
         //should return 58N BK 2 9
         assertEquals("58N BK 2 9",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(4.5, 162.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(4.5, 162.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //to the immediate south
         //should return 58M BA 2 0
         assertEquals("58M BA 2 0",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-4.5, 162.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-4.5, 162.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //with equator crossing the middle
         //should return 58N BF 2 0
         assertEquals("58N BF 2 0",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(0, 162.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(0, 162.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around the international date line and equator
         //to the immediate west and north
         //should return 60N UK 3 9
         assertEquals("60N UK 3 9",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(4.5, 175.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(4.5, 175.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //to the immediate west and south
         //should return 60M UA 3 0
         assertEquals("60M UA 3 0",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-4.5, 175.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-4.5, 175.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //to the immediate east and north
         //should return 1N FE 6 9
         assertEquals("1N FE 6 9",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(4.5, -175.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(4.5, -175.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //to the immediate east and south
         //should return 1M FR 6 0
         assertEquals("1M FR 6 0",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-4.5, -175.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-4.5, -175.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //with crossing of date line and equator at center point
         //should return 1N AA 6 0
         assertEquals("1N AA 6 0",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(0, 180), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(0, 180),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around the prime meridian
         //to the immediate west
         //should return 30R US 5 5
         assertEquals("30R US 5 5",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, -4.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, -4.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //to the immediate east
         //should return 31R FM 4 5
         assertEquals("31R FM 4 5",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, 4.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, 4.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //with date line crossing the middle
         //should return 31R BM 0 5
         assertEquals("31R BM 0 5",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, 0), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(28.5, 0),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //around the prime meridian and equator
         //to the immediate west and north
         //should return 30N UK 3 9
         assertEquals("30N UK 3 9",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(4.5, -4.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(4.5, -4.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //to the immediate west and south
         //should return 30M UA 3 0
         assertEquals("30M UA 3 0",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-4.5, -4.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-4.5, -4.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //to the immediate east and north
         //should return 31N FE 6 9
         assertEquals("31N FE 6 9",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(4.5, 4.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(4.5, 4.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //to the immediate east and south
         //should return 31M FR 6 0
         assertEquals("31M FR 6 0",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-4.5, 4.5), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(-4.5, 4.5),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //with crossing of prime meridian and equator at center point
         //should return 31N AA 6 0
         assertEquals("31N AA 6 0",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(0, 0), CoordinatePrecision.TEN_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(0, 0),
+                        CoordinatePrecision.TEN_KILOMETERS)
                         .toString());
 
         //with crossing of prime meridian and equator at center point
         //should return 31N
         assertEquals("31N",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(0, 0), CoordinatePrecision.SIX_BY_EIGHT_DEGREES)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(0, 0),
+                        CoordinatePrecision.SIX_BY_EIGHT_DEGREES)
                         .toString());
 
         //with crossing of prime meridian and equator at center point
         //should return 31N AA
         assertEquals("31N AA",
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(0, 0), CoordinatePrecision.ONE_HUNDRED_KILOMETERS)
+                coordinateSystemTranslator.toUsng(new LatLonCoordinate(0, 0),
+                        CoordinatePrecision.ONE_HUNDRED_KILOMETERS)
                         .toString());
     }
 
     @Test
     public void testConvertLatLonToUtm() {
-        //around Arizona in the United States
-        //should return easting=500000; northing=3762155; zone=12
-        UtmCoordinate utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(34, -111));
-        assertEquals(500000, (int) utmCoordinate.getEasting());
-        assertEquals(3762155, (int) utmCoordinate.getNorthing());
-        assertEquals(12, utmCoordinate.getZoneNumber());
+        double[][] latLons = {{ 34, -111 },
+            { 34.5, -112.5 },
+            { 34.545, -112.465 },
+            { -32.5, -55.5 },
+            { -34.5, -58.5 },
+            { -34.66, -58.73 },
+            { -18.5, 46.5 },
+            { -22.5, 43.5 },
+            { -23.355, 43.67 },
+            { 37, 140.5 },
+            { 35.5, 139.5 },
+            { 35.69, 139.77 },
+            { 28.5, 175.5 },
+            { 28.5, -175.5 },
+            { 28.5, 180 },
+            { 4.5, 162.5 },
+            { -4.5, 162.5 },
+            { 0, 162.5 },
+            { 4.5, 175.5 },
+            { -4.5, 175.5 },
+            { 4.5, -175.5 },
+            { -4.5, -175.5 },
+            { 0, 180 },
+            { 28.5, -4.5 },
+            { 28.5, 4.5 },
+            { 28.5, 0 },
+            { 4.5, -4.5 },
+            { -4.5, -4.5 },
+            { 4.5, 4.5 },
+            { -4.5, 4.5 },
+            { 0, 0 }};
 
-        //around Prescott/Chino Valley in Arizona
-        //should return easting=362289; northing=3818618; zone=12
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(34.5, -112.5));
-        assertEquals(362289, (int) utmCoordinate.getEasting());
-        assertEquals(3818618, (int) utmCoordinate.getNorthing());
-        assertEquals(12, utmCoordinate.getZoneNumber());
+        int[][] eastNorthZones = {{ 500000, 3762155, 12 },
+            { 362289, 3818618, 12 },
+            { 365575, 3823561, 12 },
+            { 640915, -3596850, 21 },
+            { 362289, -3818618, 21 },
+            { 341475, -3836700, 21 },
+            { 658354, -2046162, 38 },
+            { 345704, -2488944, 38 },
+            { 364050, -2583444, 38 },
+            { 455511, 4094989, 54 },
+            { 363955, 3929527, 54 },
+            { 388708, 3950262, 54 },
+            { 353193, 3153509, 60 },
+            { 646806, 3153509, 1 },
+            { 206331, 3156262, 1 },
+            { 222576, 497870, 58 },
+            { 222576, -497870, 58 },
+            { 221723, 0, 58 },
+            { 333579, 497566, 60 },
+            { 333579, -497566, 60 },
+            { 666420, 497566, 1 },
+            { 666420, -497566, 1 },
+            { 166021, 0, 1 },
+            { 353193, 3153509, 30 },
+            { 646806, 3153509, 31 },
+            { 206331, 3156262, 31 },
+            { 333579, 497566, 30 },
+            { 333579, -497566, 30 },
+            { 666420, 497566, 31 },
+            { 666420, -497566, 31 },
+            { 166021, 0, 31 } };
 
-        //immediately around Prescott city in Arizona
-        //should return easting=365575; northing=3823561; zone=12
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(34.545, -112.465));
-        assertEquals(365575, (int) utmCoordinate.getEasting());
-        assertEquals(3823561, (int) utmCoordinate.getNorthing());
-        assertEquals(12, utmCoordinate.getZoneNumber());
-
-        //around Uruguay
-        //should return easting=640915; northing=-3596850; zone=21
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-32.5, -55.5));
-        assertEquals(640915, (int) utmCoordinate.getEasting());
-        assertEquals(-3596850, (int) utmCoordinate.getNorthing());
-        assertEquals(21, utmCoordinate.getZoneNumber());
-
-        //around Buenos Aires city in Argentina
-        //should return easting=362289; northing=-3818618; zone=21
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-34.5, -58.5));
-        assertEquals(362289, (int) utmCoordinate.getEasting());
-        assertEquals(-3818618, (int) utmCoordinate.getNorthing());
-        assertEquals(21, utmCoordinate.getZoneNumber());
-
-        //around Merlo town in Buenos Aires
-        //should return easting=341475; northing=-3836700; zone=21
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-34.66, -58.73));
-        assertEquals(341475, (int) utmCoordinate.getEasting());
-        assertEquals(-3836700, (int) utmCoordinate.getNorthing());
-        assertEquals(21, utmCoordinate.getZoneNumber());
-
-        //around Madagascar
-        //should return easting=658354; northing=-2046162; zone=38
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-18.5, 46.5));
-        assertEquals(658354, (int) utmCoordinate.getEasting());
-        assertEquals(-2046162, (int) utmCoordinate.getNorthing());
-        assertEquals(38, utmCoordinate.getZoneNumber());
-
-        //around Toliara city in Madagascar
-        //should return easting=345704; northing=-2488944; zone=38
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-22.5, 43.5));
-        assertEquals(345704, (int) utmCoordinate.getEasting());
-        assertEquals(-2488944, (int) utmCoordinate.getNorthing());
-        assertEquals(38, utmCoordinate.getZoneNumber());
-
-        //around Toliara city center in Madagascar
-        //should return easting=364050; northing=-2583444; zone=38
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-23.355, 43.67));
-        assertEquals(364050, (int) utmCoordinate.getEasting());
-        assertEquals(-2583444, (int) utmCoordinate.getNorthing());
-        assertEquals(38, utmCoordinate.getZoneNumber());
-
-        //around Central Japan
-        //should return easting=455511; northing=4094989; zone=54
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(37, 140.5));
-        assertEquals(455511, (int) utmCoordinate.getEasting());
-        assertEquals(4094989, (int) utmCoordinate.getNorthing());
-        assertEquals(54, utmCoordinate.getZoneNumber());
-
-        //around Tokyo city in Japan
-        //should return easting=363955; northing=3929527; zone=54
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(35.5, 139.5));
-        assertEquals(363955, (int) utmCoordinate.getEasting());
-        assertEquals(3929527, (int) utmCoordinate.getNorthing());
-        assertEquals(54, utmCoordinate.getZoneNumber());
-
-        //around Tokyo city center in Japan
-        //should return easting=388708; northing=3950262; zone=54
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(35.69, 139.77));
-        assertEquals(388708, (int) utmCoordinate.getEasting());
-        assertEquals(3950262, (int) utmCoordinate.getNorthing());
-        assertEquals(54, utmCoordinate.getZoneNumber());
-
-        //around the international date line
-        //to the immediate west
-        //should return easting=353193; northing=3153509; zone=60
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(28.5, 175.5));
-        assertEquals(353193, (int) utmCoordinate.getEasting());
-        assertEquals(3153509, (int) utmCoordinate.getNorthing());
-        assertEquals(60, utmCoordinate.getZoneNumber());
-
-        //to the immediate east
-        //should return easting=646806; northing=3153509; zone=1
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(28.5, -175.5));
-        assertEquals(646806, (int) utmCoordinate.getEasting());
-        assertEquals(3153509, (int) utmCoordinate.getNorthing());
-        assertEquals(1, utmCoordinate.getZoneNumber());
-
-        //with date line crossing the middle
-        //should return easting=206331; northing=3156262; zone=1
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(28.5, 180));
-        assertEquals(206331, (int) utmCoordinate.getEasting());
-        assertEquals(3156262, (int) utmCoordinate.getNorthing());
-        assertEquals(1, utmCoordinate.getZoneNumber());
-
-        //around the equator
-        //to the immediate north
-        //should return easting=222576; northing=497870; zone=58
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(4.5, 162.5));
-        assertEquals(222576, (int) utmCoordinate.getEasting());
-        assertEquals(497870, (int) utmCoordinate.getNorthing());
-        assertEquals(58, utmCoordinate.getZoneNumber(), 0);
-
-        //to the immediate south
-        //should return easting=222576; northing=-497870; zone=58
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-4.5, 162.5));
-        assertEquals(222576, (int) utmCoordinate.getEasting());
-        assertEquals(-497870, (int) utmCoordinate.getNorthing());
-        assertEquals(58, utmCoordinate.getZoneNumber(), 0);
-
-        //with equator crossing the middle
-        //should return easting=221723; northing=0; zone=58
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(0, 162.5));
-        assertEquals(221723, (int) utmCoordinate.getEasting());
-        assertEquals(0, (int) utmCoordinate.getNorthing());
-        assertEquals(58, utmCoordinate.getZoneNumber(), 0);
-
-        //around the international date line and equator
-        //to the immediate west and north
-        //should return easting=333579; northing=497566; zone=60
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(4.5, 175.5));
-        assertEquals(333579, (int) utmCoordinate.getEasting());
-        assertEquals(497566, (int) utmCoordinate.getNorthing());
-        assertEquals(60, utmCoordinate.getZoneNumber(), 0);
-
-        //to the immediate west and south
-        //should return easting=333579; northing=-497566; zone=60
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-4.5, 175.5));
-        assertEquals(333579, (int) utmCoordinate.getEasting());
-        assertEquals(-497566, (int) utmCoordinate.getNorthing());
-        assertEquals(60, utmCoordinate.getZoneNumber(), 0);
-
-        //to the immediate east and north
-        //should return easting=666420; northing=497566; zone=1
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(4.5, -175.5));
-        assertEquals(666420, (int) utmCoordinate.getEasting());
-        assertEquals(497566, (int) utmCoordinate.getNorthing());
-        assertEquals(1, utmCoordinate.getZoneNumber(), 0);
-
-        //to the immediate east and south
-        //should return easting=666420; northing=666420; zone=1
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-4.5, -175.5));
-        assertEquals(666420, (int) utmCoordinate.getEasting());
-        assertEquals(666420, (int) utmCoordinate.getEasting());
-        assertEquals(1, utmCoordinate.getZoneNumber(), 0);
-
-        //with crossing of date line and equator at center point
-        //should return easting=166021; northing=0; zone=1
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(0, 180));
-        assertEquals(166021, (int) utmCoordinate.getEasting());
-        assertEquals(0, (int) utmCoordinate.getNorthing());
-        assertEquals(1, utmCoordinate.getZoneNumber(), 0);
-
-        //around the prime meridian
-        //to the immediate west
-        //should return easting=353193; northing=3153509; zone=30
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(28.5, -4.5));
-        assertEquals(353193, (int) utmCoordinate.getEasting());
-        assertEquals(3153509, (int) utmCoordinate.getNorthing());
-        assertEquals(30, utmCoordinate.getZoneNumber(), 0);
-
-        //to the immediate east
-        //should return easting=646806; northing=3153509; zone=31
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(28.5, 4.5));
-        assertEquals(646806, (int) utmCoordinate.getEasting());
-        assertEquals(3153509, (int) utmCoordinate.getNorthing());
-        assertEquals(31, utmCoordinate.getZoneNumber(), 0);
-
-        //with date line crossing the middle
-        //should return easting=206331; northing=3156262; zone=31
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(28.5, 0));
-        assertEquals(206331, (int) utmCoordinate.getEasting());
-        assertEquals(3156262, (int) utmCoordinate.getNorthing());
-        assertEquals(31, utmCoordinate.getZoneNumber(), 0);
-
-        //around the prime meridian and equator
-        //to the immediate west and north
-        //should return easting=333579; northing=497566; zone=30
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(4.5, -4.5));
-        assertEquals(333579, (int) utmCoordinate.getEasting());
-        assertEquals(497566, (int) utmCoordinate.getNorthing());
-        assertEquals(30, utmCoordinate.getZoneNumber(), 0);
-
-        //to the immediate west and south
-        //should return easting=333579; northing=-497566; zone=30
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-4.5, -4.5));
-        assertEquals(333579, (int) utmCoordinate.getEasting());
-        assertEquals(-497566, (int) utmCoordinate.getNorthing());
-        assertEquals(30, utmCoordinate.getZoneNumber(), 0);
-
-        //to the immediate east and north
-        //should return easting=666420; northing=497566; zone=31
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(4.5, 4.5));
-        assertEquals(666420, (int) utmCoordinate.getEasting());
-        assertEquals(497566, (int) utmCoordinate.getNorthing());
-        assertEquals(31, utmCoordinate.getZoneNumber(), 0);
-
-        //to the immediate east and south
-        //should return easting=666420; northing=-497566; zone=31
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(-4.5, 4.5));
-        assertEquals(666420, (int) utmCoordinate.getEasting());
-        assertEquals(-497566, (int) utmCoordinate.getNorthing());
-        assertEquals(31, utmCoordinate.getZoneNumber(), 0);
-
-        //with crossing of prime meridian and equator at center point
-        //should return easting=166021; northing=0; zone=31
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(0, 0));
-        assertEquals(166021, (int) utmCoordinate.getEasting());
-        assertEquals(0, (int) utmCoordinate.getNorthing());
-        assertEquals(31, utmCoordinate.getZoneNumber(), 0);
+        for (int i = 0; i < latLons.length; i++) {
+            UtmCoordinate utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(latLons[i][0],
+                    latLons[i][1]));
+            assertEquals(eastNorthZones[i][0], (int) utmCoordinate.getEasting());
+            assertEquals(eastNorthZones[i][1], (int) utmCoordinate.getNorthing());
+            assertEquals(eastNorthZones[i][2], utmCoordinate.getZoneNumber());
+        }
     }
 
     @Test
     public void testGithubData() throws ParseException {
-        //Using test data from github issue
-        //washington monument
-        //should return lat 38.8895 long -77.0352
-        double lat = 38.8895;
-        double lon = -77.0352;
-        int utmNorthing = 4306483;
-        int utmEasting = 323486;
-        int zoneNum = 18;
-        UsngCoordinate usng = UsngCoordinate.parseUsngString("18S UJ 23487 06483");
 
-        UtmCoordinate utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        LatLonCoordinate utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(utmToLL.getLon() * 10000));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        LatLonCoordinate usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(usngToLL.getLon() * 10000));
-
-        //white house
-        //should return lat 38.8977 lon -77.0366
-        lat = 38.8977;
-        lon = -77.0366;
-        utmNorthing = 4307395;
-        utmEasting = 323385;
-        zoneNum = 18;
-        usng = UsngCoordinate.parseUsngString("18S UJ 23386 07396");
-
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(utmToLL.getLon() * 10000));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(usngToLL.getLon() * 10000));
-
-        //mount everest'
-        //should return lat 27.9881 lon 86.9253
-        lat = 27.9881;
-        lon = 86.9253;
-        utmNorthing = 3095886;
-        utmEasting = 492654;
-        zoneNum = 45;
-        usng = UsngCoordinate.parseUsngString("45R VL 92654 95886");
-
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(utmToLL.getLon() * 10000));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(usngToLL.getLon() * 10000));
-
-        //hollywood sign'
-        //should return lat 34.1341 lon -118.3217
-        lat = 34.1341;
-        lon = -118.3217;
-        utmNorthing = 3777813;
-        utmEasting = 378131;
-        zoneNum = 11;
-        usng = UsngCoordinate.parseUsngString("11S LT 78132 77814");
-
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(utmToLL.getLon() * 10000));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(usngToLL.getLon() * 10000));
-
-        //empire state building'
-        //should return lat 40.7484 lon -73.9857'
-        lat = 40.7484;
-        lon = -73.9857;
-        utmNorthing = 4511322;
-        utmEasting = 585628;
-        zoneNum = 18;
-        usng = UsngCoordinate.parseUsngString("18T WL 85628 11322");
-
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(utmToLL.getLon() * 10000));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(usngToLL.getLon() * 10000));
-
-        //arlington cemetery'
-        //should return lat 38.88 lon -77.07'
-        lat = 38.88;
-        lon = -77.07;
-        utmNorthing = 4305496;
-        utmEasting = 320444;
-        zoneNum = 18;
-        usng = UsngCoordinate.parseUsngString("18S UJ 20444 05497");
-
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 100), Math.round(utmToLL.getLat() * 100));
-        assertEquals(Math.round(lon * 100), Math.round(utmToLL.getLon() * 100));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 100), Math.round(usngToLL.getLat() * 100));
-        assertEquals(Math.round(lon * 100), Math.round(usngToLL.getLon() * 100));
-
-        //raven\'s stadium'
-        //should return lat 39.277881 lon -76.622639'
-        lat = 39.277881;
-        lon = -76.622639;
-        utmNorthing = 4348868;
-        utmEasting = 360040;
-        zoneNum = 18;
-        usng = UsngCoordinate.parseUsngString("18S UJ 60040 48869");
-
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(utmToLL.getLon() * 10000));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(usngToLL.getLon() * 10000));
-
-        //independence hall'
-        //should return lat 39.9489 lon -75.15'
-        lat = 39.9489;
-        lon = -75.15;
-        utmNorthing = 4422096;
-        utmEasting = 487186;
-        zoneNum = 18;
-        usng = UsngCoordinate.parseUsngString("18S VK 87187 22096");
-
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 100), Math.round(utmToLL.getLon() * 100));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 100), Math.round(usngToLL.getLon() * 100));
-
-        //naval air station oceana'
-        //should return lat 36.8206 lon -76.0333'
-        lat = 36.8206;
-        lon = -76.0333;
-        utmNorthing = 4075469;
-        utmEasting = 407844;
-        zoneNum = 18;
-        usng = UsngCoordinate.parseUsngString("18S VF 07844 75469");
-
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(utmToLL.getLon() * 10000));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(usngToLL.getLon() * 10000));
-
-        //uss north carolina'
-        //should return lat 34.2364 lon -77.9542'
-        lat = 34.2364;
-        lon = -77.9542;
-        utmNorthing = 3792316;
-        utmEasting = 227899;
-        zoneNum = 18;
-        usng = UsngCoordinate.parseUsngString("18S TC 27900 92317");
-
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(utmToLL.getLon() * 10000));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(usngToLL.getLon() * 10000));
-
-        //m-80-n and n-606 junction'
-        //should return lat -36.0872 lon -72.8078'
-        lat = -36.0872;
-        lon = -72.8078;
-        utmNorthing = 6004156;
-        utmEasting = 697374;
-        zoneNum = 18;
-        usng = UsngCoordinate.parseUsngString("18H XF 97375 04155");
-
+        double[][] latLons = {{39.9489, -75.15}, {39.277881, -76.622639}, {38.88, -77.07},
+                {40.7484, -73.9857}, {34.1341, -118.3217}, {27.9881, 86.9253}, {38.8977, -77.0366},
+                {38.8895, -77.0352}, {36.8206, -76.0333}, {34.2364, -77.9542}, {-36.0872, -72.8078},
+                {-36.1333, -72.7833}, {-36.1222, -72.8044}};
+
+        int[][] eastNorthZones =
+                {{4422096, 487186, 18}, {4348868, 360040, 18}, {4305496, 320444, 18},
+                        {4511322, 585628, 18}, {3777813, 378131, 11}, {3095886, 492654, 45},
+                        {4307395, 323385, 18}, {4306483, 323486, 18}, {4075469, 407844, 18},
+                        {3792316, 227899, 18}, {6004156, 697374, 18}, {5998991, 699464, 18},
+                        {6000266, 697593, 18}};
+
+        String[] usngStrings =
+                {"18S VK 87187 22096", "18S UJ 60040 48869", "18S UJ 20444 05497",
+                 "18T WL 85628 11322", "11S LT 78132 77814", "45R VL 92654 95886",
+                 "18S UJ 23386 07396", "18S UJ 23487 06483", "18S VF 07844 75469",
+                 "18S TC 27900 92317", "18H XF 97375 04155", "18H XE 99464 98991",
+                 "18H XF 97593 00265"};
+
+        for (int i = 0; i < usngStrings.length; i++) {
+            UsngCoordinate usngCoordinate = UsngCoordinate.parseUsngString(usngStrings[i]);
+            executeGithubDataTest(latLons[i][0],
+                    latLons[i][1],
+                    eastNorthZones[i][0],
+                    eastNorthZones[i][1],
+                    eastNorthZones[i][2],
+                    usngCoordinate);
+        }
+    }
+
+    private void executeGithubDataTest(double lat, double lon, int utmNorthing, int utmEasting,
+            int zoneNum, UsngCoordinate usng) {
         if (lat < 0) {
             utmNorthing -= 10000000.0;
         }
 
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(utmToLL.getLon() * 10000));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(usngToLL.getLon() * 10000));
-
-        //cobquecura'
-        //should return lat -36.1333 lon -72.7833'
-        lat = -36.1333;
-        lon = -72.7833;
-        utmNorthing = 5998991;
-        utmEasting = 699464;
-        zoneNum = 18;
-        usng = UsngCoordinate.parseUsngString("18H XE 99464 98991");
-
-        if (lat < 0) {
-            utmNorthing -= 10000000.0;
-        }
-
-        utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
-
-        assertEquals(utmEasting, (int) utmCoordinate.getEasting());
-        assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
-        assertEquals(zoneNum, utmCoordinate.getZoneNumber());
-
-        utmCoordinate = new UtmCoordinate(zoneNum, utmEasting, utmNorthing);
-        utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
-
-        assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(utmToLL.getLon() * 10000));
-
-        assertEquals(usng,
-                coordinateSystemTranslator.toUsng(new LatLonCoordinate(lat, lon),
-                        CoordinatePrecision.ONE_METER));
-
-        usngToLL = coordinateSystemTranslator.toLatLon(usng);
-
-        assertEquals(Math.round(lat * 10000), Math.round(usngToLL.getLat() * 10000));
-        assertEquals(Math.round(lon * 10000), Math.round(usngToLL.getLon() * 10000));
-
-        //aerodromo los morros (scqr)'
-        //should return lat -36.1222 lon -72.8044'
-        lat = -36.1222;
-        lon = -72.8044;
-        utmNorthing = 6000266;
-        utmEasting = 697593;
-        zoneNum = 18;
-        usng = UsngCoordinate.parseUsngString("18H XF 97593 00265");
-
-        if (lat < 0) {
-            utmNorthing -= 10000000.0;
-        }
-
+        UtmCoordinate utmCoordinate;
+        LatLonCoordinate utmToLL;
+        LatLonCoordinate usngToLL;
         utmCoordinate = coordinateSystemTranslator.toUtm(new LatLonCoordinate(lat, lon));
 
         assertEquals(utmEasting, (int) utmCoordinate.getEasting());
@@ -1384,24 +996,14 @@ public class CoordinateSystemTranslatorTest {
 
     @Test
     public void testLLBoxToUSNG() throws ParseException {
-        //toUsng
-        //should return 18S UJ 23487 06483
-        String usngString = "18S UJ 23487 06483";
+        //should return 18S UJ 2348 0648
+        String usngString = "18S UJ 2349 0648";
         UsngCoordinate expected = UsngCoordinate.parseUsngString(usngString);
         double lat = 38.8895;
         double lon = -77.0352;
-        LatLonCoordinate latLonCoordinate = new LatLonCoordinate(lat, lon);
-        UsngCoordinate actual = coordinateSystemTranslator.toUsng(latLonCoordinate);
-        assertEquals(expected, actual);
-
-        //should return 18S UJ 2348 0648
-        usngString = "18S UJ 2349 0648";
-        expected = UsngCoordinate.parseUsngString(usngString);
-        lat = 38.8895;
-        lon = -77.0352;
         double lon2 = -77.0351;
         BoundingBox boundingBox = new BoundingBox(lat, lat, lon, lon2);
-        actual = coordinateSystemTranslator.toUsng(boundingBox);
+        UsngCoordinate actual = coordinateSystemTranslator.toUsng(boundingBox);
         assertEquals(expected, actual);
 
         //should return 18S UJ 234 064
@@ -1413,46 +1015,37 @@ public class CoordinateSystemTranslatorTest {
         boundingBox = new BoundingBox(lat, lat, lon, lon2);
         actual = coordinateSystemTranslator.toUsng(boundingBox);
         assertEquals(expected, actual);
+    }
 
-        //should return 18S UJ 23 06
-        usngString = "18S UJ 23 06";
-        expected = UsngCoordinate.parseUsngString(usngString);
-        lat = 38.8895;
-        lon = -77.0352;
-        lon2 = -77.033;
-        latLonCoordinate = new LatLonCoordinate(lat, lon2);
-        actual = coordinateSystemTranslator.toUsng(latLonCoordinate, CoordinatePrecision.ONE_KILOMETER);
-        assertEquals(expected, actual);
+    @Test
+    public void testLLPointtoUSNG() throws ParseException {
 
-        //should return 18S UJ 2 0
-        usngString = "18S UJ 2 0";
-        expected = UsngCoordinate.parseUsngString(usngString);
-        lat = 38.8895;
-        lon = -77.0352;
-        lon2 = -77.06;
-        latLonCoordinate = new LatLonCoordinate(lat, lon2);
-        actual = coordinateSystemTranslator.toUsng(latLonCoordinate, CoordinatePrecision.TEN_KILOMETERS);
-        assertEquals(expected, actual);
+        String[] usngStrings =
+                {"18S UJ 23487 06483", "18S UJ 23 06", "18S UJ 2 0", "18S UJ", "17S"};
 
-        //should return 18S UJusng
-        usngString = "18S UJ";
-        expected = UsngCoordinate.parseUsngString(usngString);
-        lat = 38.8895;
-        lon = -77.0352;
-        lon2 = -77.2;
-        latLonCoordinate = new LatLonCoordinate(lat, lon2);
-        actual = coordinateSystemTranslator.toUsng(latLonCoordinate, CoordinatePrecision.ONE_HUNDRED_KILOMETERS);
-        assertEquals(expected, actual);
+        CoordinatePrecision[] precisions =
+                {null, CoordinatePrecision.ONE_KILOMETER, CoordinatePrecision.TEN_KILOMETERS,
+                        CoordinatePrecision.ONE_HUNDRED_KILOMETERS,
+                        CoordinatePrecision.SIX_BY_EIGHT_DEGREES};
 
-        //should return 17S
-        usngString = "17S";
-        expected = UsngCoordinate.parseUsngString(usngString);
-        lat = 38.8895;
-        lon = -77.0352;
-        lon2 = -80;
-        latLonCoordinate = new LatLonCoordinate(lat, lon2);
-        actual = coordinateSystemTranslator.toUsng(latLonCoordinate, CoordinatePrecision.SIX_BY_EIGHT_DEGREES);
-        assertEquals(expected, actual);
+        double[][] expectedValues =
+                {{38.8895, -77.0352}, {38.8895, -77.033}, {38.8895, -77.06}, {38.8895, -77.2},
+                        {38.8895, -80}};
+
+        for (int i = 0; i < usngStrings.length; i++) {
+            UsngCoordinate expected = UsngCoordinate.parseUsngString(usngStrings[i]);
+            LatLonCoordinate latLonCoordinate = new LatLonCoordinate(expectedValues[i][0],
+                    expectedValues[i][1]);
+            UsngCoordinate actual = null;
+
+            if (precisions[i] == null) {
+                actual = coordinateSystemTranslator.toUsng(latLonCoordinate);
+            } else {
+                actual = coordinateSystemTranslator.toUsng(latLonCoordinate, precisions[i]);
+            }
+
+            assertEquals(expected, actual);
+        }
     }
 
     @Test
@@ -1465,88 +1058,28 @@ public class CoordinateSystemTranslatorTest {
         assertEquals(lat, llResult.getLat(), 0.0001);
         assertEquals(lon, llResult.getLon(), 0.0001);
 
-        //should return 38.8895 -77.0352 -77.0351
-        usng = UsngCoordinate.parseUsngString("18S UJ 2349 0648");
-        double north = 38.8895;
-        double south = 38.8895;
-        double west = -77.0352;
-        double east = -77.0351;
-        BoundingBox result = coordinateSystemTranslator.toBoundingBox(usng);
-        assertEquals(north, result.getNorth(), 0.0001);
-        assertEquals(south, result.getSouth(), 0.0001);
-        assertEquals(east, result.getEast(), 0.0001);
-        assertEquals(west, result.getWest(), 0.0001);
+        String[] inputValues =
+                new String[] {"18S UJ 2349 0648", "18S UJ 234 064", "18S UJ 23 06", "18S UJ 2 0",
+                        "18S UJ", "17S", "14R"};
 
-        //should return 38.8895 -77.0350 -77.0361'
-        usng = UsngCoordinate.parseUsngString("18S UJ 234 064");
-        north = 38.8896;
-        west = -77.0361;
-        east = -77.0350;
-        south = 38.8887;
-        result = coordinateSystemTranslator.toBoundingBox(usng);
-        assertEquals(north, result.getNorth(), 0.0001);
-        assertEquals(south, result.getSouth(), 0.0001);
-        assertEquals(east, result.getEast(), 0.0001);
-        assertEquals(west, result.getWest(), 0.0001);
+        double[][] expectedValues =
+                {{38.8895, -77.0352, -77.0351, 38.8895}, {38.8896, -77.0361, -77.0350, 38.8887},
+                        {38.8942, -77.0406, -77.0294, 38.8850},
+                        {38.9224, -77.0736, -76.9610, 38.8304},
+                        {39.7440, -77.3039, -76.1671, 38.8260}, {40, -84, -78, 32},
+                        {32, -102, -96, 24}};
 
-        //should return 38.8942 -77.0406 38.8850 -77.0294'
-        usng = UsngCoordinate.parseUsngString("18S UJ 23 06");
-        north = 38.8942;
-        west = -77.0406;
-        east = -77.0294;
-        south = 38.8850;
-        result = coordinateSystemTranslator.toBoundingBox(usng);
-        assertEquals(north, result.getNorth(), 0.0001);
-        assertEquals(south, result.getSouth(), 0.0001);
-        assertEquals(east, result.getEast(), 0.0001);
-        assertEquals(west, result.getWest(), 0.0001);
+        for (int i = 0; i < inputValues.length; i++) {
+            usng = UsngCoordinate.parseUsngString(inputValues[i]);
+            BoundingBox result = coordinateSystemTranslator.toBoundingBox(usng);
+            validateUsngToLatLonResult(expectedValues[i], result);
+        }
+    }
 
-        //should return 38.9224 -77.0736 38.8304 -76.9610'
-        usng = UsngCoordinate.parseUsngString("18S UJ 2 0");
-        north = 38.9224;
-        west = -77.0736;
-        east = -76.9610;
-        south = 38.8304;
-        result = coordinateSystemTranslator.toBoundingBox(usng);
-        assertEquals(north, result.getNorth(), 0.0001);
-        assertEquals(south, result.getSouth(), 0.0001);
-        assertEquals(east, result.getEast(), 0.0001);
-        assertEquals(west, result.getWest(), 0.0001);
-
-        //should return 39.7440 -77.3039 38.8260 -76.1671'
-        usng = UsngCoordinate.parseUsngString("18S UJ");
-        north = 39.7440;
-        west = -77.3039;
-        east = -76.1671;
-        south = 38.8260;
-        result = coordinateSystemTranslator.toBoundingBox(usng);
-        assertEquals(north, result.getNorth(), 0.0001);
-        assertEquals(south, result.getSouth(), 0.0001);
-        assertEquals(east, result.getEast(), 0.0001);
-        assertEquals(west, result.getWest(), 0.0001);
-
-        //should return 40 -84 32 -78'
-        usng = UsngCoordinate.parseUsngString("17S");
-        north = 40;
-        west = -84;
-        east = -78;
-        south = 32;
-        result = coordinateSystemTranslator.toBoundingBox(usng);
-        assertEquals(north, result.getNorth(), 0.0001);
-        assertEquals(south, result.getSouth(), 0.0001);
-        assertEquals(east, result.getEast(), 0.0001);
-        assertEquals(west, result.getWest(), 0.0001);
-
-        //should return 32 -102 24 -96'
-        usng = UsngCoordinate.parseUsngString("14R");
-        north = 32;
-        west = -102;
-        east = -96;
-        south = 24;
-        result = coordinateSystemTranslator.toBoundingBox(usng);
-        assertEquals(west, result.getWest(), 0);
-        assertEquals(north, result.getNorth(), 0.0001);
-        assertEquals(south, result.getSouth(), 0.0001);
-        assertEquals(east, result.getEast(), 0.0001);
+    private void validateUsngToLatLonResult(double[] expectedValues, BoundingBox result) {
+        assertEquals(expectedValues[0], result.getNorth(), 0.0001);
+        assertEquals(expectedValues[1], result.getWest(), 0.0001);
+        assertEquals(expectedValues[2], result.getEast(), 0.0001);
+        assertEquals(expectedValues[3], result.getSouth(), 0.0001);
     }
 }

@@ -1,0 +1,11 @@
+org/codice/usng/UsngCoordinate.class
+org/codice/usng/UtmCoordinate.class
+org/codice/usng/impl/UsngCoordinateImpl.class
+org/codice/usng/CoordinatePrecision.class
+org/codice/usng/impl/UtmCoordinateImpl.class
+org/codice/usng/impl/BoundingBoxImpl.class
+org/codice/usng/DecimalDegreesCoordinate.class
+org/codice/usng/impl/DecimalDegreesCoordinateImpl.class
+org/codice/usng/impl/CoordinateSystemTranslatorImpl.class
+org/codice/usng/CoordinateSystemTranslator.class
+org/codice/usng/BoundingBox.class

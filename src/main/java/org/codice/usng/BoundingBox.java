@@ -23,121 +23,36 @@
 
 package org.codice.usng;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 /**
- * This class is a representation of a point on the globe represented by a north/south/east/west
+ * This interface models an area on the globe represented by a north/south/east/west
  * bounding box.
  *
- * Instances of this class are immutable and therefore threadsafe.
+ * Default implementations of this class are immutable and therefore threadsafe.
  *
  */
-public final class BoundingBox {
-    private double north;
-
-    private double south;
-
-    private double east;
-
-    private double west;
-
-    /**
-     *
-     * @param north the northern line of latitude for this bounding box.
-     * @param south ths southern line of latitude for this bounding box.
-     * @param east the eastern line of longitude for this bounding box.
-     * @param west the western line of longitude for this bounding box.
-     */
-    public BoundingBox(final double north, final double south, final double east, final double west) {
-        this.north = north;
-        this.south = south;
-        this.east = east;
-        this.west = west;
-    }
+public interface BoundingBox {
 
     /**
      *
      * @return the northern line of latitude for this bounding box.
      */
-    public double getNorth() {
-        return north;
-    }
+    double getNorth();
 
     /**
      *
      * @return ths southern line of latitude for this bounding box.
      */
-    public double getSouth() {
-        return south;
-    }
+    double getSouth();
 
     /**
      *
      * @return the eastern line of longitude for this bounding box.
      */
-    public double getEast() {
-        return east;
-    }
+    double getEast();
 
     /**
      *
      * @return the western line of longitude for this bounding box.
      */
-    public double getWest() {
-        return west;
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("north", this.north)
-                .append("south", this.south)
-                .append("east", this.east)
-                .append("west", this.west)
-                .toString();
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object object) {
-        if (object == null) {
-            return false;
-        }
-
-        if (!(object instanceof UsngCoordinate)) {
-            return false;
-        }
-
-        BoundingBox other = (BoundingBox) object;
-
-        return new EqualsBuilder()
-                .append(this.north, other.north)
-                .append(this.south, other.south)
-                .append(this.east, other.east)
-                .append(this.west, other.west)
-                .build();
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(this.north)
-                .append(this.south)
-                .append(this.east)
-                .append(this.west)
-                .build();
-    }
+    double getWest();
 }

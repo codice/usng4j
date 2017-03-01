@@ -21,20 +21,17 @@
  * SOFTWARE.
  **/
 
-package org.codice.usng;
+package org.codice.usng.impl;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.codice.usng.DecimalDegreesCoordinate;
 
 /**
- * This class is a representation of a point on the globe represented by latitude/longitude in
- * decimal degrees.
- *
- * Instances of this class are immutable and therefore threadsafe.
- *
+ * {@inheritDoc}
  */
-public final class LatLonCoordinate {
+final class DecimalDegreesCoordinateImpl implements DecimalDegreesCoordinate {
     private double lat;
 
     private double lon;
@@ -44,23 +41,25 @@ public final class LatLonCoordinate {
      * @param lat the latitude value for this geographic point.
      * @param lon the longitude value fo this geographic point.
      */
-    public LatLonCoordinate(final double lat, final double lon) {
+    DecimalDegreesCoordinateImpl(final double lat, final double lon) {
         this.lat = lat;
         this.lon = lon;
     }
 
     /**
      *
-     * @return the latitude value for this geographic point.
+     * {@inheritDoc}
      */
+    @Override
     public double getLat() {
         return lat;
     }
 
     /**
      *
-     * @return the longitude value fo this geographic point.
+     * {@inheritDoc}
      */
+    @Override
     public double getLon() {
         return lon;
     }
@@ -87,11 +86,11 @@ public final class LatLonCoordinate {
             return false;
         }
 
-        if (!(object instanceof UsngCoordinate)) {
+        if (!(object instanceof UsngCoordinateImpl)) {
             return false;
         }
 
-        LatLonCoordinate other = (LatLonCoordinate) object;
+        DecimalDegreesCoordinateImpl other = (DecimalDegreesCoordinateImpl) object;
 
         return new EqualsBuilder()
                 .append(this.lat, other.lat)

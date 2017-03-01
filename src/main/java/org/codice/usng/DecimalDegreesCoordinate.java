@@ -24,48 +24,23 @@
 package org.codice.usng;
 
 /**
- * This interface models a point in the Universal Transverse Mercator coordinate system.
- * There are two valid formats for UTM coordinates.  Those are:
+ * This interface models a point on the globe represented by latitude/longitude in
+ * decimal degrees.
  *
- * {@code <zone number><latitude band letter><space><easting><space><northing>}
- *   e.g. 10Q -204832 302043
- *
- * or
- *
- * {@code <zone number><space><easting><space><northing>}
- *   e.g. 10 -204832 302043
- *
- * The default implementation of this class are immutable and therefore threadsafe.
+ * Default implementations of this class are immutable and therefore threadsafe.
  *
  */
-public interface UtmCoordinate {
-    /**
-     *
-     * @return the easting value of this UTM coordinate.
-     */
-    double getEasting();
+public interface DecimalDegreesCoordinate {
 
     /**
      *
-     * @return the northing value of this UTM coordinate.
+     * @return the latitude value for this geographic point.
      */
-    double getNorthing();
+    double getLat();
 
     /**
      *
-     * @return the zone number of this UTM coordinate.
+     * @return the longitude value fo this geographic point.
      */
-    int getZoneNumber();
-
-    /**
-     *
-     * @return the latitude band for this UTM coordinate or null if not specified.
-     */
-    Character getLattitudeBand();
-
-    /**
-     *
-     * @return the precision level of the supplied easting/northing values.
-     */
-    CoordinatePrecision getPrecision();
+    double getLon();
 }

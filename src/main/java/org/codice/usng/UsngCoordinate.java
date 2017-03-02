@@ -23,15 +23,8 @@
 
 package org.codice.usng;
 
-import java.text.ParseException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 /**
- * This class is a representation of a point in the United States National Grid coordinate system.
+ * This interface models a point in the United States National Grid coordinate system.
  * There are several valid formats for USNG coordinates.  A fully specified coordinate is formatted
  * like this:
  *
@@ -42,273 +35,57 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * required if easting and northing values are supplied. The easting and northing values have a
  * maximum length of 5 characters each (with an optional '-').
  *
- * The class provides methods to simplify the creation of USNG coordinates from either their String
- * representation or from the component parts of the coordinate.
- *
- * Instances of this class are immutable and therefore threadsafe.
+ * Default implementations of this class are immutable and therefore threadsafe.
  *
  */
-public final class UsngCoordinate {
-    private int zoneNumber;
-
-    private char latitudeBandLetter;
-
-    private Character columnLetter;
-
-    private Character rowLetter;
-
-    private Integer easting;
-
-    private Integer northing;
-
-    private CoordinatePrecision precision;
-
-    /**
-     *
-     * @param zoneNumber the zone number of this USNG coordinate.
-     * @param latitudeBandLetter the latitude band letter of this USNG coordinate.
-     */
-    public UsngCoordinate(final int zoneNumber, final char latitudeBandLetter) {
-        this.zoneNumber = zoneNumber;
-        this.latitudeBandLetter = latitudeBandLetter;
-        this.precision = CoordinatePrecision.SIX_BY_EIGHT_DEGREES;
-    }
-
-    /**
-     *
-     * @param zoneNumber the zone number of this USNG coordinate.
-     * @param latitudeBandLetter the latitude band letter of this USNG coordinate.
-     * @param columnLetter the grid column letter of this USNG coordinate.
-     * @param rowLetter the grid row letter of this USNG coordinate.
-     */
-    public UsngCoordinate(final int zoneNumber, final char latitudeBandLetter, final char columnLetter,
-            char rowLetter) {
-        this(zoneNumber, latitudeBandLetter);
-        this.columnLetter = columnLetter;
-        this.rowLetter = rowLetter;
-        this.precision = CoordinatePrecision.ONE_HUNDRED_KILOMETERS;
-    }
-
-    /**
-     *
-     * @param zoneNumber the zone number of this USNG coordinate.
-     * @param latitudeBandLetter the latitude band letter of this USNG coordinate.
-     * @param columnLetter the grid column letter of this USNG coordinate.
-     * @param rowLetter the grid row letter of this USNG coordinate.
-     * @param easting - the easting value of this USNG coordinate.
-     * @param northing - the northing value of this USNG coordinate.
-     */
-    public UsngCoordinate(final int zoneNumber, final char latitudeBandLetter, final char columnLetter,
-            char rowLetter, int easting, int northing) {
-        this(zoneNumber, latitudeBandLetter, columnLetter, rowLetter);
-        this.easting = easting;
-        this.northing = northing;
-        this.precision = CoordinatePrecision.forEastNorth(easting, northing);
-    }
+public interface UsngCoordinate {
 
     /**
      *
      * @return the zone number of this USNG coordinate.
      */
-    public int getZoneNumber() {
-        return this.zoneNumber;
-    }
+    int getZoneNumber();
 
     /**
      *
      * @return the latitude band for this USNG coordinate or null if not specified.
      */
-    public char getLatitudeBandLetter() {
-        return this.latitudeBandLetter;
-    }
+    char getLatitudeBandLetter();
 
     /**
      *
      * @return the grid column letter for this USNG coordinate or null if not specified.
      */
-    public Character getColumnLetter() {
-        return this.columnLetter;
-    }
+    Character getColumnLetter();
 
     /**
      *
      * @return the grid row letter for this USNG coordinate or null if not specified.
      */
-    public Character getRowLetter() {
-        return this.rowLetter;
-    }
+    Character getRowLetter();
 
     /**
      *
      * @return the easting value for this USNG coordinate or null if not specified.
      */
-    public Integer getEasting() {
-        return this.easting;
-    }
+    Integer getEasting();
 
     /**
      *
      * @return the northing for this USNG coordinate or null if not specified.
      */
-    public Integer getNorthing() {
-        return this.northing;
-    }
+    Integer getNorthing();
 
     /**
      *
      * @return the precision level of the supplied easting/northing values.
      */
-    public CoordinatePrecision getPrecision() {
-        return this.precision;
-    }
-
-    /**
-     * @param usngStr a properly formatted USNG string.
-     * @return a fully parsed UsngCoordinate object.
-     * @throws ParseException when 'usngStr' isn't in USNG format.
-     */
-    public static UsngCoordinate parseUsngString(final String usngStr) throws ParseException {
-        UsngCoordinate result = null;
-
-        String usngRegexp =
-                "(\\d\\d?)([CDEFGHJKLMNPQRSTUVWX])\\W?([ABCDEFGHJKLMNPQRSTUVWXYZ][ABCDEFGHJKLMNPQRSTUV])?(\\W\\d{0,5})?(\\W\\d{0,5})?";
-        Pattern pattern = Pattern.compile(usngRegexp);
-        Matcher m = pattern.matcher(usngStr.toUpperCase());
-
-        if (!m.matches()) {
-            String message = String.format(
-                    "Supplied argument '%s' is not a valid USNG formatted String.",
-                    usngStr);
-            throw new ParseException(message, 0);
-        }
-
-        int zoneNumber = Integer.parseInt(m.group(1));
-        char latitudeBandLetter = m.group(2)
-                .toCharArray()[0];
-
-        if (m.group(3) != null) {
-            char columnLetter = m.group(3)
-                    .toCharArray()[0];
-            char rowLetter = m.group(3)
-                    .toCharArray()[1];
-
-            if (m.group(4) != null && m.group(5) != null) {
-                int easting = Integer.parseInt(m.group(4)
-                        .trim());
-                int northing = Integer.parseInt(m.group(5)
-                        .trim());
-
-                result = new UsngCoordinate(zoneNumber,
-                        latitudeBandLetter,
-                        columnLetter,
-                        rowLetter,
-                        easting,
-                        northing);
-            } else {
-                result = new UsngCoordinate(zoneNumber,
-                        latitudeBandLetter,
-                        columnLetter,
-                        rowLetter);
-            }
-        } else {
-            result = new UsngCoordinate(zoneNumber, latitudeBandLetter);
-        }
-
-        return result;
-    }
-
-    /**
-     *
-     * @return a String representation of this USNG coordinate. The returned String is parseable by
-     * 'parseUsngString' and calling coordinate.equals(UsngCoordinate.parseUsngString(coordinate.toString())
-     * will return true.
-     */
-    @Override
-    public String toString() {
-        return this.toString(true);
-    }
+    CoordinatePrecision getPrecision();
 
     /**
      *
      * @return an MGRS coordinate formatted representation of this coordinate. This is the same as
      * the USNG formatted version with spaces removed.
      */
-    public String toMgrsString() {
-        return this.toString(false);
-    }
-
-    private String toString(final boolean includeSpaces) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(zoneNumber)
-                .append(latitudeBandLetter);
-
-        if (columnLetter != null && rowLetter != null) {
-            if (includeSpaces) {
-                stringBuilder.append(" ");
-            }
-
-            stringBuilder.append(columnLetter)
-                    .append(rowLetter);
-
-            if (easting != null && northing != null) {
-                if (includeSpaces) {
-                    stringBuilder.append(" ");
-                }
-
-                stringBuilder.append(precision.format(easting));
-
-                if (includeSpaces) {
-                    stringBuilder.append(" ");
-                }
-
-                stringBuilder.append(precision.format(northing));
-            }
-        }
-
-        return stringBuilder.toString();
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object object) {
-        if (object == null) {
-            return false;
-        }
-
-        if (!(object instanceof UsngCoordinate)) {
-            return false;
-        }
-
-        UsngCoordinate other = (UsngCoordinate) object;
-
-        return new EqualsBuilder()
-                .append(this.zoneNumber, other.zoneNumber)
-                .append(this.latitudeBandLetter, other.latitudeBandLetter)
-                .append(this.columnLetter, other.columnLetter)
-                .append(this.rowLetter, other.rowLetter)
-                .append(this.easting, other.easting)
-                .append(this.northing, other.northing)
-                .append(this.precision, other.precision)
-                .build();
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(this.zoneNumber)
-                .append(this.latitudeBandLetter)
-                .append(this.columnLetter)
-                .append(this.rowLetter)
-                .append(this.easting)
-                .append(this.northing)
-                .append(this.precision)
-                .build();
-    }
+    String toMgrsString();
 }

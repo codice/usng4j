@@ -28,6 +28,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 -->
 
+[![Build Status](https://travis-ci.org/codice/usng4j.svg?branch=master)](https://travis-ci.org/codice/usng4j)
+
 Java port of usngs.js with bug fixes, enhancements, and extensive unit tests.
 
 USNG (U.S. National Grid)

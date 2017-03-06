@@ -21,7 +21,7 @@
  * SOFTWARE.
  **/
 
-package org.codice.usng.impl;
+package org.codice.usng4j.impl;
 
 import java.text.ParseException;
 import java.util.regex.Matcher;
@@ -29,8 +29,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.codice.usng.CoordinatePrecision;
-import org.codice.usng.UtmCoordinate;
+import org.codice.usng4j.CoordinatePrecision;
+import org.codice.usng4j.UtmCoordinate;
 
 /**
  * {@inheritDoc}

@@ -21,26 +21,38 @@
  * SOFTWARE.
  **/
 
-package org.codice.usng;
+package org.codice.usng4j;
 
 /**
- * This interface models a point on the globe represented by latitude/longitude in
- * decimal degrees.
+ * This interface models an area on the globe represented by a north/south/east/west
+ * bounding box.
  *
  * Default implementations of this class are immutable and therefore threadsafe.
  *
  */
-public interface DecimalDegreesCoordinate {
+public interface BoundingBox {
 
     /**
      *
-     * @return the latitude value for this geographic point.
+     * @return the northern line of latitude for this bounding box.
      */
-    double getLat();
+    double getNorth();
 
     /**
      *
-     * @return the longitude value fo this geographic point.
+     * @return ths southern line of latitude for this bounding box.
      */
-    double getLon();
+    double getSouth();
+
+    /**
+     *
+     * @return the eastern line of longitude for this bounding box.
+     */
+    double getEast();
+
+    /**
+     *
+     * @return the western line of longitude for this bounding box.
+     */
+    double getWest();
 }

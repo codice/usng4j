@@ -21,7 +21,7 @@
  * SOFTWARE.
  **/
 
-package org.codice.usng;
+package org.codice.usng4j;
 
 /**
  * This interface models a point in the United States National Grid coordinate system.

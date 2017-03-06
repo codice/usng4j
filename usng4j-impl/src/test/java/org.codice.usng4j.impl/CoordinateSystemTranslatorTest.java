@@ -1,15 +1,15 @@
-package org.codice.usng.impl;
+package org.codice.usng4j.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.text.ParseException;
 
-import org.codice.usng.BoundingBox;
-import org.codice.usng.CoordinatePrecision;
-import org.codice.usng.DecimalDegreesCoordinate;
-import org.codice.usng.UsngCoordinate;
-import org.codice.usng.UtmCoordinate;
+import org.codice.usng4j.BoundingBox;
+import org.codice.usng4j.CoordinatePrecision;
+import org.codice.usng4j.DecimalDegreesCoordinate;
+import org.codice.usng4j.UsngCoordinate;
+import org.codice.usng4j.UtmCoordinate;
 import org.junit.Test;
 
 public class CoordinateSystemTranslatorTest {

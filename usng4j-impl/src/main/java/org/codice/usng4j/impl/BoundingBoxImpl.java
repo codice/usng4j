@@ -21,12 +21,12 @@
  * SOFTWARE.
  **/
 
-package org.codice.usng.impl;
+package org.codice.usng4j.impl;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.codice.usng.BoundingBox;
+import org.codice.usng4j.BoundingBox;
 
 /**
  * {@inheritDoc}

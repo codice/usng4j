@@ -21,7 +21,7 @@
  * SOFTWARE.
  **/
 
-package org.codice.usng;
+package org.codice.usng4j;
 
 import java.text.ParseException;
 

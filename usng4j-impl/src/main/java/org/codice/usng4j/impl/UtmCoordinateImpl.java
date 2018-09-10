@@ -26,10 +26,10 @@ package org.codice.usng4j.impl;
 import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.codice.usng4j.CoordinatePrecision;
+import org.codice.usng4j.NSIndicator;
 import org.codice.usng4j.UtmCoordinate;
 
 /**
@@ -46,13 +46,15 @@ final class UtmCoordinateImpl implements UtmCoordinate {
 
     private Character lattitudeBand;
 
+    private NSIndicator nsIndicator;
+
     /**
      *
      * @param zoneNumber the zone number for this UTM coordinate.
      * @param easting the easting value for the UTM coordinate.
      * @param northing the northing value of the UTM coordinate.
      */
-    UtmCoordinateImpl(final int zoneNumber, final double easting, final double northing) {
+    UtmCoordinateImpl(int zoneNumber, double easting, double northing) {
         this.zoneNumber = zoneNumber;
         this.easting = easting;
         this.northing = northing;
@@ -64,9 +66,21 @@ final class UtmCoordinateImpl implements UtmCoordinate {
      * @param zoneNumber the zone number for this UTM coordinate.
      * @param easting the easting value for the UTM coordinate.
      * @param northing the northing value of the UTM coordinate.
+     * @param nsIndicator N/S or null depending on hemisphere and whether it is used
+     */
+    UtmCoordinateImpl(int zoneNumber, double easting, double northing, NSIndicator nsIndicator) {
+        this(zoneNumber, easting, northing);
+        this.nsIndicator = nsIndicator;
+    }
+
+    /**
+     *
+     * @param zoneNumber the zone number for this UTM coordinate.
+     * @param easting the easting value for the UTM coordinate.
+     * @param northing the northing value of the UTM coordinate.
      * @param lattitudeBand the MGRS latitude band for this UTM coordinate.
      */
-    UtmCoordinateImpl(final int zoneNumber, final char lattitudeBand, final double easting, final double northing) {
+    UtmCoordinateImpl(int zoneNumber, char lattitudeBand, double easting, double northing) {
         this(zoneNumber, easting, northing);
         this.lattitudeBand = lattitudeBand;
     }
@@ -101,6 +115,11 @@ final class UtmCoordinateImpl implements UtmCoordinate {
     @Override
     public Character getLattitudeBand() {
         return this.lattitudeBand;
+    }
+
+    @Override
+    public NSIndicator getNSIndicator() {
+        return this.nsIndicator;
     }
 
     /**

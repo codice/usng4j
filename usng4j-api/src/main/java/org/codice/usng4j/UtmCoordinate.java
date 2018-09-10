@@ -65,6 +65,12 @@ public interface UtmCoordinate {
 
     /**
      *
+     * @return the N/S indicator if using northing values with hemisphere indicator
+     */
+    NSIndicator getNSIndicator();
+
+    /**
+     *
      * @return the precision level of the supplied easting/northing values.
      */
     CoordinatePrecision getPrecision();

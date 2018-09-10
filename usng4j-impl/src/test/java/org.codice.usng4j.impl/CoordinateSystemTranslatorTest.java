@@ -1,5 +1,6 @@
 package org.codice.usng4j.impl;
 
+import static org.codice.usng4j.impl.CoordinateSystemTranslatorImpl.NORTHING_OFFSET;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -8,6 +9,7 @@ import java.text.ParseException;
 import org.codice.usng4j.BoundingBox;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.DecimalDegreesCoordinate;
+import org.codice.usng4j.NSIndicator;
 import org.codice.usng4j.UsngCoordinate;
 import org.codice.usng4j.UtmCoordinate;
 import org.junit.Test;
@@ -259,10 +261,10 @@ public class CoordinateSystemTranslatorTest {
         assertEquals(43292, parts.getNorthing(), 0);
     }
 
-    @Test(expected = ParseException.class)
+    @Test
     public void testParseUtm() throws ParseException {
         //should return zone=5; letter=Q; easting=-00001; northing=2199600
-        String utmCoordinateString = "5Q -00001 2199600";
+        String utmCoordinateString = "5Q -000001 2199600";
         UtmCoordinate utmCoordinate = UtmCoordinateImpl.parseUtmString(utmCoordinateString);
         assertEquals(5, utmCoordinate.getZoneNumber());
         assertEquals('Q',
@@ -273,17 +275,18 @@ public class CoordinateSystemTranslatorTest {
         assertEquals(CoordinatePrecision.ONE_METER, utmCoordinate.getPrecision());
 
         //should return zone=5; letter=null; easting=-00001; northing=2199600
-        utmCoordinateString = "5 -00001 2199600";
+        utmCoordinateString = "5 -000001 2199600";
         utmCoordinate = UtmCoordinateImpl.parseUtmString(utmCoordinateString);
         assertEquals(5, utmCoordinate.getZoneNumber());
         assertNull(utmCoordinate.getLattitudeBand());
         assertEquals(-1, utmCoordinate.getEasting(), 0);
         assertEquals(2199600.0, utmCoordinate.getNorthing(), 0);
         assertEquals(CoordinatePrecision.ONE_METER, utmCoordinate.getPrecision());
+    }
 
-        //should throw ParseException
-        utmCoordinateString = "5Q";
-        UtmCoordinateImpl.parseUtmString(utmCoordinateString);
+    @Test(expected = ParseException.class)
+    public void testParseUtmBadInput() throws ParseException {
+        UtmCoordinateImpl.parseUtmString("5Q");
     }
 
     @Test
@@ -335,24 +338,24 @@ public class CoordinateSystemTranslatorTest {
     public void testConvertUtmToLatLon() {
         //with single digit zone and specifying accuracy
         int northing = 42785;
-        int easting = 31517;
+        int easting = 131517;
         int zone = 5;
         int accuracy = 100000;
         UtmCoordinate utmCoordinate = new UtmCoordinateImpl(zone, easting, northing);
         BoundingBox boundingBox = coordinateSystemTranslator.toBoundingBox(utmCoordinate, accuracy);
         assertEquals(1, Math.floor(boundingBox.getNorth()), 0);
-        assertEquals(-157, Math.floor(boundingBox.getEast()), 0);
+        assertEquals(-156, Math.floor(boundingBox.getEast()), 0);
         assertEquals(0, Math.floor(boundingBox.getSouth()), 0);
-        assertEquals(-158, Math.floor(boundingBox.getWest()), 0);
+        assertEquals(-157, Math.floor(boundingBox.getWest()), 0);
 
         //should return lat=0; east=-158
         northing = 42785;
-        easting = 31517;
+        easting = 131517;
         zone = 5;
         utmCoordinate = new UtmCoordinateImpl(zone, easting, northing);
         DecimalDegreesCoordinate latLon = coordinateSystemTranslator.toLatLon(utmCoordinate);
         assertEquals(0, Math.floor(latLon.getLat()), 0);
-        assertEquals(-158, Math.floor(latLon.getLon()), 0);
+        assertEquals(-157, Math.floor(latLon.getLon()), 0);
 
         //should return north=1; east=-115; south=0; west=-116
         northing = 12900;
@@ -374,6 +377,23 @@ public class CoordinateSystemTranslatorTest {
         latLon = coordinateSystemTranslator.toLatLon(utmCoordinate);
         assertEquals(0, Math.floor(latLon.getLat()), 0);
         assertEquals(-116, Math.floor(latLon.getLon()), 0);
+
+        // should return lat=-35; lon=-59
+        northing = 6168016;
+        easting = 341475;
+        zone = 21;
+        utmCoordinate = new UtmCoordinateImpl(zone, easting, northing - NORTHING_OFFSET);
+        latLon = coordinateSystemTranslator.toLatLon(utmCoordinate);
+        assertEquals(-35.0, Math.floor(latLon.getLat()), 0);
+        assertEquals(-59.0, Math.floor(latLon.getLon()), 0);
+
+        northing = 6168016;
+        easting = 341475;
+        zone = 21;
+        utmCoordinate = new UtmCoordinateImpl(zone, easting, northing, NSIndicator.SOUTH);
+        latLon = coordinateSystemTranslator.toLatLon(utmCoordinate);
+        assertEquals(-35.0, Math.floor(latLon.getLat()), 0);
+        assertEquals(-59.0, Math.floor(latLon.getLon()), 0);
     }
 
     @Test

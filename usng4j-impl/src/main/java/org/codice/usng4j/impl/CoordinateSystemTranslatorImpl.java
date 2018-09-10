@@ -30,6 +30,7 @@ import org.codice.usng4j.BoundingBox;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.CoordinateSystemTranslator;
 import org.codice.usng4j.DecimalDegreesCoordinate;
+import org.codice.usng4j.NSIndicator;
 import org.codice.usng4j.UsngCoordinate;
 import org.codice.usng4j.UtmCoordinate;
 
@@ -37,6 +38,8 @@ import org.codice.usng4j.UtmCoordinate;
  * {@inheritDoc}
  */
 public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTranslator {
+
+    public static final double NORTHING_OFFSET = 10000000.0; // (meters)
 
     private static final double DEG_2_RAD = Math.PI / 180;
 
@@ -51,8 +54,6 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
     // UTM offsets
     private static final double EASTING_OFFSET = 500000.0;   // (meters)
-
-    private static final double NORTHING_OFFSET = 10000000.0; // (meters)
 
     // scale factor of central meridian
     private static final double K0 = 0.9996;
@@ -352,52 +353,22 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     }
 
     String getUtmLetterDesignator(double lat) {
-        char letterDesignator;
-        if ((84 >= lat) && (lat >= 72)) {
-            letterDesignator = 'X';
-        } else if ((72 > lat) && (lat >= 64)) {
-            letterDesignator = 'W';
-        } else if ((64 > lat) && (lat >= 56)) {
-            letterDesignator = 'V';
-        } else if ((56 > lat) && (lat >= 48)) {
-            letterDesignator = 'U';
-        } else if ((48 > lat) && (lat >= 40)) {
-            letterDesignator = 'T';
-        } else if ((40 > lat) && (lat >= 32)) {
-            letterDesignator = 'S';
-        } else if ((32 > lat) && (lat >= 24)) {
-            letterDesignator = 'R';
-        } else if ((24 > lat) && (lat >= 16)) {
-            letterDesignator = 'Q';
-        } else if ((16 > lat) && (lat >= 8)) {
-            letterDesignator = 'P';
-        } else if ((8 > lat) && (lat >= 0)) {
-            letterDesignator = 'N';
-        } else if ((0 > lat) && (lat >= -8)) {
-            letterDesignator = 'M';
-        } else if ((-8 > lat) && (lat >= -16)) {
-            letterDesignator = 'L';
-        } else if ((-16 > lat) && (lat >= -24)) {
-            letterDesignator = 'K';
-        } else if ((-24 > lat) && (lat >= -32)) {
-            letterDesignator = 'J';
-        } else if ((-32 > lat) && (lat >= -40)) {
-            letterDesignator = 'H';
-        } else if ((-40 > lat) && (lat >= -48)) {
-            letterDesignator = 'G';
-        } else if ((-48 > lat) && (lat >= -56)) {
-            letterDesignator = 'F';
-        } else if ((-56 > lat) && (lat >= -64)) {
-            letterDesignator = 'E';
-        } else if ((-64 > lat) && (lat >= -72)) {
-            letterDesignator = 'D';
-        } else if ((-72 > lat) && (lat >= -80)) {
-            letterDesignator = 'C';
+        if (lat > 84 || lat < -80) {
+            return "Z";
         } else {
-            letterDesignator = 'Z'; // This is here as an error flag to show
+            double index = (lat + 80) / 8;
+            if (index >= 6) {
+                index++; // skip 'I'
+            }
+            if (index >= 12) {
+                index++; // skip 'O'
+            }
+            if (index >= 22) {
+                index --; // adjust for 80 to 84, which should be 'X'
+            }
+
+            return String.valueOf((char)(67 + index));
         }
-        // that the latitude is outside the UTM limits
-        return String.valueOf(letterDesignator);
     }
 
     /****************** Find the set for a given zone. ************************
@@ -586,6 +557,17 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
      */
     @Override
     public DecimalDegreesCoordinate toLatLon(UtmCoordinate utmCoordinate) {
+        if (utmCoordinate.getNSIndicator() == NSIndicator.SOUTH) {
+            UtmCoordinate newUtm = new UtmCoordinateImpl(utmCoordinate.getZoneNumber(),
+                utmCoordinate.getEasting(),
+                utmCoordinate.getNorthing() - NORTHING_OFFSET);
+            return toLatLonNsNormalized(newUtm);
+        } else {
+            return toLatLonNsNormalized(utmCoordinate);
+        }
+    }
+
+    private DecimalDegreesCoordinate toLatLonNsNormalized(UtmCoordinate utmCoordinate) {
         double xUTM = utmCoordinate.getEasting() - CoordinateSystemTranslatorImpl.EASTING_OFFSET;
         double yUTM = utmCoordinate.getNorthing();
 
@@ -595,30 +577,30 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
         // (latitude)
         double M = yUTM / CoordinateSystemTranslatorImpl.K0;
         double mu = M / (this.equatorialRadius * (1 - this.eccSquared / 4.0
-                - 3 * this.eccSquared * this.eccSquared / 64.0
-                - 5 * this.eccSquared * this.eccSquared * this.eccSquared / 256.0));
+            - 3 * this.eccSquared * this.eccSquared / 64.0
+            - 5 * this.eccSquared * this.eccSquared * this.eccSquared / 256.0));
         // phi1 is the "footprint latitude" or the latitude at the central meridian which
         // has the same y coordinate as that of the point (phi (lat), lambda (lon) ).
         double phi1Rad = mu + (3 * this.e1 / 2 - 27 * this.e1 * this.e1 * this.e1 / 32) * Math.sin(
-                2 * mu)
-                + (21 * this.e1 * this.e1 / 16 - 55 * this.e1 * this.e1 * this.e1 * this.e1 / 32)
-                * Math.sin(4 * mu) + (151 * this.e1 * this.e1 * this.e1 / 96) * Math.sin(6 * mu);
+            2 * mu)
+            + (21 * this.e1 * this.e1 / 16 - 55 * this.e1 * this.e1 * this.e1 * this.e1 / 32)
+            * Math.sin(4 * mu) + (151 * this.e1 * this.e1 * this.e1 / 96) * Math.sin(6 * mu);
         double phi1 = phi1Rad * CoordinateSystemTranslatorImpl.RAD_2_DEG;
 
         // Terms used in the conversion equations
         double N1 = this.equatorialRadius / Math.sqrt(
-                1 - this.eccSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad));
+            1 - this.eccSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad));
         double T1 = Math.tan(phi1Rad) * Math.tan(phi1Rad);
         double C1 = this.eccPrimeSquared * Math.cos(phi1Rad) * Math.cos(phi1Rad);
         double R1 = this.equatorialRadius * (1 - this.eccSquared) / Math.pow(
-                1 - this.eccSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad), 1.5);
+            1 - this.eccSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad), 1.5);
         double D = xUTM / (N1 * CoordinateSystemTranslatorImpl.K0);
         // Calculate latitude, in decimal degrees
         double lat = phi1Rad - (N1 * Math.tan(phi1Rad) / R1) * (D * D / 2
-                - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * this.eccPrimeSquared) * D * D * D * D
-                / 24 +
-                (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * this.eccPrimeSquared - 3 * C1 * C1)
-                        * D * D * D * D * D * D / 720.0);
+            - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * this.eccPrimeSquared) * D * D * D * D
+            / 24 +
+            (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * this.eccPrimeSquared - 3 * C1 * C1)
+                * D * D * D * D * D * D / 720.0);
         lat = lat * CoordinateSystemTranslatorImpl.RAD_2_DEG;
 
         if (lat == 0) {
@@ -627,8 +609,8 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
         // Calculate longitude, in decimal degrees
         double lon = (D - (1 + 2 * T1 + C1) * D * D * D / 6 +
-                (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * this.eccPrimeSquared + 24 * T1 * T1) * D
-                        * D * D * D * D / 120) / Math.cos(phi1Rad);
+            (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * this.eccPrimeSquared + 24 * T1 * T1) * D
+                * D * D * D * D / 120) / Math.cos(phi1Rad);
 
         lon = lonOrigin + lon * CoordinateSystemTranslatorImpl.RAD_2_DEG;
         return new DecimalDegreesCoordinateImpl(lat, lon);

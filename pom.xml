@@ -6,7 +6,7 @@
 
     <groupId>org.codice</groupId>
     <artifactId>usng4j</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <modules>
         <module>usng4j-api</module>
         <module>usng4j-impl</module>
@@ -17,6 +17,9 @@
     <properties>
         <junit.version>4.12</junit.version>
         <commons-lang3.version>3.5</commons-lang3.version>
+        <maven-jacoco-plugin.version>0.8.1</maven-jacoco-plugin.version>
+        <!-- Must MANUALLY update this if the codice-maven project's version changes -->
+        <codice-maven.version>0.1</codice-maven.version>
     </properties>
 
     <distributionManagement>
@@ -47,6 +50,26 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${maven-jacoco-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codice.maven</groupId>
+                        <artifactId>jacoco</artifactId>
+                        <version>${codice-maven.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

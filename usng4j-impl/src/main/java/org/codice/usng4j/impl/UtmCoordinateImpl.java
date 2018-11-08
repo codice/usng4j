@@ -32,186 +32,164 @@ import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.NSIndicator;
 import org.codice.usng4j.UtmCoordinate;
 
-/**
- * {@inheritDoc}
- */
+/** {@inheritDoc} */
 final class UtmCoordinateImpl implements UtmCoordinate {
-    private double easting;
+  private double easting;
 
-    private double northing;
+  private double northing;
 
-    private int zoneNumber;
+  private int zoneNumber;
 
-    private CoordinatePrecision precision;
+  private CoordinatePrecision precision;
 
-    private Character lattitudeBand;
+  private Character lattitudeBand;
 
-    private NSIndicator nsIndicator;
+  private NSIndicator nsIndicator;
 
-    /**
-     *
-     * @param zoneNumber the zone number for this UTM coordinate.
-     * @param easting the easting value for the UTM coordinate.
-     * @param northing the northing value of the UTM coordinate.
-     */
-    UtmCoordinateImpl(int zoneNumber, double easting, double northing) {
-        this.zoneNumber = zoneNumber;
-        this.easting = easting;
-        this.northing = northing;
-        this.precision = CoordinatePrecision.forEastNorth((int) easting, (int) northing);
+  /**
+   * @param zoneNumber the zone number for this UTM coordinate.
+   * @param easting the easting value for the UTM coordinate.
+   * @param northing the northing value of the UTM coordinate.
+   */
+  UtmCoordinateImpl(int zoneNumber, double easting, double northing) {
+    this.zoneNumber = zoneNumber;
+    this.easting = easting;
+    this.northing = northing;
+    this.precision = CoordinatePrecision.forEastNorth((int) easting, (int) northing);
+  }
+
+  /**
+   * @param zoneNumber the zone number for this UTM coordinate.
+   * @param easting the easting value for the UTM coordinate.
+   * @param northing the northing value of the UTM coordinate.
+   * @param nsIndicator N/S or null depending on hemisphere and whether it is used
+   */
+  UtmCoordinateImpl(int zoneNumber, double easting, double northing, NSIndicator nsIndicator) {
+    this(zoneNumber, easting, northing);
+    this.nsIndicator = nsIndicator;
+  }
+
+  /**
+   * @param zoneNumber the zone number for this UTM coordinate.
+   * @param easting the easting value for the UTM coordinate.
+   * @param northing the northing value of the UTM coordinate.
+   * @param lattitudeBand the MGRS latitude band for this UTM coordinate.
+   */
+  UtmCoordinateImpl(int zoneNumber, char lattitudeBand, double easting, double northing) {
+    this(zoneNumber, easting, northing);
+    this.lattitudeBand = lattitudeBand;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getEasting() {
+    return easting;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getNorthing() {
+    return northing;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public int getZoneNumber() {
+    return zoneNumber;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Character getLattitudeBand() {
+    return this.lattitudeBand;
+  }
+
+  @Override
+  public NSIndicator getNSIndicator() {
+    return this.nsIndicator;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public CoordinatePrecision getPrecision() {
+    return this.precision;
+  }
+
+  /**
+   * @param utmString a UTM formatted string. e.g. {@code 10Q 123456 -0123456}
+   * @return an object representation of 'utmString'
+   * @throws ParseException when 'utmString' isn't correctly formatted.
+   */
+  static UtmCoordinate parseUtmString(String utmString) throws ParseException {
+    Pattern utmRegexp =
+        Pattern.compile("(\\d\\d?)(-?[CDEFGHJKLMNPQRSTUVWX]?)(\\W?-?\\d{6})(\\W?-?\\d{7})");
+
+    Matcher m = utmRegexp.matcher(utmString);
+
+    if (!m.matches()) {
+      String message =
+          String.format("Supplied argument '%s' is not a valid UTM formatted String.", utmString);
+      throw new ParseException(message, 0);
     }
 
-    /**
-     *
-     * @param zoneNumber the zone number for this UTM coordinate.
-     * @param easting the easting value for the UTM coordinate.
-     * @param northing the northing value of the UTM coordinate.
-     * @param nsIndicator N/S or null depending on hemisphere and whether it is used
-     */
-    UtmCoordinateImpl(int zoneNumber, double easting, double northing, NSIndicator nsIndicator) {
-        this(zoneNumber, easting, northing);
-        this.nsIndicator = nsIndicator;
+    int zoneNumber = Integer.parseInt(m.group(1));
+    String latitudeBandString = m.group(2);
+    int easting = Integer.parseInt(m.group(3).trim());
+    int northing = Integer.parseInt(m.group(4).trim());
+
+    if (latitudeBandString.length() > 0) {
+      return new UtmCoordinateImpl(zoneNumber, latitudeBandString.charAt(0), easting, northing);
+    } else {
+      return new UtmCoordinateImpl(zoneNumber, easting, northing);
+    }
+  }
+
+  /**
+   * @return a String representation of this UTM coordinate. The returned String is parseable by
+   *     'parseUtmString'. Calling
+   *     coordinate.equals(UtmCoordinate.parseUtmString(coordinate.toString()) will return true.
+   */
+  @Override
+  public String toString() {
+    return new StringBuilder()
+        .append(zoneNumber)
+        .append(lattitudeBand == null ? "" : lattitudeBand)
+        .append(" ")
+        .append(precision.format((int) easting))
+        .append(" ")
+        .append(precision.format((int) northing))
+        .toString();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public boolean equals(final Object object) {
+    if (object == null) {
+      return false;
     }
 
-    /**
-     *
-     * @param zoneNumber the zone number for this UTM coordinate.
-     * @param easting the easting value for the UTM coordinate.
-     * @param northing the northing value of the UTM coordinate.
-     * @param lattitudeBand the MGRS latitude band for this UTM coordinate.
-     */
-    UtmCoordinateImpl(int zoneNumber, char lattitudeBand, double easting, double northing) {
-        this(zoneNumber, easting, northing);
-        this.lattitudeBand = lattitudeBand;
+    if (!(object instanceof UtmCoordinateImpl)) {
+      return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double getEasting() {
-        return easting;
-    }
+    UtmCoordinateImpl other = (UtmCoordinateImpl) object;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double getNorthing() {
-        return northing;
-    }
+    return new EqualsBuilder()
+        .append(this.zoneNumber, other.zoneNumber)
+        .append(this.easting, other.easting)
+        .append(this.northing, other.northing)
+        .append(this.lattitudeBand, other.lattitudeBand)
+        .build();
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getZoneNumber() {
-        return zoneNumber;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Character getLattitudeBand() {
-        return this.lattitudeBand;
-    }
-
-    @Override
-    public NSIndicator getNSIndicator() {
-        return this.nsIndicator;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CoordinatePrecision getPrecision() {
-        return this.precision;
-    }
-
-    /**
-     *
-     * @param utmString a UTM formatted string. e.g. {@code 10Q 123456 -0123456}
-     * @return an object representation of 'utmString'
-     * @throws ParseException when 'utmString' isn't correctly formatted.
-     */
-    static UtmCoordinate parseUtmString(String utmString) throws ParseException {
-        Pattern utmRegexp = Pattern.compile("(\\d\\d?)(-?[CDEFGHJKLMNPQRSTUVWX]?)(\\W?-?\\d{6})(\\W?-?\\d{7})");
-
-        Matcher m = utmRegexp.matcher(utmString);
-
-        if (!m.matches()) {
-            String message = String.format(
-                    "Supplied argument '%s' is not a valid UTM formatted String.",
-                    utmString);
-            throw new ParseException(message, 0);
-        }
-
-        int zoneNumber = Integer.parseInt(m.group(1));
-        String latitudeBandString = m.group(2);
-        int easting = Integer.parseInt(m.group(3).trim());
-        int northing = Integer.parseInt(m.group(4).trim());
-
-        if (latitudeBandString.length() > 0) {
-            return new UtmCoordinateImpl(zoneNumber, latitudeBandString.charAt(0), easting, northing);
-        } else {
-            return new UtmCoordinateImpl(zoneNumber, easting, northing);
-        }
-    }
-
-    /**
-     *
-     * @return a String representation of this UTM coordinate. The returned String is parseable by
-     * 'parseUtmString'. Calling coordinate.equals(UtmCoordinate.parseUtmString(coordinate.toString())
-     * will return true.
-     */
-    @Override
-    public String toString() {
-        return new StringBuilder().append(zoneNumber)
-                .append(lattitudeBand == null ? "" : lattitudeBand)
-                .append(" ")
-                .append(precision.format((int) easting))
-                .append(" ")
-                .append(precision.format((int) northing))
-                .toString();
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object object) {
-        if (object == null) {
-            return false;
-        }
-
-        if (!(object instanceof UtmCoordinateImpl)) {
-            return false;
-        }
-
-        UtmCoordinateImpl other = (UtmCoordinateImpl) object;
-
-        return new EqualsBuilder()
-                .append(this.zoneNumber, other.zoneNumber)
-                .append(this.easting, other.easting)
-                .append(this.northing, other.northing)
-                .append(this.lattitudeBand, other.lattitudeBand)
-                .build();
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(this.zoneNumber)
-                .append(this.easting)
-                .append(this.northing)
-                .append(this.lattitudeBand)
-                .build();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder()
+        .append(this.zoneNumber)
+        .append(this.easting)
+        .append(this.northing)
+        .append(this.lattitudeBand)
+        .build();
+  }
 }

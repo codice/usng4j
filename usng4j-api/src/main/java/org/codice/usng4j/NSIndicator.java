@@ -21,10 +21,8 @@
 
 package org.codice.usng4j;
 
-/**
- * Indicator for North/South for UTM coordinates
- */
+/** Indicator for North/South for UTM coordinates */
 public enum NSIndicator {
-  NORTH, SOUTH
-
+  NORTH,
+  SOUTH
 }

@@ -24,35 +24,21 @@
 package org.codice.usng4j;
 
 /**
- * This interface models an area on the globe represented by a north/south/east/west
- * bounding box.
+ * This interface models an area on the globe represented by a north/south/east/west bounding box.
  *
- * Default implementations of this class are immutable and therefore threadsafe.
- *
+ * <p>Default implementations of this class are immutable and therefore threadsafe.
  */
 public interface BoundingBox {
 
-    /**
-     *
-     * @return the northern line of latitude for this bounding box.
-     */
-    double getNorth();
+  /** @return the northern line of latitude for this bounding box. */
+  double getNorth();
 
-    /**
-     *
-     * @return ths southern line of latitude for this bounding box.
-     */
-    double getSouth();
+  /** @return ths southern line of latitude for this bounding box. */
+  double getSouth();
 
-    /**
-     *
-     * @return the eastern line of longitude for this bounding box.
-     */
-    double getEast();
+  /** @return the eastern line of longitude for this bounding box. */
+  double getEast();
 
-    /**
-     *
-     * @return the western line of longitude for this bounding box.
-     */
-    double getWest();
+  /** @return the western line of longitude for this bounding box. */
+  double getWest();
 }

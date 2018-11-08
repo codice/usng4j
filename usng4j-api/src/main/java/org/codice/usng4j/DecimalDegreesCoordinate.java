@@ -24,23 +24,15 @@
 package org.codice.usng4j;
 
 /**
- * This interface models a point on the globe represented by latitude/longitude in
- * decimal degrees.
+ * This interface models a point on the globe represented by latitude/longitude in decimal degrees.
  *
- * Default implementations of this class are immutable and therefore threadsafe.
- *
+ * <p>Default implementations of this class are immutable and therefore threadsafe.
  */
 public interface DecimalDegreesCoordinate {
 
-    /**
-     *
-     * @return the latitude value for this geographic point.
-     */
-    double getLat();
+  /** @return the latitude value for this geographic point. */
+  double getLat();
 
-    /**
-     *
-     * @return the longitude value fo this geographic point.
-     */
-    double getLon();
+  /** @return the longitude value fo this geographic point. */
+  double getLon();
 }

@@ -28,113 +28,93 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.codice.usng4j.BoundingBox;
 
-/**
- * {@inheritDoc}
- */
+/** {@inheritDoc} */
 final class BoundingBoxImpl implements BoundingBox {
-    private double north;
+  private double north;
 
-    private double south;
+  private double south;
 
-    private double east;
+  private double east;
 
-    private double west;
+  private double west;
 
-    /**
-     *
-     * @param north the northern line of latitude for this bounding box.
-     * @param south ths southern line of latitude for this bounding box.
-     * @param east the eastern line of longitude for this bounding box.
-     * @param west the western line of longitude for this bounding box.
-     */
-    BoundingBoxImpl(final double north, final double south, final double east, final double west) {
-        this.north = north;
-        this.south = south;
-        this.east = east;
-        this.west = west;
+  /**
+   * @param north the northern line of latitude for this bounding box.
+   * @param south ths southern line of latitude for this bounding box.
+   * @param east the eastern line of longitude for this bounding box.
+   * @param west the western line of longitude for this bounding box.
+   */
+  BoundingBoxImpl(final double north, final double south, final double east, final double west) {
+    this.north = north;
+    this.south = south;
+    this.east = east;
+    this.west = west;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getNorth() {
+    return this.north;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getSouth() {
+    return this.south;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getEast() {
+    return this.east;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getWest() {
+    return this.west;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("north", this.north)
+        .append("south", this.south)
+        .append("east", this.east)
+        .append("west", this.west)
+        .toString();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public boolean equals(final Object object) {
+    if (object == null) {
+      return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double getNorth() {
-        return this.north;
+    if (!(object instanceof UsngCoordinateImpl)) {
+      return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double getSouth() {
-        return this.south;
-    }
+    BoundingBox other = (BoundingBox) object;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double getEast() {
-        return this.east;
-    }
+    return new EqualsBuilder()
+        .append(this.north, other.getNorth())
+        .append(this.south, other.getSouth())
+        .append(this.east, other.getEast())
+        .append(this.west, other.getWest())
+        .build();
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double getWest() {
-        return this.west;
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("north", this.north)
-                .append("south", this.south)
-                .append("east", this.east)
-                .append("west", this.west)
-                .toString();
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object object) {
-        if (object == null) {
-            return false;
-        }
-
-        if (!(object instanceof UsngCoordinateImpl)) {
-            return false;
-        }
-
-        BoundingBox other = (BoundingBox) object;
-
-        return new EqualsBuilder()
-                .append(this.north, other.getNorth())
-                .append(this.south, other.getSouth())
-                .append(this.east, other.getEast())
-                .append(this.west, other.getWest())
-                .build();
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(this.north)
-                .append(this.south)
-                .append(this.east)
-                .append(this.west)
-                .build();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder()
+        .append(this.north)
+        .append(this.south)
+        .append(this.east)
+        .append(this.west)
+        .build();
+  }
 }

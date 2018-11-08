@@ -34,24 +34,6 @@ package org.codice.usng4j;
  *
  * <p>{@code <zone number><space><easting><space><northing>} e.g. 10 -204832 302043
  *
- * <p>The default implementation of this class are immutable and therefore threadsafe.
+ * <p>The default implementation of this class is immutable and therefore threadsafe.
  */
-public interface UtmCoordinate {
-  /** @return the easting value of this UTM coordinate. */
-  double getEasting();
-
-  /** @return the northing value of this UTM coordinate. */
-  double getNorthing();
-
-  /** @return the zone number of this UTM coordinate. */
-  int getZoneNumber();
-
-  /** @return the latitude band for this UTM coordinate or null if not specified. */
-  Character getLattitudeBand();
-
-  /** @return the N/S indicator if using northing values with hemisphere indicator */
-  NSIndicator getNSIndicator();
-
-  /** @return the precision level of the supplied easting/northing values. */
-  CoordinatePrecision getPrecision();
-}
+public interface UtmCoordinate extends UtmUpsCapabilities {}

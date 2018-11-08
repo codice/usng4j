@@ -55,13 +55,6 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${maven-jacoco-plugin.version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codice.maven</groupId>
-                        <artifactId>jacoco</artifactId>
-                        <version>${codice-maven.version}</version>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <id>default-prepare-agent</id>

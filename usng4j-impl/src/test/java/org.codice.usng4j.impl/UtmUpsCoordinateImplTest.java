@@ -8,32 +8,62 @@ import static org.junit.Assert.fail;
 public class UtmUpsCoordinateImplTest {
 
   @Test
-  public void testSuccessfulParsingUtmString() {
+  public void testParsingValidUtmStringAsUtm() {
     fail();
   }
 
   @Test
-  public void testParsingInvalidUtmString() {
+  public void testParsingInvalidUtmStringAsUtm() {
     fail();
   }
 
   @Test
-  public void testSuccessfulParsingUpsString() {
+  public void testParsingValidUtmStringAsUtmUps() {
     fail();
   }
 
   @Test
-  public void testParsingInvalidUpsString() {
+  public void testParsingInvalidUtmStringAsUtmUps() {
     fail();
   }
 
   @Test
-  public void testSuccessfulParsingUtmStringWithOverlappingUpsCoordinates() {
+  public void testParsingValidUpsStringAsUps() {
     fail();
   }
 
   @Test
-  public void testSuccessfulParsingUpsStringWithOverlappingUtmCoordinates() {
+  public void testParsingInvalidUpsStringAsUps() {
+    fail();
+  }
+
+  @Test
+  public void testParsingValidUpsStringAsUtmUps() {
+    fail();
+  }
+
+  @Test
+  public void testParsingInvalidUpsStringAsUtmUps() {
+    fail();
+  }
+
+  @Test
+  public void testParsingUtmOverlappingUpsAsUtm() {
+    fail();
+  }
+
+  @Test
+  public void testParsingUtmOverlappingUpsAsUtmUps() {
+    fail();
+  }
+  
+  @Test
+  public void testParsingUpsOverlappingUtmAsUps() {
+    fail();
+  }
+
+  @Test
+  public void testParsingUpsOverlappingUtmAsUtmUps() {
     fail();
   }
 }

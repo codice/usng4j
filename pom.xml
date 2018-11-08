@@ -18,8 +18,6 @@
     <junit.version>4.12</junit.version>
     <commons-lang3.version>3.5</commons-lang3.version>
     <maven-jacoco-plugin.version>0.8.1</maven-jacoco-plugin.version>
-    <!-- Must MANUALLY update this if the codice-maven project's version changes -->
-    <codice-maven.version>0.1</codice-maven.version>
   </properties>
 
   <distributionManagement>

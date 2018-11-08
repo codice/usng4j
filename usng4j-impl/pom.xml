@@ -39,11 +39,6 @@
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>${maven-jacoco-plugin.version}</version>
         <dependencies>
-          <dependency>
-            <groupId>org.codice.maven</groupId>
-            <artifactId>jacoco</artifactId>
-            <version>${codice-maven.version}</version>
-          </dependency>
         </dependencies>
         <executions>
           <execution>
@@ -62,17 +57,17 @@
               <rules>
                 <rule>
                   <limits>
-                    <limit implementation="org.codice.jacoco.LenientLimit">
+                    <limit>
                       <counter>INSTRUCTION</counter>
                       <value>COVEREDRATIO</value>
                       <minimum>0.78</minimum>
                     </limit>
-                    <limit implementation="org.codice.jacoco.LenientLimit">
+                    <limit>
                       <counter>BRANCH</counter>
                       <value>COVEREDRATIO</value>
                       <minimum>0.55</minimum>
                     </limit>
-                    <limit implementation="org.codice.jacoco.LenientLimit">
+                    <limit>
                       <counter>COMPLEXITY</counter>
                       <value>COVEREDRATIO</value>
                       <minimum>0.51</minimum>

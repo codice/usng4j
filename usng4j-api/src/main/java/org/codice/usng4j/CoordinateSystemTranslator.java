@@ -28,98 +28,99 @@ import java.text.ParseException;
 /**
  * A utility for converting between coordinate systems.
  *
- * The default implementation of this class is immutable and therefore threadsafe.
+ * <p>The default implementation of this class is immutable and therefore threadsafe.
  */
 public interface CoordinateSystemTranslator {
-    /**
-     *
-     * @param latLonCoordinate the bounding box to be converted.
-     * @return a UsngCoordinate that represents the supplied DecimalDegreesCoordinate.
-     */
-    UsngCoordinate toUsng(BoundingBox latLonCoordinate);
+  /**
+   * @param latLonCoordinate the bounding box to be converted.
+   * @return a UsngCoordinate that represents the supplied DecimalDegreesCoordinate.
+   */
+  UsngCoordinate toUsng(BoundingBox latLonCoordinate);
 
-    /**
-     * Converts from decimal degrees to UTM.
-     *
-     * @param decimalDegreesCoordinate the Lat/Lon coordinate to be converted.
-     * @return the UTM equivalent of decimalDegreesCoordinate.
-     */
-    UtmCoordinate toUtm(DecimalDegreesCoordinate decimalDegreesCoordinate);
+  /**
+   * Converts from decimal degrees to UTM.
+   *
+   * @param decimalDegreesCoordinate the Lat/Lon coordinate to be converted.
+   * @return the UTM equivalent of decimalDegreesCoordinate.
+   */
+  UtmCoordinate toUtm(DecimalDegreesCoordinate decimalDegreesCoordinate);
 
-    /**
-     * Converts from decimal degrees to USNG.
-     *
-     * @param decimalDegreesCoordinate the lat/lon coordinate to be converted.
-     * @return a USNG equivalent of decimalDegreesCoordinate.
-     */
-    UsngCoordinate toUsng(DecimalDegreesCoordinate decimalDegreesCoordinate);
+  /**
+   * Converts from decimal degrees to USNG.
+   *
+   * @param decimalDegreesCoordinate the lat/lon coordinate to be converted.
+   * @return a USNG equivalent of decimalDegreesCoordinate.
+   */
+  UsngCoordinate toUsng(DecimalDegreesCoordinate decimalDegreesCoordinate);
 
-    /**
-     * Converts from decimal degrees to USNG.
-     *
-     * @param decimalDegreesCoordinate the lat/lon coordinate to be converted.
-     * @param coordinatePrecision the requested precision of the returned UsngCoordinate.
-     * @return a USNG equivalent of decimalDegreesCoordinate.
-     */
-    UsngCoordinate toUsng(DecimalDegreesCoordinate decimalDegreesCoordinate,
-            CoordinatePrecision coordinatePrecision);
+  /**
+   * Converts from decimal degrees to USNG.
+   *
+   * @param decimalDegreesCoordinate the lat/lon coordinate to be converted.
+   * @param coordinatePrecision the requested precision of the returned UsngCoordinate.
+   * @return a USNG equivalent of decimalDegreesCoordinate.
+   */
+  UsngCoordinate toUsng(
+      DecimalDegreesCoordinate decimalDegreesCoordinate, CoordinatePrecision coordinatePrecision);
 
-    /**
-     * Converts from UTM to a bounding box.
-     *
-     * @param utmCoordinate the UTM coordinate to be converted.
-     * @return the lat/lon equiavlent of utmCoordinate.
-     */
-    BoundingBox toBoundingBox(UtmCoordinate utmCoordinate);
+  /**
+   * Converts from UTM to a bounding box.
+   *
+   * @param utmCoordinate the UTM coordinate to be converted.
+   * @return the lat/lon equiavlent of utmCoordinate.
+   */
+  BoundingBox toBoundingBox(UtmCoordinate utmCoordinate);
 
-    /**
-     * Converts from UTM to decimal degrees.
-     *
-     * @param utmCoordinate
-     * @return
-     */
-    DecimalDegreesCoordinate toLatLon(UtmCoordinate utmCoordinate);
+  /**
+   * Converts from UTM to decimal degrees.
+   *
+   * @param utmCoordinate
+   * @return
+   */
+  DecimalDegreesCoordinate toLatLon(UtmCoordinate utmCoordinate);
 
-    /**
-     * Converts from USNG to UTM.
-     * @param usngCoordinate the USNG coordinate to be converted.
-     * @return the UTM equivalent of usngCoordinate.
-     */
-    UtmCoordinate toUtm(UsngCoordinate usngCoordinate);
+  /**
+   * Converts from USNG to UTM.
+   *
+   * @param usngCoordinate the USNG coordinate to be converted.
+   * @return the UTM equivalent of usngCoordinate.
+   */
+  UtmCoordinate toUtm(UsngCoordinate usngCoordinate);
 
-    /**
-     * Convert from USNG to lat/lon.
-     * @param usngCoordinate the USNG coordinate to be converted.
-     * @return the lat/lon equivalent of usngp.
-     */
-    DecimalDegreesCoordinate toLatLon(UsngCoordinate usngCoordinate);
+  /**
+   * Convert from USNG to lat/lon.
+   *
+   * @param usngCoordinate the USNG coordinate to be converted.
+   * @return the lat/lon equivalent of usngp.
+   */
+  DecimalDegreesCoordinate toLatLon(UsngCoordinate usngCoordinate);
 
-    /**
-     * Convert from USNG to lat/lon.
-     * @param usngCoordinate the USNG coordinate to be converted.
-     * @return the lat/lon equivalent of usngp.
-     */
-    BoundingBox toBoundingBox(UsngCoordinate usngCoordinate);
+  /**
+   * Convert from USNG to lat/lon.
+   *
+   * @param usngCoordinate the USNG coordinate to be converted.
+   * @return the lat/lon equivalent of usngp.
+   */
+  BoundingBox toBoundingBox(UsngCoordinate usngCoordinate);
 
-    /**
-     *
-     * @param utmString a UTM formatted string. e.g. {@code 10Q 123456 -0123456}
-     * @return an object representation of 'utmString'
-     * @throws ParseException when 'utmString' isn't correctly formatted.
-     */
-    UtmCoordinate parseUtmString(String utmString) throws ParseException;
+  /**
+   * @param utmString a UTM formatted string. e.g. {@code 10Q 123456 -0123456}
+   * @return an object representation of 'utmString'
+   * @throws ParseException when 'utmString' isn't correctly formatted.
+   */
+  UtmCoordinate parseUtmString(String utmString) throws ParseException;
 
-    /**
-     * @param usngString a properly formatted USNG string.
-     * @return a fully parsed UsngCoordinate object.
-     * @throws ParseException when 'usngStr' isn't in USNG format.
-     */
-    UsngCoordinate parseUsngString(String usngString) throws ParseException;
+  /**
+   * @param usngString a properly formatted USNG string.
+   * @return a fully parsed UsngCoordinate object.
+   * @throws ParseException when 'usngStr' isn't in USNG format.
+   */
+  UsngCoordinate parseUsngString(String usngString) throws ParseException;
 
-    /**
-     * @param mgrsString a properly formatted MGRS string.
-     * @return a fully parsed UsngCoordinate object.
-     * @throws ParseException when 'msgrsString' isn't in MGRS format.
-     */
-    UsngCoordinate parseMgrsString(String mgrsString) throws ParseException;
+  /**
+   * @param mgrsString a properly formatted MGRS string.
+   * @return a fully parsed UsngCoordinate object.
+   * @throws ParseException when 'msgrsString' isn't in MGRS format.
+   */
+  UsngCoordinate parseMgrsString(String mgrsString) throws ParseException;
 }

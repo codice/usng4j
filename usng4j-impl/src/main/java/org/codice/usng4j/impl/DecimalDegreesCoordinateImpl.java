@@ -28,85 +28,58 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.codice.usng4j.DecimalDegreesCoordinate;
 
-/**
- * {@inheritDoc}
- */
+/** {@inheritDoc} */
 final class DecimalDegreesCoordinateImpl implements DecimalDegreesCoordinate {
-    private double lat;
+  private double lat;
 
-    private double lon;
+  private double lon;
 
-    /**
-     *
-     * @param lat the latitude value for this geographic point.
-     * @param lon the longitude value fo this geographic point.
-     */
-    DecimalDegreesCoordinateImpl(final double lat, final double lon) {
-        this.lat = lat;
-        this.lon = lon;
+  /**
+   * @param lat the latitude value for this geographic point.
+   * @param lon the longitude value fo this geographic point.
+   */
+  DecimalDegreesCoordinateImpl(final double lat, final double lon) {
+    this.lat = lat;
+    this.lon = lon;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getLat() {
+    return lat;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public double getLon() {
+    return lon;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this).append("lat", this.lat).append("lon", this.lon).toString();
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public boolean equals(final Object object) {
+    if (object == null) {
+      return false;
     }
 
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public double getLat() {
-        return lat;
+    if (!(object instanceof UsngCoordinateImpl)) {
+      return false;
     }
 
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public double getLon() {
-        return lon;
-    }
+    DecimalDegreesCoordinateImpl other = (DecimalDegreesCoordinateImpl) object;
 
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("lat", this.lat)
-                .append("lon", this.lon)
-                .toString();
-    }
+    return new EqualsBuilder().append(this.lat, other.lat).append(this.lon, other.lon).build();
+  }
 
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object object) {
-        if (object == null) {
-            return false;
-        }
-
-        if (!(object instanceof UsngCoordinateImpl)) {
-            return false;
-        }
-
-        DecimalDegreesCoordinateImpl other = (DecimalDegreesCoordinateImpl) object;
-
-        return new EqualsBuilder()
-                .append(this.lat, other.lat)
-                .append(this.lon, other.lon)
-                .build();
-    }
-
-    /**
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder()
-                .append(this.lat)
-                .append(this.lon)
-                .build();
-    }
+  /** {@inheritDoc} */
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(this.lat).append(this.lon).build();
+  }
 }

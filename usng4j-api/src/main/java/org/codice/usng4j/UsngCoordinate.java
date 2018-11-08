@@ -24,68 +24,44 @@
 package org.codice.usng4j;
 
 /**
- * This interface models a point in the United States National Grid coordinate system.
- * There are several valid formats for USNG coordinates.  A fully specified coordinate is formatted
- * like this:
+ * This interface models a point in the United States National Grid coordinate system. There are
+ * several valid formats for USNG coordinates. A fully specified coordinate is formatted like this:
  *
- * {@code <zone number><latitude band letter><space><grid column><grid row><space><easting><space><northing>}
- *   e.g. 18T WL 85628 11322
+ * <p>{@code <zone number><latitude band letter><space><grid column><grid
+ * row><space><easting><space><northing>} e.g. 18T WL 85628 11322
  *
- * Only {@code <zone number>} and {@code <latitude band letter>} are required. The grid letters are
- * required if easting and northing values are supplied. The easting and northing values have a
+ * <p>Only {@code <zone number>} and {@code <latitude band letter>} are required. The grid letters
+ * are required if easting and northing values are supplied. The easting and northing values have a
  * maximum length of 5 characters each (with an optional '-').
  *
- * Default implementations of this class are immutable and therefore threadsafe.
- *
+ * <p>Default implementations of this class are immutable and therefore threadsafe.
  */
 public interface UsngCoordinate {
 
-    /**
-     *
-     * @return the zone number of this USNG coordinate.
-     */
-    int getZoneNumber();
+  /** @return the zone number of this USNG coordinate. */
+  int getZoneNumber();
 
-    /**
-     *
-     * @return the latitude band for this USNG coordinate or null if not specified.
-     */
-    char getLatitudeBandLetter();
+  /** @return the latitude band for this USNG coordinate or null if not specified. */
+  char getLatitudeBandLetter();
 
-    /**
-     *
-     * @return the grid column letter for this USNG coordinate or null if not specified.
-     */
-    Character getColumnLetter();
+  /** @return the grid column letter for this USNG coordinate or null if not specified. */
+  Character getColumnLetter();
 
-    /**
-     *
-     * @return the grid row letter for this USNG coordinate or null if not specified.
-     */
-    Character getRowLetter();
+  /** @return the grid row letter for this USNG coordinate or null if not specified. */
+  Character getRowLetter();
 
-    /**
-     *
-     * @return the easting value for this USNG coordinate or null if not specified.
-     */
-    Integer getEasting();
+  /** @return the easting value for this USNG coordinate or null if not specified. */
+  Integer getEasting();
 
-    /**
-     *
-     * @return the northing for this USNG coordinate or null if not specified.
-     */
-    Integer getNorthing();
+  /** @return the northing for this USNG coordinate or null if not specified. */
+  Integer getNorthing();
 
-    /**
-     *
-     * @return the precision level of the supplied easting/northing values.
-     */
-    CoordinatePrecision getPrecision();
+  /** @return the precision level of the supplied easting/northing values. */
+  CoordinatePrecision getPrecision();
 
-    /**
-     *
-     * @return an MGRS coordinate formatted representation of this coordinate. This is the same as
-     * the USNG formatted version with spaces removed.
-     */
-    String toMgrsString();
+  /**
+   * @return an MGRS coordinate formatted representation of this coordinate. This is the same as the
+   *     USNG formatted version with spaces removed.
+   */
+  String toMgrsString();
 }

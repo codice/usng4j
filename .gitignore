@@ -1,8 +1,7 @@
 *.class
 
 # Maven target folders
-usng4j-api/target/**
-usng4j-impl/target/**
+target/
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

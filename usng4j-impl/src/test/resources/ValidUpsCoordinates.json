@@ -1,0 +1,85 @@
+[{
+  latitude: 90,
+  longitude: 0,
+  easting: 2000000,
+  northing: 2000000,
+  northPole: true
+}, {
+  latitude: 84.01,
+  longitude: 0,
+  easting: 2000000,
+  northing: 1334385,
+  northPole: true
+}, {
+  latitude: 84.01,
+  longitude: 15,
+  easting: 2172273,
+  northing: 1357065,
+  northPole: true
+}, {
+  latitude: 87,
+  longitude: 0,
+  easting: 2000000,
+  northing: 1666855,
+  northPole: true
+}, {
+  latitude: 87,
+  longitude: 15,
+  easting: 2086224,
+  northing: 1678207,
+  northPole: true
+}, {
+  latitude: -80.01,
+  longitude: 0,
+  easting: 2000000,
+  northing: 3111832,
+  northPole: false
+}, {
+  latitude: -80.01,
+  longitude: 15,
+  easting: 2287763,
+  northing: 3073947,
+  northPole: false
+}, {
+  latitude: -85,
+  longitude: 0,
+  easting: 2000000,
+  northing: 2555457,
+  northPole: false
+}, {
+  latitude: -85,
+  longitude: 15,
+  easting: 2143762,
+  northing: 2536530,
+  northPole: false
+}, {
+  latitude: -90,
+  longitude: 0,
+  easting: 2000000,
+  northing: 2000000,
+  northPole: false
+}, {
+  latitude: -87,
+  longitude: 0,
+  easting: 2000000,
+  northing: 2333144,
+  northPole: false
+}, {
+  latitude: 87,
+  longitude: 67,
+  easting: 2306661,
+  northing: 1869830,
+  northPole: true
+}, {
+  latitude: 87,
+  longitude: -67,
+  easting: 1693338,
+  northing: 1869830,
+  northPole: true
+}, {
+  latitude: 84.1,
+  longitude: -166,
+  easting: 1841396,
+  northing: 2636122,
+  northPole: true
+}]

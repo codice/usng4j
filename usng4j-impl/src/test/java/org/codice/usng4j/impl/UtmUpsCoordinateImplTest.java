@@ -2,9 +2,19 @@ package org.codice.usng4j.impl;
 
 import static org.junit.Assert.fail;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import org.junit.Test;
 
 public class UtmUpsCoordinateImplTest {
+
+  private Gson gson = new GsonBuilder().create();
+
+  private InputStreamReader reader(String file) throws IOException {
+    return new InputStreamReader(UtmUpsCoordinateImplTest.class.getResourceAsStream(file), "UTF-8");
+  }
 
   // UTM parsing tests
 
@@ -31,7 +41,12 @@ public class UtmUpsCoordinateImplTest {
   // UPS parsing tests
 
   @Test
-  public void testParsingUpsAsUps() {
+  public void testParsingUpsAsUps() throws IOException {
+    UtmUpsCoordinateImpl[] upsObjects =
+        gson.fromJson(reader("/ValidUpsCoordinates.json"), UtmUpsCoordinateImpl[].class);
+    for (UtmUpsCoordinateImpl upsCoordinate : upsObjects) {
+      System.out.println(upsCoordinate.toString());
+    }
     fail();
   }
 

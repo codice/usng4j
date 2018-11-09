@@ -1,9 +1,8 @@
 package org.codice.usng4j.impl;
 
-import org.junit.Test;
-
-
 import static org.junit.Assert.fail;
+
+import org.junit.Test;
 
 public class UtmUpsCoordinateImplTest {
 
@@ -56,7 +55,7 @@ public class UtmUpsCoordinateImplTest {
   public void testParsingUtmOverlappingUpsAsUtmUps() {
     fail();
   }
-  
+
   @Test
   public void testParsingUpsOverlappingUtmAsUps() {
     fail();

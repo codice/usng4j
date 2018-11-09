@@ -591,7 +591,6 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
             + (21 * this.e1 * this.e1 / 16 - 55 * this.e1 * this.e1 * this.e1 * this.e1 / 32)
                 * Math.sin(4 * mu)
             + (151 * this.e1 * this.e1 * this.e1 / 96) * Math.sin(6 * mu);
-    double phi1 = phi1Rad * CoordinateSystemTranslatorImpl.RAD_2_DEG;
 
     // Terms used in the conversion equations
     double N1 =

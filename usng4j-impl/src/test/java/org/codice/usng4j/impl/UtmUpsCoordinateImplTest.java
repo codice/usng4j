@@ -6,43 +6,20 @@ import org.junit.Test;
 
 public class UtmUpsCoordinateImplTest {
 
+  // UTM parsing tests
+
   @Test
-  public void testParsingValidUtmStringAsUtm() {
+  public void testParsingUtmAsUtm() {
     fail();
   }
 
   @Test
-  public void testParsingInvalidUtmStringAsUtm() {
+  public void testParsingInvalidUtm() {
     fail();
   }
 
   @Test
-  public void testParsingValidUtmStringAsUtmUps() {
-    fail();
-  }
-
-  @Test
-  public void testParsingInvalidUtmStringAsUtmUps() {
-    fail();
-  }
-
-  @Test
-  public void testParsingValidUpsStringAsUps() {
-    fail();
-  }
-
-  @Test
-  public void testParsingInvalidUpsStringAsUps() {
-    fail();
-  }
-
-  @Test
-  public void testParsingValidUpsStringAsUtmUps() {
-    fail();
-  }
-
-  @Test
-  public void testParsingInvalidUpsStringAsUtmUps() {
+  public void testParsingUpsAsUtm() {
     fail();
   }
 
@@ -51,13 +28,47 @@ public class UtmUpsCoordinateImplTest {
     fail();
   }
 
+  // UPS parsing tests
+
   @Test
-  public void testParsingUtmOverlappingUpsAsUtmUps() {
+  public void testParsingUpsAsUps() {
+    fail();
+  }
+
+  @Test
+  public void testParsingInvalidUps() {
+    fail();
+  }
+
+  @Test
+  public void testParsingUtmAsUps() {
     fail();
   }
 
   @Test
   public void testParsingUpsOverlappingUtmAsUps() {
+    fail();
+  }
+
+  // UTM/UPS parsing tests
+
+  @Test
+  public void testParsingUtmAsUtmUps() {
+    fail();
+  }
+
+  @Test
+  public void testParsingUpsAsUtmUps() {
+    fail();
+  }
+
+  @Test
+  public void testParsingInvalidUtmUps() {
+    fail();
+  }
+
+  @Test
+  public void testParsingUtmOverlappingUpsAsUtmUps() {
     fail();
   }
 

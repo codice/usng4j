@@ -23,6 +23,7 @@
 
 package org.codice.usng4j.impl;
 
+import javax.annotation.Nullable;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.NSIndicator;
 import org.codice.usng4j.UtmUpsCoordinate;
@@ -31,25 +32,38 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   private final int zone;
   private final Character latitudeBand;
-  private final int northing;
-  private final int easting;
+  private final double easting;
+  private final double northing;
+  private final CoordinatePrecision precision;
+  private final NSIndicator nsIndicator;
 
   private UtmUpsCoordinateImpl(
-      final int zone, final Character latitudeBand, final int northing, final int easting) {
+      final int zone,
+      final Character latitudeBand,
+      final double easting,
+      final double northing,
+      @Nullable final NSIndicator nsIndicator) {
     this.zone = zone;
     this.latitudeBand = latitudeBand;
-    this.northing = northing;
     this.easting = easting;
+    this.northing = northing;
+    this.nsIndicator = nsIndicator;
+    this.precision = CoordinatePrecision.forEastNorth((int) easting, (int) northing);
   }
 
-  public static UtmUpsCoordinate fromLatLon(final double lat, final double lon) {
-    // TODO: implement
-    return null;
+  public static UtmUpsCoordinate fromZoneBandNorthingEastingNSI(
+      final int zone,
+      final Character latitudeBand,
+      final double easting,
+      final double northing,
+      @Nullable final NSIndicator nsIndicator) {
+    // TODO: implement input checks
+    return new UtmUpsCoordinateImpl(zone, latitudeBand, easting, northing, nsIndicator);
   }
 
   public static UtmUpsCoordinate fromZoneBandNorthingEasting(
-      final int zone, final Character latitudeBand, final int northing, final int easting) {
-    return new UtmUpsCoordinateImpl(zone, latitudeBand, northing, easting);
+      final int zone, final Character latitudeBand, final double easting, final double northing) {
+    return fromZoneBandNorthingEastingNSI(zone, latitudeBand, easting, northing, null);
   }
 
   @Override
@@ -74,7 +88,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   @Override
   public CoordinatePrecision getPrecision() {
-    return null;
+    return precision;
   }
 
   @Override
@@ -87,19 +101,21 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     return (zone == 0 ? "" : String.valueOf(zone))
         + (latitudeBand == null ? "" : latitudeBand)
         + " "
-        + Math.round(easting)
+        + precision.format((int) easting)
         + "mE "
-        + Math.round(northing)
+        + precision.format((int) northing)
         + "mN";
   }
 
   @Override
   public boolean isUTM() {
+    // TODO implement
     return false;
   }
 
   @Override
   public boolean isUPS() {
+    // TODO implement
     return false;
   }
 }

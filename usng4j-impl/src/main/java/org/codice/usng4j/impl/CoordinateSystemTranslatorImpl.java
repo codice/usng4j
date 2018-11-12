@@ -25,13 +25,17 @@ package org.codice.usng4j.impl;
 
 import java.text.ParseException;
 import java.util.Optional;
+import java.util.function.Function;
+
 import org.codice.usng4j.BoundingBox;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.CoordinateSystemTranslator;
 import org.codice.usng4j.DecimalDegreesCoordinate;
 import org.codice.usng4j.NSIndicator;
+import org.codice.usng4j.UpsCoordinate;
 import org.codice.usng4j.UsngCoordinate;
 import org.codice.usng4j.UtmCoordinate;
+import org.codice.usng4j.UtmUpsCoordinate;
 
 /** {@inheritDoc} */
 public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTranslator {
@@ -44,6 +48,12 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
   private static final int BLOCK_SIZE = 100000;
 
+  private static final double EPSILON = Math.ulp(1.0);
+
+  private static final double RHO_ADJUSTER_VALUE = 12_637_275.1116;
+
+  private static final double ES = 0.08181918271;
+
   // For diagram of zone sets; please see the "United States National Grid" white paper.
   private static final int GRIDSQUARE_SET_COL_SIZE = 8; // column width of grid square set
 
@@ -51,6 +61,11 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
   // UTM offsets
   private static final double EASTING_OFFSET = 500000.0; // (meters)
+
+  // UPS offsets
+  private static final int FALSE_UPS_NORTHING = 2_000_000;
+
+  private static final int FALSE_UTM_EASTING = 2_000_000;
 
   // scale factor of central meridian
   private static final double K0 = 0.9996;
@@ -502,8 +517,8 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
   /** {@inheritDoc} */
   @Override
-  public BoundingBox toBoundingBox(final UtmCoordinate utmCoordinate) {
-    return toBoundingBox(utmCoordinate, null);
+  public BoundingBox toBoundingBox(final UtmUpsCoordinate utmUpsCoordinate) {
+    return toBoundingBox(utmUpsCoordinate, null);
   }
 
   BoundingBox toBoundingBox(final UtmCoordinate utmCoordinate, final Integer accuracy) {
@@ -554,20 +569,70 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
   /** {@inheritDoc} */
   @Override
-  public DecimalDegreesCoordinate toLatLon(UtmCoordinate utmCoordinate) {
+  public DecimalDegreesCoordinate toLatLon(final UtmCoordinate utmCoordinate) {
     if (utmCoordinate.getNSIndicator() == NSIndicator.SOUTH) {
-      UtmCoordinate newUtm =
-          new UtmCoordinateImpl(
+      final UtmUpsCoordinate newUtmUps =
+          UtmUpsCoordinateImpl.fromZoneBandNorthingEasting(
               utmCoordinate.getZoneNumber(),
+              utmCoordinate.getLattitudeBand(),
               utmCoordinate.getEasting(),
               utmCoordinate.getNorthing() - NORTHING_OFFSET);
-      return toLatLonNsNormalized(newUtm);
+      return toLatLonNsNormalized(newUtmUps);
     } else {
       return toLatLonNsNormalized(utmCoordinate);
     }
   }
 
-  private DecimalDegreesCoordinate toLatLonNsNormalized(UtmCoordinate utmCoordinate) {
+  private static double atanh(final double x) {
+    return Math.log((1.0+x)/(1.0-x)) / 2.0;
+  }
+
+  private static double eatanhe(final double x) {
+    return ES * atanh(ES * x);
+  }
+
+  private static double taupf(double tauValue) {
+    final double tau1 = Math.hypot(1, tauValue);
+    final double sig = Math.sinh(eatanhe(tauValue / tau1));
+    return Math.hypot(1.0, sig) * tauValue - sig * tau1;
+  }
+
+  private static double tauf(double taupValue) {
+    final double e2m = 1.0 - Math.pow(ES, 2);
+    // To lowest order in e^2, taup = (1 - e^2) * tau = _e2m * tau; so use
+    // tau = taup/_e2m as a starting guess.  (This starting guess is the
+    // geocentric latitude which, to first order in the flattening, is equal
+    // to the conformal latitude.)  Only 1 iteration is needed for |lat| <
+    // 3.35 deg, otherwise 2 iterations are needed.  If, instead, tau = taup
+    // is used the mean number of iterations increases to 1.99 (2 iterations
+    // are needed except near tau = 0).
+    double tau = taupValue / e2m;
+    final double stol = Math.sqrt(EPSILON) / 10 * Math.max(1, Math.abs(taupValue));
+    // min iterations = 1, max iterations = 2; mean = 1.94; 5 iterations panic
+    for (int i = 0; i < 5; i++) {
+      final double taupa = taupf(tau);
+      final double dtau = (taupValue - taupa) * (1 + e2m * Math.hypot(1, tau) * Math.hypot(1, taupa));
+      tau += dtau;
+      if (!(Math.abs(dtau) >= stol)) {
+        break;
+      }
+    }
+    return tau;
+  }
+
+  private DecimalDegreesCoordinate toLatLonNsNormalized(UpsCoordinate upsCoordinate) {
+    final double northing = upsCoordinate.getNorthing() - FALSE_UPS_NORTHING;
+    final double easting = upsCoordinate.getEasting() - FALSE_UTM_EASTING;
+
+    final double es = 0.08181918271;
+
+    final double rho = Math.hypot(easting, northing);
+    final double t = rho != 0.0 ? rho / RHO_ADJUSTER_VALUE : Math.pow(EPSILON, 2);
+    final double taup = (1/t - t) / 2;
+    final double tau = tauf(taup);
+  }
+
+  private DecimalDegreesCoordinate utmToLatLonNsNormalized(UtmCoordinate utmCoordinate) {
     double xUTM = utmCoordinate.getEasting() - CoordinateSystemTranslatorImpl.EASTING_OFFSET;
     double yUTM = utmCoordinate.getNorthing();
 

@@ -13,7 +13,7 @@ import org.codice.usng4j.UsngCoordinate;
 import org.codice.usng4j.UtmCoordinate;
 import org.junit.Test;
 
-public class CoordinateSystemTranslatorTest {
+public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
   private CoordinateSystemTranslatorImpl coordinateSystemTranslator =
       new CoordinateSystemTranslatorImpl(true);
 

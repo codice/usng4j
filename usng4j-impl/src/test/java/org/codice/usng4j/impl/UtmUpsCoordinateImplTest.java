@@ -2,7 +2,6 @@ package org.codice.usng4j.impl;
 
 import static org.junit.Assert.fail;
 
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -38,25 +37,26 @@ public class UtmUpsCoordinateImplTest {
 
     @Override
     public String toString() {
-      return String.format("Lat: %f,  Lon: %f,  E: %f,  N: %f,  NP: %b",
-        latitude, longitude, easting, northing, northPole);
+      return String.format(
+          "Lat: %f,  Lon: %f,  E: %f,  N: %f,  NP: %b",
+          latitude, longitude, easting, northing, northPole);
     }
   }
 
   private static final List<UtmUpsTestData> validUpsCoordinatesTests = new ArrayList<>();
   private static final List<UtmUpsTestData> validUtmCoordinatesTests = new ArrayList<>();
 
-  private static InputStreamReader reader(final String fileName)
-    throws IOException {
-    return new InputStreamReader(UtmUpsCoordinateImplTest.class.getResourceAsStream(fileName), "UTF-8");
+  private static InputStreamReader reader(final String fileName) throws IOException {
+    return new InputStreamReader(
+        UtmUpsCoordinateImplTest.class.getResourceAsStream(fileName), "UTF-8");
   }
 
   @BeforeClass
   public static void allTestsSetup() throws IOException {
     final Gson gson = new GsonBuilder().create();
     final Type testDataListType = new TypeToken<List<UtmUpsTestData>>() {}.getType();
-    validUpsCoordinatesTests.addAll(gson.fromJson(
-      reader("/ValidUpsCoordinates.json"), testDataListType));
+    validUpsCoordinatesTests.addAll(
+        gson.fromJson(reader("/ValidUpsCoordinates.json"), testDataListType));
     // TODO:  add a set of valid UTM coordinates test data
     // validUtmCoordinatesTests.addAll(gson.fromJson(
     //  reader("/ValidUtmCoordinates.json"), testDataListType));

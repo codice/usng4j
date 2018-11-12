@@ -1,85 +1,156 @@
-[{
-  latitude: 90,
-  longitude: 0,
-  easting: 2000000,
-  northing: 2000000,
-  northPole: true
-}, {
-  latitude: 84.01,
-  longitude: 0,
-  easting: 2000000,
-  northing: 1334385,
-  northPole: true
-}, {
-  latitude: 84.01,
-  longitude: 15,
-  easting: 2172273,
-  northing: 1357065,
-  northPole: true
-}, {
-  latitude: 87,
-  longitude: 0,
-  easting: 2000000,
-  northing: 1666855,
-  northPole: true
-}, {
-  latitude: 87,
-  longitude: 15,
-  easting: 2086224,
-  northing: 1678207,
-  northPole: true
-}, {
-  latitude: -80.01,
-  longitude: 0,
-  easting: 2000000,
-  northing: 3111832,
-  northPole: false
-}, {
-  latitude: -80.01,
-  longitude: 15,
-  easting: 2287763,
-  northing: 3073947,
-  northPole: false
-}, {
-  latitude: -85,
-  longitude: 0,
-  easting: 2000000,
-  northing: 2555457,
-  northPole: false
-}, {
-  latitude: -85,
-  longitude: 15,
-  easting: 2143762,
-  northing: 2536530,
-  northPole: false
-}, {
-  latitude: -90,
-  longitude: 0,
-  easting: 2000000,
-  northing: 2000000,
-  northPole: false
-}, {
-  latitude: -87,
-  longitude: 0,
-  easting: 2000000,
-  northing: 2333144,
-  northPole: false
-}, {
-  latitude: 87,
-  longitude: 67,
-  easting: 2306661,
-  northing: 1869830,
-  northPole: true
-}, {
-  latitude: 87,
-  longitude: -67,
-  easting: 1693338,
-  northing: 1869830,
-  northPole: true
-}, {
-  latitude: 84.1,
-  longitude: -166,
-  easting: 1841396,
-  northing: 2636122,
-  northPole: true
-}]
+[
+  {
+    latitude: 90,
+    longitude: 0,
+    easting: 2000000,
+    northing: 2000000,
+    nsIndicator: "NORTH",
+    upsString: "Z 2000000mE 2000000mN",
+    utmString: "",
+    latLonString: "90.0000000°, 000.0000000°",
+    mgrsString: "ZAH0000000000"
+  },
+  {
+    latitude: 84.01,
+    longitude: 0,
+    easting: 2000000,
+    northing: 1334385,
+    nsIndicator: "NORTH",
+    upsString: "Z 2000000mE 1344403mN",
+    utmString: "",
+    latLonString: "84.1000000°, 000.0000000°",
+    mgrsString: "ZAA0000044403"
+  },
+  {
+    latitude: 84.01,
+    longitude: 15,
+    easting: 2172273,
+    northing: 1357065,
+    nsIndicator: "NORTH",
+    upsString: "Z 2169680mE 1366742mN",
+    utmString: "",
+    latLonString: "84.1000000°, 015.0000000°",
+    mgrsString: "ZBA6968066742"
+  },
+  {
+    latitude: 87,
+    longitude: 0,
+    easting: 2000000,
+    northing: 1666855,
+    nsIndicator: "NORTH",
+    upsString: "Z 2000000mE 1666855mN",
+    utmString: "",
+    latLonString: "87.0000000°, 000.0000000°",
+    mgrsString: "ZAD0000066855"
+  },
+  {
+    latitude: 87,
+    longitude: 15,
+    easting: 2086224,
+    northing: 1678207,
+    nsIndicator: "NORTH",
+    upsString: "Z 2086224mE 1678207mN",
+    utmString: "",
+    latLonString: "87.0000000°, 015.0000000°",
+    mgrsString: "ZAD8622478207"
+  },
+  {
+    latitude: -80.01,
+    longitude: 0,
+    easting: 2000000,
+    northing: 3111832,
+    nsIndicator: "SOUTH",
+    upsString: "B 2000000mE 3101768mN",
+    utmString: "",
+    latLonString: "-80.1000000°, 000.0000000°",
+    mgrsString: "BAZ0000001768"
+  },
+  {
+    latitude: -80.01,
+    longitude: 15,
+    easting: 2287763,
+    northing: 3073947,
+    nsIndicator: "SOUTH",
+    upsString: "B 2285158mE 3064226mN",
+    utmString: "",
+    latLonString: "-80.1000000°, 015.0000000°",
+    mgrsString: "BCY8515864226"
+  },
+  {
+    latitude: -85,
+    longitude: 0,
+    easting: 2000000,
+    northing: 2555457,
+    nsIndicator: "SOUTH",
+    upsString: "B 2000000mE 2555457mN",
+    utmString: "",
+    latLonString: "-85.0000000°, 000.0000000°",
+    mgrsString: "BAT0000055457"
+  },
+  {
+    latitude: -85,
+    longitude: 15,
+    easting: 2143762,
+    northing: 2536530,
+    nsIndicator: "SOUTH",
+    upsString: "B 2143762mE 2536530mN",
+    utmString: "",
+    latLonString: "-85.0000000°, 015.0000000°",
+    mgrsString: "BBT4376236530"
+  },
+  {
+    latitude: -90,
+    longitude: 0,
+    easting: 2000000,
+    northing: 2000000,
+    nsIndicator: "SOUTH",
+    upsString: "B 2000000mE 2000000mN",
+    utmString: "",
+    latLonString: "-90.0000000°, 000.0000000°",
+    mgrsString: "BAN0000000000"
+  },
+  {
+    latitude: -87,
+    longitude: 0,
+    easting: 2000000,
+    northing: 2333144,
+    nsIndicator: "SOUTH",
+    upsString: "B 2000000mE 2333144mN",
+    utmString: "",
+    latLonString: "-87.0000000°, 000.0000000°",
+    mgrsString: "BAR0000033144"
+  },
+  {
+    latitude: 87,
+    longitude: 67,
+    easting: 2306661,
+    northing: 1869830,
+    nsIndicator: "NORTH",
+    upsString: "Z 2306661mE 1869830mN",
+    utmString: "",
+    latLonString: "87.0000000°, 067.0000000°",
+    mgrsString: "ZFF0666169830"
+  },
+  {
+    latitude: 87,
+    longitude: -67,
+    easting: 1693338,
+    northing: 1869830,
+    nsIndicator: "NORTH",
+    upsString: "Y 1693338mE 1869830mN",
+    utmString: "",
+    latLonString: "87.0000000°, -067.0000000°",
+    mgrsString: "YUF9333869830"
+  },
+  {
+    latitude: 84.1,
+    longitude: -166,
+    easting: 1841396,
+    northing: 2636122,
+    nsIndicator: "NORTH",
+    upsString: "Y 1919405mE 2323248mN",
+    utmString: "",
+    latLonString: "87.0000000°, -166.0000000°",
+    mgrsString: "YZL1940523248"
+  }
+]

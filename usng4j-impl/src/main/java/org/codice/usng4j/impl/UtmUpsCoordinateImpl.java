@@ -24,15 +24,25 @@
 package org.codice.usng4j.impl;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.NSIndicator;
 import org.codice.usng4j.UtmUpsCoordinate;
 
 public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
+
+  private static final Set<Character> upsNorthenBands = new HashSet<>(Arrays.asList('Y', 'Z'));
+  private static final Set<Character> upsSothernBands = new HashSet<>(Arrays.asList('A', 'B'));
+  private static final Set<Character> utmNorthenBands =
+      new HashSet<>(Arrays.asList('C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'));
+  private static final Set<Character> utmSothernBands =
+      new HashSet<>(Arrays.asList('N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'));
 
   private final int zone;
   private final Character latitudeBand;
@@ -72,18 +82,30 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   private static Optional<UtmUpsCoordinate> validateCoordinate(
       final UtmUpsCoordinate utmUpsCoordinate) {
-    // TODO:  double check ranges of valid UTM and UPS easting and northing
-    final Set<Character> upsBands = new HashSet<>(Arrays.asList('A', 'B', 'Y', 'Z'));
+    final Set<Character> upsNorthernBands = new HashSet<>(Arrays.asList('Y', 'Z'));
+    final Set<Character> upsSouthernBands = new HashSet<>(Arrays.asList('A', 'B'));
+    final Set<Character> utmNorthernBands =
+        new HashSet<>(Arrays.asList('C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'));
+    final Set<Character> utmSouthernBands =
+        new HashSet<>(Arrays.asList('N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'));
     return Optional.of(utmUpsCoordinate)
-        .filter(coordinate -> coordinate.getEasting() >= -3_200_000)
+        .filter(coordinate -> coordinate.getEasting() >= 0)
         .filter(coordinate -> coordinate.getEasting() <= 3_200_000)
-        .filter(coordinate -> coordinate.getNorthing() >= 0) // -10_000_000)
+        .filter(coordinate -> coordinate.getNorthing() >= 0)
         .filter(coordinate -> coordinate.getNorthing() <= 10_000_000)
         .filter(
             (coordinate ->
                 (coordinate.getZoneNumber() == 0
-                        && upsBands.contains(coordinate.getLattitudeBand()))
-                    || (coordinate.getZoneNumber() >= 1 && coordinate.getZoneNumber() <= 60)));
+                        && unifiedBandSet(upsNorthernBands, upsSouthernBands)
+                            .contains(coordinate.getLattitudeBand())
+                    || (coordinate.getZoneNumber() >= 1 && coordinate.getZoneNumber() <= 60)
+                        && unifiedBandSet(utmNorthernBands, utmSouthernBands)
+                            .contains(coordinate.getLattitudeBand()))));
+  }
+
+  @SafeVarargs
+  private static Set<Character> unifiedBandSet(final Set<Character>... bandSets) {
+    return Stream.of(bandSets).flatMap(Collection::stream).collect(Collectors.toSet());
   }
 
   public static UtmUpsCoordinate fromZoneBandNorthingEasting(

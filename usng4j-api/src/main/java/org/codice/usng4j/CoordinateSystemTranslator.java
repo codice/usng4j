@@ -38,12 +38,31 @@ public interface CoordinateSystemTranslator {
   UsngCoordinate toUsng(BoundingBox latLonCoordinate);
 
   /**
-   * Converts from decimal degrees to UTM.
+   * Converts from decimal degrees to UTM. Throws an {@code IllegalArgumentException} if the
+   * resulting coordinate is not valid UTM.
    *
    * @param decimalDegreesCoordinate the Lat/Lon coordinate to be converted.
    * @return the UTM equivalent of decimalDegreesCoordinate.
    */
   UtmCoordinate toUtm(DecimalDegreesCoordinate decimalDegreesCoordinate);
+
+  /**
+   * Converts from decimal degrees to UPS. Throws an {@code IllegalArgumentException} if the
+   * resulting coordinate is not valid UPS.
+   *
+   * @param decimalDegreesCoordinate the Lat/Lon coordinate to be converted.
+   * @return the UPS equivalent of decimalDegreesCoordinate.
+   */
+  UpsCoordinate toUps(DecimalDegreesCoordinate decimalDegreesCoordinate);
+
+  /**
+   * Converts from decimal degrees to UTM/UPS. Throws an {@code IllegalArgumentException} if the
+   * resulting coordinate is not valid UTM or valid UPS.
+   *
+   * @param decimalDegreesCoordinate the Lat/Lon coordinate to be converted.
+   * @return the UPS equivalent of decimalDegreesCoordinate.
+   */
+  UtmUpsCoordinate toUtmUps(DecimalDegreesCoordinate decimalDegreesCoordinate);
 
   /**
    * Converts from decimal degrees to USNG.

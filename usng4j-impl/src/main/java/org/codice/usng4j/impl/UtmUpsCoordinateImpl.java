@@ -23,6 +23,10 @@
 
 package org.codice.usng4j.impl;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.NSIndicator;
@@ -57,8 +61,29 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
       final double easting,
       final double northing,
       @Nullable final NSIndicator nsIndicator) {
-    // TODO: implement input checks
-    return new UtmUpsCoordinateImpl(zone, latitudeBand, easting, northing, nsIndicator);
+    final UtmUpsCoordinate coordinateCandidate =
+        new UtmUpsCoordinateImpl(zone, latitudeBand, easting, northing, nsIndicator);
+    return validateCoordinate(coordinateCandidate)
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException(
+                    coordinateCandidate + " is neither UTM nor UPS coordinate"));
+  }
+
+  private static Optional<UtmUpsCoordinate> validateCoordinate(
+      final UtmUpsCoordinate utmUpsCoordinate) {
+    // TODO:  double check ranges of valid UTM and UPS easting and northing
+    final Set<Character> upsBands = new HashSet<>(Arrays.asList('A', 'B', 'Y', 'Z'));
+    return Optional.of(utmUpsCoordinate)
+        .filter(coordinate -> coordinate.getEasting() >= -3_200_000)
+        .filter(coordinate -> coordinate.getEasting() <= 3_200_000)
+        .filter(coordinate -> coordinate.getNorthing() >= -10_000_000)
+        .filter(coordinate -> coordinate.getNorthing() <= 10_000_000)
+        .filter(
+            (coordinate ->
+                (coordinate.getZoneNumber() == 0
+                        && upsBands.contains(coordinate.getLattitudeBand()))
+                    || (coordinate.getZoneNumber() >= 1 && coordinate.getZoneNumber() <= 60)));
   }
 
   public static UtmUpsCoordinate fromZoneBandNorthingEasting(

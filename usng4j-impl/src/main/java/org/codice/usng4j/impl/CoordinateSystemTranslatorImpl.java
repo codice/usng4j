@@ -25,8 +25,6 @@ package org.codice.usng4j.impl;
 
 import java.text.ParseException;
 import java.util.Optional;
-import java.util.function.Function;
-
 import org.codice.usng4j.BoundingBox;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.CoordinateSystemTranslator;
@@ -37,7 +35,6 @@ import org.codice.usng4j.UsngCoordinate;
 import org.codice.usng4j.UtmCoordinate;
 import org.codice.usng4j.UtmUpsCoordinate;
 
-/** {@inheritDoc} */
 public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTranslator {
 
   public static final double NORTHING_OFFSET = 10000000.0; // (meters)
@@ -140,7 +137,6 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return zoneNumber;
   }
 
-  /** {@inheritDoc} */
   @Override
   public UsngCoordinate toUsng(final BoundingBox latLonCoordinate) {
     // calculate midpoints for use in USNG string calculation
@@ -211,7 +207,6 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return this.toUsng(new DecimalDegreesCoordinateImpl(lat, lon), precision);
   }
 
-  /** {@inheritDoc} */
   @Override
   public UtmCoordinate toUtm(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
     double lat = decimalDegreesCoordinate.getLat();
@@ -294,13 +289,11 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return new UtmCoordinateImpl(zoneNumber, UTMEasting, UTMNorthing);
   }
 
-  /** {@inheritDoc} */
   @Override
   public UsngCoordinate toUsng(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
     return this.toUsng(decimalDegreesCoordinate, CoordinatePrecision.ONE_METER);
   }
 
-  /** {@inheritDoc} */
   @Override
   public UsngCoordinateImpl toUsng(
       final DecimalDegreesCoordinate decimalDegreesCoordinate,
@@ -367,6 +360,16 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
         rowLetter,
         (int) USNGEasting,
         (int) USNGNorthing);
+  }
+
+  @Override
+  public BoundingBox toBoundingBox(final UtmCoordinate utmCoordinate) {
+    final UtmUpsCoordinate suppliedCoordinate = (UtmUpsCoordinate) utmCoordinate;
+    if (suppliedCoordinate.isUTM()) {
+      return toBoundingBox((UtmUpsCoordinate) utmCoordinate);
+    } else {
+      throw new IllegalArgumentException(utmCoordinate + " is not a UTM coordinate");
+    }
   }
 
   String getUtmLetterDesignator(double lat) {
@@ -515,8 +518,6 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return l1.substring(col, col + 1) + l2.substring(row, row + 1);
   }
 
-  /** {@inheritDoc} */
-  @Override
   public BoundingBox toBoundingBox(final UtmUpsCoordinate utmUpsCoordinate) {
     return toBoundingBox(utmUpsCoordinate, null);
   }
@@ -567,7 +568,6 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return result;
   }
 
-  /** {@inheritDoc} */
   @Override
   public DecimalDegreesCoordinate toLatLon(final UtmCoordinate utmCoordinate) {
     if (utmCoordinate.getNSIndicator() == NSIndicator.SOUTH) {
@@ -579,12 +579,12 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
               utmCoordinate.getNorthing() - NORTHING_OFFSET);
       return toLatLonNsNormalized(newUtmUps);
     } else {
-      return toLatLonNsNormalized(utmCoordinate);
+      return utmToLatLonNsNormalized(utmCoordinate);
     }
   }
 
   private static double atanh(final double x) {
-    return Math.log((1.0+x)/(1.0-x)) / 2.0;
+    return Math.log((1.0 + x) / (1.0 - x)) / 2.0;
   }
 
   private static double eatanhe(final double x) {
@@ -611,7 +611,8 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     // min iterations = 1, max iterations = 2; mean = 1.94; 5 iterations panic
     for (int i = 0; i < 5; i++) {
       final double taupa = taupf(tau);
-      final double dtau = (taupValue - taupa) * (1 + e2m * Math.hypot(1, tau) * Math.hypot(1, taupa));
+      final double dtau =
+          (taupValue - taupa) * (1 + e2m * Math.hypot(1, tau) * Math.hypot(1, taupa));
       tau += dtau;
       if (!(Math.abs(dtau) >= stol)) {
         break;
@@ -628,8 +629,11 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
     final double rho = Math.hypot(easting, northing);
     final double t = rho != 0.0 ? rho / RHO_ADJUSTER_VALUE : Math.pow(EPSILON, 2);
-    final double taup = (1/t - t) / 2;
+    final double taup = (1 / t - t) / 2;
     final double tau = tauf(taup);
+
+    // TODO:  add -> returning finished calculation
+    throw new RuntimeException("IMPLEMENTATION NOT FINISHED!");
   }
 
   private DecimalDegreesCoordinate utmToLatLonNsNormalized(UtmCoordinate utmCoordinate) {
@@ -769,7 +773,6 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return null;
   }
 
-  /** {@inheritDoc} */
   @Override
   public UtmCoordinate toUtm(final UsngCoordinate usngCoordinate) {
 
@@ -853,7 +856,6 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return new UtmCoordinateImpl(zone, letter, easting, northing);
   }
 
-  /** {@inheritDoc} */
   @Override
   public DecimalDegreesCoordinate toLatLon(UsngCoordinate usngCoordinate) {
 
@@ -881,7 +883,6 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return this.toLatLon(tempUtmCoordinate);
   }
 
-  /** {@inheritDoc} */
   @Override
   public BoundingBox toBoundingBox(UsngCoordinate usngCoordinate) {
 
@@ -911,19 +912,16 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return this.toBoundingBox(tempUtmCoordinate, accuracy);
   }
 
-  /** {@inheritDoc} */
   @Override
   public UtmCoordinate parseUtmString(String utmString) throws ParseException {
     return UtmCoordinateImpl.parseUtmString(utmString);
   }
 
-  /** {@inheritDoc} */
   @Override
   public UsngCoordinate parseUsngString(String usngString) throws ParseException {
     return UsngCoordinateImpl.parseUsngString(usngString);
   }
 
-  /** {@inheritDoc} */
   @Override
   public UsngCoordinate parseMgrsString(String mgrsString) throws ParseException {
     return UsngCoordinateImpl.parseMgrsString(mgrsString);

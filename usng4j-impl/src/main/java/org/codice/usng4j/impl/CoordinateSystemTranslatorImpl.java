@@ -290,6 +290,18 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
   }
 
   @Override
+  public UpsCoordinate toUps(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
+    // TODO:  implement
+    throw new RuntimeException("NEEDS IMPLEMENTATION!");
+  }
+
+  @Override
+  public UtmUpsCoordinate toUtmUps(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
+    // TODO:  implement
+    throw new RuntimeException("NEEDS IMPLEMENTATION!");
+  }
+
+  @Override
   public UsngCoordinate toUsng(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
     return this.toUsng(decimalDegreesCoordinate, CoordinatePrecision.ONE_METER);
   }

@@ -77,7 +77,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     return Optional.of(utmUpsCoordinate)
         .filter(coordinate -> coordinate.getEasting() >= -3_200_000)
         .filter(coordinate -> coordinate.getEasting() <= 3_200_000)
-        .filter(coordinate -> coordinate.getNorthing() >= -10_000_000)
+        .filter(coordinate -> coordinate.getNorthing() >= 0) // -10_000_000)
         .filter(coordinate -> coordinate.getNorthing() <= 10_000_000)
         .filter(
             (coordinate ->

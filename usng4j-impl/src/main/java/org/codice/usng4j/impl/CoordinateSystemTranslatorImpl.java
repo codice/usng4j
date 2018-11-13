@@ -569,18 +569,40 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
   }
 
   @Override
-  public DecimalDegreesCoordinate toLatLon(final UtmCoordinate utmCoordinate) {
-    if (utmCoordinate.getNSIndicator() == NSIndicator.SOUTH) {
-      final UtmUpsCoordinate newUtmUps =
-          UtmUpsCoordinateImpl.fromZoneBandNorthingEasting(
-              utmCoordinate.getZoneNumber(),
-              utmCoordinate.getLattitudeBand(),
-              utmCoordinate.getEasting(),
-              utmCoordinate.getNorthing() - NORTHING_OFFSET);
-      return toLatLonNsNormalized(newUtmUps);
+  public DecimalDegreesCoordinate toLatLon(final UtmUpsCoordinate utmUpsCoordinate) {
+    if (utmUpsCoordinate.isUTM()) {
+      return toLatLon((UtmCoordinate) utmUpsCoordinate);
     } else {
-      return utmToLatLonNsNormalized(utmCoordinate);
+      return toLatLon((UpsCoordinate) utmUpsCoordinate);
     }
+  }
+
+  @Override
+  public DecimalDegreesCoordinate toLatLon(final UpsCoordinate upsCoordinate) {
+    final UpsCoordinate normalizedUps =
+        upsCoordinate.getNSIndicator() == NSIndicator.SOUTH
+            ? UtmUpsCoordinateImpl.fromZoneBandNorthingEasting(
+                upsCoordinate.getZoneNumber(),
+                upsCoordinate.getLattitudeBand(),
+                upsCoordinate.getEasting(),
+                upsCoordinate.getNorthing() - NORTHING_OFFSET)
+            : upsCoordinate;
+
+    return upsToLatLonNsNormalized(normalizedUps);
+  }
+
+  @Override
+  public DecimalDegreesCoordinate toLatLon(final UtmCoordinate utmCoordinate) {
+    final UtmCoordinate normalizedUtm =
+        utmCoordinate.getNSIndicator() == NSIndicator.SOUTH
+            ? UtmUpsCoordinateImpl.fromZoneBandNorthingEasting(
+                utmCoordinate.getZoneNumber(),
+                utmCoordinate.getLattitudeBand(),
+                utmCoordinate.getEasting(),
+                utmCoordinate.getNorthing() - NORTHING_OFFSET)
+            : utmCoordinate;
+
+    return utmToLatLonNsNormalized(normalizedUtm);
   }
 
   private static double atanh(final double x) {
@@ -591,13 +613,13 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return ES * atanh(ES * x);
   }
 
-  private static double taupf(double tauValue) {
+  private static double taupf(final double tauValue) {
     final double tau1 = Math.hypot(1, tauValue);
     final double sig = Math.sinh(eatanhe(tauValue / tau1));
     return Math.hypot(1.0, sig) * tauValue - sig * tau1;
   }
 
-  private static double tauf(double taupValue) {
+  private static double tauf(final double taupValue) {
     final double e2m = 1.0 - Math.pow(ES, 2);
     // To lowest order in e^2, taup = (1 - e^2) * tau = _e2m * tau; so use
     // tau = taup/_e2m as a starting guess.  (This starting guess is the
@@ -621,19 +643,19 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return tau;
   }
 
-  private DecimalDegreesCoordinate toLatLonNsNormalized(UpsCoordinate upsCoordinate) {
+  private DecimalDegreesCoordinate upsToLatLonNsNormalized(final UpsCoordinate upsCoordinate) {
     final double northing = upsCoordinate.getNorthing() - FALSE_UPS_NORTHING;
     final double easting = upsCoordinate.getEasting() - FALSE_UTM_EASTING;
-
-    final double es = 0.08181918271;
 
     final double rho = Math.hypot(easting, northing);
     final double t = rho != 0.0 ? rho / RHO_ADJUSTER_VALUE : Math.pow(EPSILON, 2);
     final double taup = (1 / t - t) / 2;
     final double tau = tauf(taup);
 
-    // TODO:  add -> returning finished calculation
-    throw new RuntimeException("IMPLEMENTATION NOT FINISHED!");
+    final boolean isNorth = upsCoordinate.getLattitudeBand() >= 'Y';
+    final double lat = (isNorth ? 1 : -1) * Math.atan(tau) * RAD_2_DEG;
+    final double lon = Math.atan2(easting, isNorth ? -northing : northing) * RAD_2_DEG;
+    return new DecimalDegreesCoordinateImpl(lat, lon);
   }
 
   private DecimalDegreesCoordinate utmToLatLonNsNormalized(UtmCoordinate utmCoordinate) {

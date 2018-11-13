@@ -80,6 +80,24 @@ public interface CoordinateSystemTranslator {
   DecimalDegreesCoordinate toLatLon(UtmCoordinate utmCoordinate);
 
   /**
+   * Convert a UPS coordinate to latitude and longitude coordinates.
+   *
+   * @param upsCoordinate The UPS coordinate to convert to latitude and longitude
+   *
+   * @return the {@code DecimalDegreesCoordinate} representing the latitude and longitude at the same location as the given {@code UpsCoordinate}.
+   */
+  DecimalDegreesCoordinate toLatLon(UpsCoordinate upsCoordinate);
+
+  /**
+   * Convert a UTM/UPS coordinate to latitude and longitude coordinates.
+   *
+   * @param utmUpsCoordinate The UTM/UPS coordinate to convert to latitude and longitude
+   *
+   * @return the {@code DecimalDegreesCoordinate} representing the latitude and longitude at the same location as the given {@code UtmUpsCoordinate}.
+   */
+  DecimalDegreesCoordinate toLatLon(UtmUpsCoordinate utmUpsCoordinate);
+
+  /**
    * Converts from USNG to UTM.
    *
    * @param usngCoordinate the USNG coordinate to be converted.

@@ -129,7 +129,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     return Optional.of(utmUpsCoordinate)
         .filter(
             coordinate ->
-              coordinate.getLatitudeBand() != null || coordinate.getNSIndicator() != null)
+                coordinate.getLatitudeBand() != null || coordinate.getNSIndicator() != null)
         .filter(coordinate -> coordinate.getEasting() >= 0)
         .filter(coordinate -> coordinate.getEasting() <= 3_200_000)
         .filter(coordinate -> coordinate.getNorthing() >= 0)
@@ -184,9 +184,9 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   @Override
   public NSIndicator getNSIndicator() {
-    return nsIndicator == null && getLattitudeBand()!= null
-      ? calculateNSIndicatorFromLatBand(getLattitudeBand())
-      : nsIndicator;
+    return nsIndicator == null && getLattitudeBand() != null
+        ? calculateNSIndicatorFromLatBand(getLattitudeBand())
+        : nsIndicator;
   }
 
   private static NSIndicator calculateNSIndicatorFromLatBand(

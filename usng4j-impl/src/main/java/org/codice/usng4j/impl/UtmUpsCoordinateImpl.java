@@ -47,6 +47,15 @@ import org.codice.usng4j.UtmUpsCoordinate;
 public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   public static final double NORTHING_OFFSET = 10_000_000; // (meters)
+
+  private static final String UTMUPS_REGEXP =
+      "\\s*(\\d*)([A-Z]?)\\s+(\\d+)(?:[mM][eE])?\\s+(\\d+)(?:[mM][nN])?\\s*((\\s+[nNsS])?)\\s*";
+  private static final Pattern utmUpsRegexp = Pattern.compile(UTMUPS_REGEXP);
+  private static final int ZONE_NUMBER_RE_GROUP = 1;
+  private static final int LATITUDE_BAND_RE_GROUP = 2;
+  private static final int EASTING_RE_GROUP = 3;
+  private static final int NORTHING_RE_GROUP = 4;
+  private static final int NS_INDICATOR_RE_GROUP = 5;
   private static final Set<Character> upsNorthenBands = new HashSet<>(Arrays.asList('Y', 'Z'));
   private static final Set<Character> upsSothernBands = new HashSet<>(Arrays.asList('A', 'B'));
   private static final Set<Character> utmNorthernBands =
@@ -67,9 +76,6 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     allAcceptableUtmBands = new HashSet<>(allValidUtmBands);
     allAcceptableUtmBands.add(null);
   }
-
-  private static final String UTMUPS_REGEXP =
-      "\\s*(\\d*)([A-Z]?)\\s+(\\d+)(?:[mM][eE])?\\s+(\\d+)(?:[mM][nN])?\\s*((\\s+[nNsS])?)\\s*";
 
   private final int zone;
   private final Character latitudeBand;
@@ -92,7 +98,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     this.precision = CoordinatePrecision.forEastNorth((int) easting, (int) northing);
   }
 
-  static UtmUpsCoordinate fromZoneBandNorthingEastingNSI(
+  private static UtmUpsCoordinate fromZoneBandNorthingEastingNSI(
       final int zone,
       @Nullable final Character latitudeBand,
       final double easting,
@@ -132,8 +138,9 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
             (coordinate ->
                 (coordinate.getZoneNumber() == 0
                         && allAcceptableUpsBands.contains(coordinate.getLatitudeBand())
-                    || (coordinate.getZoneNumber() >= 1 && coordinate.getZoneNumber() <= 60)
-                        && allAcceptableUtmBands.contains(coordinate.getLatitudeBand()))));
+                    || (coordinate.getZoneNumber() >= 1
+                        && coordinate.getZoneNumber() <= 60
+                        && allAcceptableUtmBands.contains(coordinate.getLatitudeBand())))));
   }
 
   @SafeVarargs
@@ -141,7 +148,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     return Stream.of(bandSets).flatMap(Collection::stream).collect(Collectors.toSet());
   }
 
-  public static UtmUpsCoordinate fromZoneBandNorthingEasting(
+  static UtmUpsCoordinate fromZoneBandNorthingEasting(
       final int zone, final Character latitudeBand, final double easting, final double northing) {
     return fromZoneBandNorthingEastingNSI(zone, latitudeBand, easting, northing, null);
   }
@@ -202,34 +209,31 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
    * @return an object representation of 'utmUpsString'
    * @throws ParseException when 'utmUpsString' isn't correctly formatted.
    */
-  static UtmUpsCoordinate parseUtmUpsString(String utmUpsString) throws ParseException {
-
-    Pattern utmUpsRegexp = Pattern.compile(UTMUPS_REGEXP);
-
-    Matcher m = utmUpsRegexp.matcher(utmUpsString);
-    if (!m.matches()) {
-      throw new ParseException(
-          String.format(
-              "Supplied argument '%s' is not a valid UTM/UPS formatted String.", utmUpsString),
-          0);
+  static UtmUpsCoordinate parseUtmUpsString(final String utmUpsString) throws ParseException {
+    final Matcher matcher = utmUpsRegexp.matcher(utmUpsString);
+    if (!matcher.matches()) {
+      handleUnsuccessfulParsing(utmUpsString);
     }
-
-    String zoneNumber = m.group(1);
-    String latitudeBandString = m.group(2);
-    int easting = Integer.parseInt(m.group(3));
-    int northing = Integer.parseInt(m.group(4));
-    String nsIndicatorString = m.group(5).trim();
-    NSIndicator nsIndicator =
-        nsIndicatorString.length() > 0
-            ? nsIndicatorString.charAt(0) == 'N' ? NSIndicator.NORTH : NSIndicator.SOUTH
-            : null;
-
+    final String zoneNumber = matcher.group(ZONE_NUMBER_RE_GROUP);
+    final String latitudeBandString = matcher.group(LATITUDE_BAND_RE_GROUP);
+    final int easting = Integer.parseInt(matcher.group(EASTING_RE_GROUP));
+    final int northing = Integer.parseInt(matcher.group(NORTHING_RE_GROUP));
+    final String nsIndicatorString = matcher.group(NS_INDICATOR_RE_GROUP).trim();
+    final NSIndicator nsIndicator =
+        nsIndicatorString.length() > 0 ? nsIndicatorString.charAt(0) == 'N' ? NORTH : SOUTH : null;
     return fromZoneBandNorthingEastingNSI(
         zoneNumber.length() > 0 ? Integer.parseInt(zoneNumber) : 0,
         latitudeBandString.length() > 0 ? latitudeBandString.charAt(0) : null,
         easting,
         northing,
         nsIndicator);
+  }
+
+  private static void handleUnsuccessfulParsing(final String invalidInput) throws ParseException {
+    throw new ParseException(
+        String.format(
+            "Supplied argument '%s' is not a valid UTM/UPS formatted String.", invalidInput),
+        0);
   }
 
   @Override

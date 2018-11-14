@@ -1,5 +1,6 @@
 package org.codice.usng4j.impl;
 
+import static org.codice.usng4j.impl.CoordinateSystemTranslatorImpl.NORTHING_OFFSET;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -324,6 +325,14 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     assertEquals(-116, Math.floor(latLon.getLon()), 0);
 
     // should return lat=-35; lon=-59
+    northing = 6168016;
+    easting = 341475;
+    zone = 21;
+    utmCoordinate = new UtmCoordinateImpl(zone, easting, northing - NORTHING_OFFSET);
+    latLon = coordinateSystemTranslator.toLatLon(utmCoordinate);
+    assertEquals(-35.0, Math.floor(latLon.getLat()), 0);
+    assertEquals(-59.0, Math.floor(latLon.getLon()), 0);
+
     northing = 6168016;
     easting = 341475;
     zone = 21;

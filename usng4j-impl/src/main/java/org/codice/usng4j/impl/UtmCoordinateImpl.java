@@ -23,6 +23,8 @@
 
 package org.codice.usng4j.impl;
 
+import static org.codice.usng4j.NSIndicator.NORTH;
+
 import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,8 +34,10 @@ import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.NSIndicator;
 import org.codice.usng4j.UtmCoordinate;
 
-/** {@inheritDoc} */
 final class UtmCoordinateImpl implements UtmCoordinate {
+
+  private static final double NORTHING_OFFSET = 10_000_000; // (meters)
+
   private double easting;
 
   private double northing;
@@ -56,6 +60,7 @@ final class UtmCoordinateImpl implements UtmCoordinate {
     this.easting = easting;
     this.northing = northing;
     this.precision = CoordinatePrecision.forEastNorth((int) easting, (int) northing);
+    this.nsIndicator = NORTH;
   }
 
   /**
@@ -90,6 +95,13 @@ final class UtmCoordinateImpl implements UtmCoordinate {
   @Override
   public double getNorthing() {
     return northing;
+  }
+
+  @Override
+  public double getNorthingWithOffset() {
+    return getNSIndicator() != null && getNSIndicator().equals(NORTH)
+        ? getNorthing()
+        : getNorthing() - NORTHING_OFFSET;
   }
 
   /** {@inheritDoc} */

@@ -23,6 +23,8 @@
 
 package org.codice.usng4j.impl;
 
+import static org.codice.usng4j.NSIndicator.NORTH;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -37,12 +39,27 @@ import org.codice.usng4j.UtmUpsCoordinate;
 
 public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
+  public static final double NORTHING_OFFSET = 10_000_000; // (meters)
   private static final Set<Character> upsNorthenBands = new HashSet<>(Arrays.asList('Y', 'Z'));
   private static final Set<Character> upsSothernBands = new HashSet<>(Arrays.asList('A', 'B'));
   private static final Set<Character> utmNorthenBands =
       new HashSet<>(Arrays.asList('C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'));
   private static final Set<Character> utmSothernBands =
       new HashSet<>(Arrays.asList('N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'));
+  // The following static sets are added for performance and readability
+  private static final Set<Character> allValidUpsBands;
+  private static final Set<Character> allValidUtmBands;
+  private static final Set<Character> allAcceptableUpsBands;
+  private static final Set<Character> allAcceptableUtmBands;
+
+  static {
+    allValidUpsBands = unifiedBandSet(upsNorthenBands, upsSothernBands);
+    allAcceptableUpsBands = new HashSet<>(allValidUpsBands);
+    allAcceptableUpsBands.add(null);
+    allValidUtmBands = unifiedBandSet(utmNorthenBands, upsSothernBands);
+    allAcceptableUtmBands = new HashSet<>(allValidUtmBands);
+    allAcceptableUtmBands.add(null);
+  }
 
   private final int zone;
   private final Character latitudeBand;
@@ -65,7 +82,22 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     this.precision = CoordinatePrecision.forEastNorth((int) easting, (int) northing);
   }
 
-  public static UtmUpsCoordinate fromZoneBandNorthingEastingNSI(
+  static UtmUpsCoordinate fromZoneBandNorthingEastingNSI(
+      final int zone,
+      final Character latitudeBand,
+      final double easting,
+      final double northing,
+      @Nullable final NSIndicator nsIndicator) {
+    return fromZoneBandNorthingEastingNSIIfPossible(
+            zone, latitudeBand, easting, northing, nsIndicator)
+        .orElseThrow(
+            () ->
+                new IllegalArgumentException(
+                    new UtmUpsCoordinateImpl(zone, latitudeBand, easting, northing, nsIndicator)
+                        + " is neither UTM nor UPS coordinate"));
+  }
+
+  static Optional<UtmUpsCoordinate> fromZoneBandNorthingEastingNSIIfPossible(
       final int zone,
       final Character latitudeBand,
       final double easting,
@@ -73,22 +105,15 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
       @Nullable final NSIndicator nsIndicator) {
     final UtmUpsCoordinate coordinateCandidate =
         new UtmUpsCoordinateImpl(zone, latitudeBand, easting, northing, nsIndicator);
-    return validateCoordinate(coordinateCandidate)
-        .orElseThrow(
-            () ->
-                new IllegalArgumentException(
-                    coordinateCandidate + " is neither UTM nor UPS coordinate"));
+    return validateCoordinate(coordinateCandidate);
   }
 
   private static Optional<UtmUpsCoordinate> validateCoordinate(
       final UtmUpsCoordinate utmUpsCoordinate) {
-    final Set<Character> upsNorthernBands = new HashSet<>(Arrays.asList('Y', 'Z'));
-    final Set<Character> upsSouthernBands = new HashSet<>(Arrays.asList('A', 'B'));
-    final Set<Character> utmNorthernBands =
-        new HashSet<>(Arrays.asList('C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'));
-    final Set<Character> utmSouthernBands =
-        new HashSet<>(Arrays.asList('N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'));
     return Optional.of(utmUpsCoordinate)
+        .filter(
+            coordinate ->
+                coordinate.getLattitudeBand() != null || coordinate.getNSIndicator() != null)
         .filter(coordinate -> coordinate.getEasting() >= 0)
         .filter(coordinate -> coordinate.getEasting() <= 3_200_000)
         .filter(coordinate -> coordinate.getNorthing() >= 0)
@@ -96,11 +121,9 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
         .filter(
             (coordinate ->
                 (coordinate.getZoneNumber() == 0
-                        && unifiedBandSet(upsNorthernBands, upsSouthernBands)
-                            .contains(coordinate.getLattitudeBand())
+                        && allAcceptableUpsBands.contains(coordinate.getLattitudeBand())
                     || (coordinate.getZoneNumber() >= 1 && coordinate.getZoneNumber() <= 60)
-                        && unifiedBandSet(utmNorthernBands, utmSouthernBands)
-                            .contains(coordinate.getLattitudeBand()))));
+                        && allAcceptableUtmBands.contains(coordinate.getLattitudeBand()))));
   }
 
   @SafeVarargs
@@ -116,6 +139,15 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
   @Override
   public double getNorthing() {
     return northing;
+  }
+
+  @Override
+  public double getNorthingWithOffset() {
+    return isUTM()
+            && ((getNSIndicator() != null && getNSIndicator().equals(NORTH))
+                || utmNorthenBands.contains(getLattitudeBand()))
+        ? getNorthing()
+        : getNorthing() - NORTHING_OFFSET;
   }
 
   @Override

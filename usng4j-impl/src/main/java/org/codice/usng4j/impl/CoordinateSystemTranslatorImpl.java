@@ -605,16 +605,7 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
   @Override
   public DecimalDegreesCoordinate toLatLon(final UtmCoordinate utmCoordinate) {
-    final UtmCoordinate normalizedUtm =
-        utmCoordinate.getNSIndicator() == NSIndicator.SOUTH
-            ? UtmUpsCoordinateImpl.fromZoneBandNorthingEasting(
-                utmCoordinate.getZoneNumber(),
-                utmCoordinate.getLattitudeBand(),
-                utmCoordinate.getEasting(),
-                utmCoordinate.getNorthing() - NORTHING_OFFSET)
-            : utmCoordinate;
-
-    return utmToLatLonNsNormalized(normalizedUtm);
+    return utmToLatLonNsNormalized(utmCoordinate);
   }
 
   private static double atanh(final double x) {
@@ -672,7 +663,7 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
   private DecimalDegreesCoordinate utmToLatLonNsNormalized(UtmCoordinate utmCoordinate) {
     double xUTM = utmCoordinate.getEasting() - CoordinateSystemTranslatorImpl.EASTING_OFFSET;
-    double yUTM = utmCoordinate.getNorthing();
+    double yUTM = utmCoordinate.getNorthingWithOffset();
 
     // origin longitude for the zone (+3 puts origin in zone center)
     int lonOrigin = (utmCoordinate.getZoneNumber() - 1) * 6 - 180 + 3;

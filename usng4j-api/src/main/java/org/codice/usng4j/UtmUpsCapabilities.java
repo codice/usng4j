@@ -31,7 +31,11 @@ interface UtmUpsCapabilities {
   int getZoneNumber();
 
   /** @return the latitude band for this UTM coordinate or null if not specified. */
+  @Deprecated
   Character getLattitudeBand();
+
+  /** @return the latitude band for this UTM coordinate or null if not specified. */
+  Character getLatitudeBand();
 
   /** @return the N/S indicator if using northing values with hemisphere indicator */
   NSIndicator getNSIndicator();

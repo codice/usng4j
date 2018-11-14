@@ -85,13 +85,11 @@ final class UtmCoordinateImpl implements UtmCoordinate {
     this.lattitudeBand = lattitudeBand;
   }
 
-  /** {@inheritDoc} */
   @Override
   public double getEasting() {
     return easting;
   }
 
-  /** {@inheritDoc} */
   @Override
   public double getNorthing() {
     return northing;
@@ -102,15 +100,18 @@ final class UtmCoordinateImpl implements UtmCoordinate {
     return getNSIndicator().equals(NORTH) ? getNorthing() : getNorthing() - NORTHING_OFFSET;
   }
 
-  /** {@inheritDoc} */
   @Override
   public int getZoneNumber() {
     return zoneNumber;
   }
 
-  /** {@inheritDoc} */
   @Override
   public Character getLattitudeBand() {
+    return getLatitudeBand();
+  }
+
+  @Override
+  public Character getLatitudeBand() {
     return this.lattitudeBand;
   }
 
@@ -119,7 +120,6 @@ final class UtmCoordinateImpl implements UtmCoordinate {
     return this.nsIndicator;
   }
 
-  /** {@inheritDoc} */
   @Override
   public CoordinatePrecision getPrecision() {
     return this.precision;
@@ -171,7 +171,6 @@ final class UtmCoordinateImpl implements UtmCoordinate {
         .toString();
   }
 
-  /** {@inheritDoc} */
   @Override
   public boolean equals(final Object object) {
     if (object == null) {
@@ -192,7 +191,6 @@ final class UtmCoordinateImpl implements UtmCoordinate {
         .build();
   }
 
-  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     return new HashCodeBuilder()

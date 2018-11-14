@@ -24,6 +24,7 @@
 package org.codice.usng4j.impl;
 
 import static org.codice.usng4j.NSIndicator.NORTH;
+import static org.codice.usng4j.NSIndicator.SOUTH;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -35,7 +36,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.NSIndicator;
 import org.codice.usng4j.UtmUpsCoordinate;
@@ -119,7 +123,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     return Optional.of(utmUpsCoordinate)
         .filter(
             coordinate ->
-                coordinate.getLattitudeBand() != null || coordinate.getNSIndicator() != null)
+                coordinate.getLatitudeBand() != null || coordinate.getNSIndicator() != null)
         .filter(coordinate -> coordinate.getEasting() >= 0)
         .filter(coordinate -> coordinate.getEasting() <= 3_200_000)
         .filter(coordinate -> coordinate.getNorthing() >= 0)
@@ -127,9 +131,9 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
         .filter(
             (coordinate ->
                 (coordinate.getZoneNumber() == 0
-                        && allAcceptableUpsBands.contains(coordinate.getLattitudeBand())
+                        && allAcceptableUpsBands.contains(coordinate.getLatitudeBand())
                     || (coordinate.getZoneNumber() >= 1 && coordinate.getZoneNumber() <= 60)
-                        && allAcceptableUtmBands.contains(coordinate.getLattitudeBand()))));
+                        && allAcceptableUtmBands.contains(coordinate.getLatitudeBand()))));
   }
 
   @SafeVarargs
@@ -163,12 +167,24 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   @Override
   public Character getLattitudeBand() {
+    return getLatitudeBand();
+  }
+
+  @Override
+  public Character getLatitudeBand() {
     return latitudeBand;
   }
 
   @Override
   public NSIndicator getNSIndicator() {
-    return nsIndicator;
+    return nsIndicator == null ? calculateNSIndicatorFromLatBand(getLattitudeBand()) : nsIndicator;
+  }
+
+  private static NSIndicator calculateNSIndicatorFromLatBand(
+      @Nonnull final Character latitudeBand) {
+    return utmNorthenBands.contains(latitudeBand) || upsNorthenBands.contains(latitudeBand)
+        ? NORTH
+        : SOUTH;
   }
 
   @Override
@@ -217,6 +233,21 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
   }
 
   @Override
+  public boolean isUTM() {
+    return !isUPS() || isUpsOverlapException(this);
+  }
+
+  static boolean isUpsOverlapException(final UtmUpsCoordinate candidateCoordinate) {
+    // TODO:  implement overlap checking
+    return false;
+  }
+
+  @Override
+  public boolean isUPS() {
+    return allValidUpsBands.contains(getLattitudeBand()) || isUpsOverlapException(this);
+  }
+
+  @Override
   public String toString() {
     return (zone == 0 ? "" : String.valueOf(zone))
         + (latitudeBand == null ? "" : latitudeBand)
@@ -228,14 +259,28 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
   }
 
   @Override
-  public boolean isUTM() {
-    // TODO implement
-    return false;
+  public boolean equals(final Object suppliedObject) {
+    return Optional.ofNullable(suppliedObject)
+        .filter(UtmUpsCoordinateImpl.class::isInstance)
+        .map(UtmUpsCoordinateImpl.class::cast)
+        .map(
+            other ->
+                new EqualsBuilder()
+                    .append(zone, other.zone)
+                    .append(easting, other.easting)
+                    .append(northing, other.northing)
+                    .append(latitudeBand, other.latitudeBand)
+                    .build())
+        .orElse(false);
   }
 
   @Override
-  public boolean isUPS() {
-    // TODO implement
-    return false;
+  public int hashCode() {
+    return new HashCodeBuilder()
+        .append(zone)
+        .append(easting)
+        .append(northing)
+        .append(latitudeBand)
+        .build();
   }
 }

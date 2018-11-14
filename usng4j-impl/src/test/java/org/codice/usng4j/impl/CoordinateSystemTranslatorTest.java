@@ -232,28 +232,35 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
 
   @Test
   public void testParseUtm() throws ParseException {
-    // should return zone=5; letter=Q; easting=-00001; northing=2199600
-    String utmCoordinateString = "5Q -000001 2199600";
-    UtmCoordinate utmCoordinate = UtmCoordinateImpl.parseUtmString(utmCoordinateString);
+    // should return zone=5; letter=null; easting=00001; northing=2199600;
+    // nsIndicator=NSIndicator.NORTH
+    String utmCoordinateString = "5 000001 2199600 N";
+    UtmCoordinate utmCoordinate = coordinateSystemTranslator.parseUtmString(utmCoordinateString);
     assertEquals(5, utmCoordinate.getZoneNumber());
-    assertEquals('Q', utmCoordinate.getLattitudeBand().charValue());
-    assertEquals(-1, utmCoordinate.getEasting(), 0);
+    assertNull(utmCoordinate.getLattitudeBand());
+    assertEquals(1, utmCoordinate.getEasting(), 0);
+    assertEquals(NSIndicator.NORTH, utmCoordinate.getNSIndicator());
     assertEquals(2199600.0, utmCoordinate.getNorthing(), 0);
     assertEquals(CoordinatePrecision.ONE_METER, utmCoordinate.getPrecision());
 
-    // should return zone=5; letter=null; easting=-00001; northing=2199600
-    utmCoordinateString = "5 -000001 2199600";
-    utmCoordinate = UtmCoordinateImpl.parseUtmString(utmCoordinateString);
+    // should return zone=5; letter=Q; easting=-00001; northing=2199600; nsIndicator=null
+    utmCoordinateString = "5Q 000001 2199600";
+    utmCoordinate = coordinateSystemTranslator.parseUtmString(utmCoordinateString);
     assertEquals(5, utmCoordinate.getZoneNumber());
-    assertNull(utmCoordinate.getLattitudeBand());
-    assertEquals(-1, utmCoordinate.getEasting(), 0);
+    assertEquals('Q', utmCoordinate.getLattitudeBand().charValue());
+    assertEquals(1, utmCoordinate.getEasting(), 0);
     assertEquals(2199600.0, utmCoordinate.getNorthing(), 0);
     assertEquals(CoordinatePrecision.ONE_METER, utmCoordinate.getPrecision());
   }
 
   @Test(expected = ParseException.class)
-  public void testParseUtmBadInput() throws ParseException {
+  public void testParseUtmInvalid() throws ParseException {
     UtmCoordinateImpl.parseUtmString("5Q");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testParseUtmBadInput() throws IllegalArgumentException, ParseException {
+    coordinateSystemTranslator.parseUtmString("5 000001 2199600");
   }
 
   @Test

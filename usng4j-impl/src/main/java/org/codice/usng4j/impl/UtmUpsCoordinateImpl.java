@@ -25,11 +25,14 @@ package org.codice.usng4j.impl;
 
 import static org.codice.usng4j.NSIndicator.NORTH;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -56,10 +59,13 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     allValidUpsBands = unifiedBandSet(upsNorthenBands, upsSothernBands);
     allAcceptableUpsBands = new HashSet<>(allValidUpsBands);
     allAcceptableUpsBands.add(null);
-    allValidUtmBands = unifiedBandSet(utmNorthernBands, upsSothernBands);
+    allValidUtmBands = unifiedBandSet(utmNorthenBands, utmSothernBands);
     allAcceptableUtmBands = new HashSet<>(allValidUtmBands);
     allAcceptableUtmBands.add(null);
   }
+
+  private static final String UTMUPS_REGEXP =
+      "\\s*(\\d*)([A-Z]?)\\s+(\\d+)(?:[mM][eE])?\\s+(\\d+)(?:[mM][nN])?\\s*((\\s+[nNsS])?)\\s*";
 
   private final int zone;
   private final Character latitudeBand;
@@ -70,7 +76,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   private UtmUpsCoordinateImpl(
       final int zone,
-      final Character latitudeBand,
+      @Nullable final Character latitudeBand,
       final double easting,
       final double northing,
       @Nullable final NSIndicator nsIndicator) {
@@ -84,7 +90,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   static UtmUpsCoordinate fromZoneBandNorthingEastingNSI(
       final int zone,
-      final Character latitudeBand,
+      @Nullable final Character latitudeBand,
       final double easting,
       final double northing,
       @Nullable final NSIndicator nsIndicator) {
@@ -99,7 +105,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   static Optional<UtmUpsCoordinate> fromZoneBandEastingNorthingNSIIfPossible(
       final int zone,
-      final Character latitudeBand,
+      @Nullable final Character latitudeBand,
       final double easting,
       final double northing,
       @Nullable final NSIndicator nsIndicator) {
@@ -162,7 +168,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   @Override
   public NSIndicator getNSIndicator() {
-    return null;
+    return nsIndicator;
   }
 
   @Override
@@ -173,6 +179,41 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
   @Override
   public double getEasting() {
     return easting;
+  }
+
+  /**
+   * @param utmUpsString a UTM/UPS formatted string. e.g. {@code 10Q 123456 0123456}
+   * @return an object representation of 'utmUpsString'
+   * @throws ParseException when 'utmUpsString' isn't correctly formatted.
+   */
+  static UtmUpsCoordinate parseUtmUpsString(String utmUpsString) throws ParseException {
+
+    Pattern utmUpsRegexp = Pattern.compile(UTMUPS_REGEXP);
+
+    Matcher m = utmUpsRegexp.matcher(utmUpsString);
+    if (!m.matches()) {
+      throw new ParseException(
+          String.format(
+              "Supplied argument '%s' is not a valid UTM/UPS formatted String.", utmUpsString),
+          0);
+    }
+
+    String zoneNumber = m.group(1);
+    String latitudeBandString = m.group(2);
+    int easting = Integer.parseInt(m.group(3));
+    int northing = Integer.parseInt(m.group(4));
+    String nsIndicatorString = m.group(5).trim();
+    NSIndicator nsIndicator =
+        nsIndicatorString.length() > 0
+            ? nsIndicatorString.charAt(0) == 'N' ? NSIndicator.NORTH : NSIndicator.SOUTH
+            : null;
+
+    return fromZoneBandNorthingEastingNSI(
+        zoneNumber.length() > 0 ? Integer.parseInt(zoneNumber) : 0,
+        latitudeBandString.length() > 0 ? latitudeBandString.charAt(0) : null,
+        easting,
+        northing,
+        nsIndicator);
   }
 
   @Override

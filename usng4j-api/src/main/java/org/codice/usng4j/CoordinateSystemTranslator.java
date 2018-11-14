@@ -141,6 +141,13 @@ public interface CoordinateSystemTranslator {
   BoundingBox toBoundingBox(UsngCoordinate usngCoordinate);
 
   /**
+   * @param utmUpsString a UTM/UPS formatted string. e.g. {@code A 123456 123456}
+   * @return an object representation of 'utmUpsString'
+   * @throws ParseException when 'utmUpsString' isn't correctly formatted.
+   */
+  UtmUpsCoordinate parseUtmUpsString(String utmUpsString) throws ParseException;
+
+  /**
    * @param utmString a UTM formatted string. e.g. {@code 10Q 123456 -0123456}
    * @return an object representation of 'utmString'
    * @throws ParseException when 'utmString' isn't correctly formatted.

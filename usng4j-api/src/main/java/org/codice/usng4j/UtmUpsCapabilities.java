@@ -24,6 +24,9 @@ interface UtmUpsCapabilities {
   /** @return the northing value of this UTM coordinate. */
   double getNorthing();
 
+  /** @return the northing value with the NORTHING_OFFSET subtracted if NSIndicator equals SOUTH */
+  double getNorthingWithOffset();
+
   /** @return the zone number of this UTM coordinate. */
   int getZoneNumber();
 

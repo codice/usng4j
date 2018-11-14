@@ -102,8 +102,8 @@ public interface CoordinateSystemTranslator {
    * Convert a UPS coordinate to latitude and longitude coordinates.
    *
    * @param upsCoordinate The UPS coordinate to convert to latitude and longitude
-   *
-   * @return the {@code DecimalDegreesCoordinate} representing the latitude and longitude at the same location as the given {@code UpsCoordinate}.
+   * @return the {@code DecimalDegreesCoordinate} representing the latitude and longitude at the
+   *     same location as the given {@code UpsCoordinate}.
    */
   DecimalDegreesCoordinate toLatLon(UpsCoordinate upsCoordinate);
 
@@ -111,8 +111,8 @@ public interface CoordinateSystemTranslator {
    * Convert a UTM/UPS coordinate to latitude and longitude coordinates.
    *
    * @param utmUpsCoordinate The UTM/UPS coordinate to convert to latitude and longitude
-   *
-   * @return the {@code DecimalDegreesCoordinate} representing the latitude and longitude at the same location as the given {@code UtmUpsCoordinate}.
+   * @return the {@code DecimalDegreesCoordinate} representing the latitude and longitude at the
+   *     same location as the given {@code UtmUpsCoordinate}.
    */
   DecimalDegreesCoordinate toLatLon(UtmUpsCoordinate utmUpsCoordinate);
 

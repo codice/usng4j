@@ -11,6 +11,48 @@ import org.junit.Test;
 
 public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
 
+  // UPS/UTM instantiating tests
+
+  @Test
+  public void testCreatingValidUtmUpsCoordinateInstanceWithAllFieldsSupplied() {
+    fail();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFailingCreatingUtmUpsCoordinateInstanceWithNoLatBandAndNoNSISupplied() {
+    fail();
+  }
+
+  @Test
+  public void testCreatingUtmUpsCoordinateInstanceWithNoLatBandAndNSISupplied() {
+    fail();
+  }
+
+  @Test
+  public void testCreatingUtmUpsCoordinateInstanceWithLatBandAndNSISupplied() {
+    fail();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFailingCreatingUtmUpsCoordinateInstanceWithIllegalLatBandSupplied() {
+    fail();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFailingCreatingUtmUpsCoordinateInstanceWithIllegalEastingSupplied() {
+    fail();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFailingCreatingUtmUpsCoordinateInstanceWithIllegalNorthingSupplied() {
+    fail();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testFailingCreatingUtmUpsCoordinateInstanceWithIllegalZoneSupplied() {
+    fail();
+  }
+
   // UTM parsing tests
 
   @Test

@@ -932,8 +932,13 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
   }
 
   @Override
+  public UtmUpsCoordinate parseUtmUpsString(String utmString) throws ParseException {
+    return UtmUpsCoordinateImpl.parseUtmUpsString(utmString);
+  }
+
+  @Override
   public UtmCoordinate parseUtmString(String utmString) throws ParseException {
-    return UtmCoordinateImpl.parseUtmString(utmString);
+    return UtmUpsCoordinateImpl.parseUtmUpsString(utmString);
   }
 
   @Override

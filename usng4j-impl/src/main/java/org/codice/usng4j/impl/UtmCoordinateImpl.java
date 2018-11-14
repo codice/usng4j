@@ -99,9 +99,7 @@ final class UtmCoordinateImpl implements UtmCoordinate {
 
   @Override
   public double getNorthingWithOffset() {
-    return getNSIndicator().equals(NORTH)
-        ? getNorthing()
-        : getNorthing() - NORTHING_OFFSET;
+    return getNSIndicator().equals(NORTH) ? getNorthing() : getNorthing() - NORTHING_OFFSET;
   }
 
   /** {@inheritDoc} */

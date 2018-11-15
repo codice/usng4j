@@ -190,6 +190,18 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
     UtmUpsCoordinateImpl.parseUtmUpsString("L 000001 2199600");
   }
 
+  @Test
+  public void testNorthingOffset() throws ParseException {
+    final UtmUpsCoordinate testCoordinateSouth =
+        UtmUpsCoordinateImpl.parseUtmUpsString("5 000001 2199600 S");
+    assertThat(
+        testCoordinateSouth.getNorthingWithOffset(),
+        is(testCoordinateSouth.getNorthing() - UtmUpsCoordinateImpl.NORTHING_OFFSET));
+    final UtmUpsCoordinate testCoordinateNorth =
+        UtmUpsCoordinateImpl.parseUtmUpsString("5 000001 2199600 N");
+    assertThat(testCoordinateNorth.getNorthingWithOffset(), is(testCoordinateNorth.getNorthing()));
+  }
+
   // Object overrides tests
 
   @Test

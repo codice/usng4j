@@ -23,13 +23,15 @@
 
 package org.codice.usng4j.impl;
 
+import static org.codice.usng4j.NSIndicator.NORTH;
+import static org.codice.usng4j.NSIndicator.SOUTH;
+
 import java.text.ParseException;
 import java.util.Optional;
 import org.codice.usng4j.BoundingBox;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.CoordinateSystemTranslator;
 import org.codice.usng4j.DecimalDegreesCoordinate;
-import org.codice.usng4j.NSIndicator;
 import org.codice.usng4j.UpsCoordinate;
 import org.codice.usng4j.UsngCoordinate;
 import org.codice.usng4j.UtmCoordinate;
@@ -292,16 +294,41 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
   @Override
   public UpsCoordinate toUps(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
     final UtmUpsCoordinate utmUpsCoordinate = toUtmUps(decimalDegreesCoordinate);
-    if (utmUpsCoordinate.isUPS()) {
-      throw new IllegalArgumentException(utmUpsCoordinate + " is a UPS coordinate");
+    if (utmUpsCoordinate.isUTM()) {
+      throw new IllegalArgumentException(
+          utmUpsCoordinate + " is a UTM coordinate, please use toUtm or toUtmUps functions.");
     }
     return utmUpsCoordinate;
   }
 
   @Override
   public UtmUpsCoordinate toUtmUps(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
-    // TODO:  implement
-    throw new RuntimeException("NEEDS IMPLEMENTATION!");
+    validateDecimalDegreeInput(decimalDegreesCoordinate);
+    final double rhoAdjusterValue = 12_637_275.1116;
+    final double falseUPSNorthing = 2_000_000;
+    final double falseUPSEasting = 2_000_000;
+    final boolean northPole = decimalDegreesCoordinate.getLat() >= 0;
+    final double tau = Math.tan(Math.abs(decimalDegreesCoordinate.getLat()) * DEG_2_RAD);
+    final double taup = taupf(tau);
+    final double rhoStep1 = Math.hypot(1, taup) + Math.abs(taup);
+    final double rhoStep2 = Math.abs(decimalDegreesCoordinate.getLat()) != 90 ? 1 / rhoStep1 : 0;
+    final double rhoStep3 = taup >= 0 ? rhoStep2 : rhoStep1;
+    final double rho = rhoStep3 * rhoAdjusterValue;
+    final double x = Math.sin(decimalDegreesCoordinate.getLon() * DEG_2_RAD) * rho;
+    final double y =
+        Math.cos(decimalDegreesCoordinate.getLon() * DEG_2_RAD) * (northPole ? -rho : rho);
+    return UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+        0, null, x + falseUPSEasting, y + falseUPSNorthing, northPole ? NORTH : SOUTH);
+  }
+
+  private static void validateDecimalDegreeInput(
+      final DecimalDegreesCoordinate decimalDegreesCoordinate) {
+    if (decimalDegreesCoordinate.getLat() < -90
+        || decimalDegreesCoordinate.getLat() > 90
+        || decimalDegreesCoordinate.getLon() < -180
+        || decimalDegreesCoordinate.getLon() > 180) {
+      throw new IllegalArgumentException(decimalDegreesCoordinate + " is invalid");
+    }
   }
 
   @Override

@@ -240,7 +240,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   @Override
   public boolean isUTM() {
-    return !isUPS() || isUpsOverlapException(this);
+    return getZoneNumber() > 0 || isUpsOverlapException(this);
   }
 
   static boolean isUpsOverlapException(final UtmUpsCoordinate candidateCoordinate) {
@@ -250,7 +250,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   @Override
   public boolean isUPS() {
-    return allValidUpsBands.contains(getLattitudeBand()) || isUpsOverlapException(this);
+    return getZoneNumber() == 0 || isUpsOverlapException(this);
   }
 
   @Override

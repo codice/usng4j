@@ -56,7 +56,7 @@ public abstract class BaseClassForUsng4jTest {
               try {
                 testDataConsumer.accept(testData);
                 return Optional.<String>empty();
-              } catch (Exception failure) {
+              } catch (AssertionError failure) {
                 return Optional.of(
                     failure.getMessage() + String.format("\n\t\t[Input Data:  %s]", testData));
               }

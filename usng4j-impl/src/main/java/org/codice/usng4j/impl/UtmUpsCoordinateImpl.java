@@ -240,17 +240,12 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   @Override
   public boolean isUTM() {
-    return getZoneNumber() > 0 || isUpsOverlapException(this);
-  }
-
-  static boolean isUpsOverlapException(final UtmUpsCoordinate candidateCoordinate) {
-    // TODO:  implement overlap checking
-    return false;
+    return getZoneNumber() > 0;
   }
 
   @Override
   public boolean isUPS() {
-    return getZoneNumber() == 0 || isUpsOverlapException(this);
+    return getZoneNumber() == 0;
   }
 
   @Override

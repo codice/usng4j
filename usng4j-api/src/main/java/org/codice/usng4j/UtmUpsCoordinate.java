@@ -24,14 +24,16 @@ package org.codice.usng4j;
  */
 public interface UtmUpsCoordinate extends UtmCoordinate, UpsCoordinate {
   /**
-   * Determines if the current coordinate data is described in terms of UTM (where the zone number is positive).
+   * Determines if the current coordinate data is described in terms of UTM (where the zone number
+   * is positive).
    *
    * @return true if the data is in UTM space, false otherwise.
    */
   boolean isUTM();
 
   /**
-   * Determines if the current coordinate data is described in terms of UPS (where the zone number is 0 and the latitude band is 'A', 'B', 'Y', or 'Z').
+   * Determines if the current coordinate data is described in terms of UPS (where the zone number
+   * is 0 and the latitude band is 'A', 'B', 'Y', or 'Z').
    *
    * @return true if the data is in UPS space, false otherwise.
    */

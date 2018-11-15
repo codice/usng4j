@@ -11,7 +11,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.UtmCoordinate;
 import org.codice.usng4j.UtmUpsCoordinate;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {

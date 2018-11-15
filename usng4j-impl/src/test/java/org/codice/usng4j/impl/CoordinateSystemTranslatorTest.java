@@ -1251,13 +1251,18 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
         validUpsCoordinatesTests);
   }
 
-  private void assertUpsCoordIsClose(
-      final UpsCoordinate result, final UtmUpsTestData expected) {
-    assertThat(String.format("Easting %f must be within %fm of %f!", result.getEasting(), EASTING_NORTHING_DEVIATION, expected.easting),
+  private void assertUpsCoordIsClose(final UpsCoordinate result, final UtmUpsTestData expected) {
+    assertThat(
+        String.format(
+            "Easting %f must be within %fm of %f!",
+            result.getEasting(), EASTING_NORTHING_DEVIATION, expected.easting),
         result.getEasting() >= expected.easting - EASTING_NORTHING_DEVIATION
             && result.getEasting() <= expected.easting + EASTING_NORTHING_DEVIATION,
         is(true));
-    assertThat(String.format("Northing %f must be within %fm of %f!", result.getNorthing(), EASTING_NORTHING_DEVIATION, expected.northing),
+    assertThat(
+        String.format(
+            "Northing %f must be within %fm of %f!",
+            result.getNorthing(), EASTING_NORTHING_DEVIATION, expected.northing),
         result.getNorthing() >= expected.northing - EASTING_NORTHING_DEVIATION
             && result.getNorthing() <= expected.northing + EASTING_NORTHING_DEVIATION,
         is(true));

@@ -28,6 +28,7 @@ import static org.codice.usng4j.NSIndicator.SOUTH;
 
 import java.text.ParseException;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import org.codice.usng4j.BoundingBox;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.CoordinateSystemTranslator;
@@ -36,8 +37,6 @@ import org.codice.usng4j.UpsCoordinate;
 import org.codice.usng4j.UsngCoordinate;
 import org.codice.usng4j.UtmCoordinate;
 import org.codice.usng4j.UtmUpsCoordinate;
-
-import javax.annotation.Nullable;
 
 public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTranslator {
 

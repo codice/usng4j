@@ -231,14 +231,4 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
         UtmUpsCoordinateImpl.parseUtmUpsString(expectedTestDataSingleCoordinate.upsString);
     assertThat(testCoordinateOne.hashCode(), is(testCoordinateTwo.hashCode()));
   }
-
-  @Ignore("FUNCTIONALITY NOT IMPLEMENTED")
-  @Test
-  public void testParsingValidOverlappingUpsAsUtmUps() {
-    // This functionality is not fully implemented yet.
-    // TODO:  update this test once it's implemented 35X 425945mE 8931452mN
-    final UtmUpsCoordinate testCoordinate =
-        UtmUpsCoordinateImpl.fromZoneBandNorthingEasting(32, 'V', 425_945, 8_931_452);
-    assertThat(testCoordinate.isUTM() && testCoordinate.isUPS(), is(true));
-  }
 }

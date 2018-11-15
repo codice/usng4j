@@ -58,7 +58,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
   private static final int NS_INDICATOR_RE_GROUP = 5;
   private static final Set<Character> upsNorthenBands = new HashSet<>(Arrays.asList('Y', 'Z'));
   private static final Set<Character> upsSothernBands = new HashSet<>(Arrays.asList('A', 'B'));
-  private static final Set<Character> utmNorthernBands =
+  private static final Set<Character> utmNorthenBands =
       new HashSet<>(Arrays.asList('C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'));
   private static final Set<Character> utmSothernBands =
       new HashSet<>(Arrays.asList('N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'));
@@ -162,7 +162,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
   public double getNorthingWithOffset() {
     return isUTM()
             && ((getNSIndicator() != null && getNSIndicator().equals(NORTH))
-                || utmNorthernBands.contains(getLattitudeBand()))
+                || utmNorthenBands.contains(getLattitudeBand()))
         ? getNorthing()
         : getNorthing() - NORTHING_OFFSET;
   }

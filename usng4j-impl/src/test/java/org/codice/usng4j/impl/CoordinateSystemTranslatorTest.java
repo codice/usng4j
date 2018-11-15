@@ -7,10 +7,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.util.Optional;
-
 import org.codice.usng4j.BoundingBox;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.DecimalDegreesCoordinate;
@@ -23,6 +23,7 @@ import org.junit.Test;
 
 public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
   private static final double LAT_LON_DEVIATION = 0.5;
+  private static final double THREE_METERS = 3;
 
   private CoordinateSystemTranslatorImpl coordinateSystemTranslator =
       new CoordinateSystemTranslatorImpl(true);
@@ -294,7 +295,7 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     assertEquals(3743292, Math.floor(coords.getNorthing()), 0);
     assertEquals(412900, Math.floor(coords.getEasting()), 0);
     assertEquals(12, coords.getZoneNumber());
-    assertEquals('S', coords.getLattitudeBand().charValue());
+    assertEquals('S', coords.getLatitudeBand().charValue());
   }
 
   @Test
@@ -359,18 +360,29 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     assertEquals(-59.0, Math.floor(latLon.getLon()), 0);
   }
 
-  private void assertLatOrLonIsClose(final boolean latitude, final double actual, final double expected) throws AssertionError {
+  private void assertLatOrLonIsClose(
+      final boolean latitude, final double actual, final double expected) throws AssertionError {
     final String latOrLonCapitalized = latitude ? "Latitude" : "Longitude";
     final int maxAbsValue = latitude ? 90 : 180;
 
-    final String withinMaxError = String.format("%ss must be <= %d!", latOrLonCapitalized, maxAbsValue);
+    final String withinMaxError =
+        String.format("%ss must be <= %d!", latOrLonCapitalized, maxAbsValue);
     assertThat(withinMaxError, actual <= maxAbsValue, is(true));
 
-    final String withinMinError = String.format("%ss must be >= -%d!", latOrLonCapitalized, maxAbsValue);
+    final String withinMinError =
+        String.format("%ss must be >= -%d!", latOrLonCapitalized, maxAbsValue);
     assertThat(withinMinError, actual >= -maxAbsValue, is(true));
 
-    final String nearExpectedError = String.format(latOrLonCapitalized + " %f must be within %f of %f!", actual, LAT_LON_DEVIATION, expected);
-    assertThat(nearExpectedError, actual <= expected + LAT_LON_DEVIATION && actual >= expected - LAT_LON_DEVIATION, is(true));
+    final String nearExpectedError =
+        String.format(
+            latOrLonCapitalized + " %f must be within %f of %f!",
+            actual,
+            LAT_LON_DEVIATION,
+            expected);
+    assertThat(
+        nearExpectedError,
+        actual <= expected + LAT_LON_DEVIATION && actual >= expected - LAT_LON_DEVIATION,
+        is(true));
   }
 
   private void testConvertValidUpsToLatLon(UtmUpsTestData testData) throws AssertionError {
@@ -387,14 +399,12 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
           String.format(
               "The UPS coordinate with band='%c', northing=%f, easting=%f, and north/south "
                   + "indicator=%s could not be constructed!",
-              upsZone,
-              testData.northing,
-              testData.easting,
-              testData.nsIndicator));
+              upsZone, testData.northing, testData.easting, testData.nsIndicator));
     }
     final UtmUpsCoordinate utmUpsCoordinate = utmUpsCoordinateOptional.get();
 
-    final DecimalDegreesCoordinate latLon = coordinateSystemTranslator.toLatLon((UpsCoordinate) utmUpsCoordinate);
+    final DecimalDegreesCoordinate latLon =
+        coordinateSystemTranslator.toLatLon((UpsCoordinate) utmUpsCoordinate);
     assertLatOrLonIsClose(true /* latitude */, latLon.getLat(), testData.latitude);
     if (Math.abs(testData.latitude) != 90.0) {
       assertLatOrLonIsClose(false /* longitude */, latLon.getLon(), testData.longitude);
@@ -419,7 +429,9 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
             .map(Optional::get)
             .collect(joining("\n"));
     if (!upsConversionError.isEmpty()) {
-      fail("Some valid UPS coordinates were not correctly converted to lat-lon: " + upsConversionError);
+      fail(
+          "Some valid UPS coordinates were not correctly converted to lat-lon: "
+              + upsConversionError);
     }
   }
 
@@ -1234,16 +1246,21 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
           final DecimalDegreesCoordinate decimalDegreesCoordinate =
               new DecimalDegreesCoordinateImpl(upsTestData.latitude, upsTestData.longitude);
           final UpsCoordinate result = coordinateSystemTranslator.toUps(decimalDegreesCoordinate);
-          assertThat(
-              result,
-              is(
-                  UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
-                      0,
-                      null,
-                      upsTestData.easting,
-                      upsTestData.northing,
-                      upsTestData.nsIndicator)));
+          assertWithinThreeMetersPrecision(result, upsTestData);
         },
         validUpsCoordinatesTests);
+  }
+
+  private void assertWithinThreeMetersPrecision(
+      final UpsCoordinate result, final UtmUpsTestData expected) {
+    assertThat(
+        result.getEasting() >= expected.easting - THREE_METERS
+            && result.getEasting() <= expected.easting + THREE_METERS,
+        is(true));
+    assertThat(
+        result.getNorthing() >= expected.northing - THREE_METERS
+            && result.getNorthing() <= expected.northing + THREE_METERS,
+        is(true));
+    assertThat(result.getNSIndicator(), is(expected.nsIndicator));
   }
 }

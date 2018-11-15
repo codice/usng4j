@@ -10,8 +10,8 @@
     latLonString: "90.0000000°, 000.0000000°",
     mgrsString: "ZAH0000000000"
   },
-  /*{
-    latitude: 84.01,
+  {
+    latitude: 84.1,
     longitude: 0,
     easting: 2000000,
     northing: 1344403,
@@ -22,7 +22,7 @@
     mgrsString: "ZAA0000044403"
   },
   {
-    latitude: 84.01,
+    latitude: 84.1,
     longitude: 15,
     easting: 2169680,
     northing: 1366742,
@@ -31,7 +31,7 @@
     utmString: "",
     latLonString: "84.1000000°, 015.0000000°",
     mgrsString: "ZBA6968066742"
-  },*/
+  },
   {
     latitude: 87,
     longitude: 0,
@@ -54,8 +54,8 @@
     latLonString: "87.0000000°, 015.0000000°",
     mgrsString: "ZAD8622478207"
   },
-  /*{
-    latitude: -80.01,
+  {
+    latitude: -80.1,
     longitude: 0,
     easting: 2000000,
     northing: 3101768,
@@ -75,7 +75,7 @@
     utmString: "",
     latLonString: "-80.1000000°, 015.0000000°",
     mgrsString: "BCY8515864226"
-  },*/
+  },
   {
     latitude: -85,
     longitude: 0,

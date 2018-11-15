@@ -23,7 +23,7 @@ import org.junit.Test;
 
 public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
   private static final double LAT_LON_DEVIATION = 0.5;
-  private static final double THREE_METERS = 3;
+  private static final double EASTING_NORTHING_DEVIATION = 4.0;
 
   private CoordinateSystemTranslatorImpl coordinateSystemTranslator =
       new CoordinateSystemTranslatorImpl(true);
@@ -1246,20 +1246,20 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
           final DecimalDegreesCoordinate decimalDegreesCoordinate =
               new DecimalDegreesCoordinateImpl(upsTestData.latitude, upsTestData.longitude);
           final UpsCoordinate result = coordinateSystemTranslator.toUps(decimalDegreesCoordinate);
-          assertWithinThreeMetersPrecision(result, upsTestData);
+          assertUpsCoordIsClose(result, upsTestData);
         },
         validUpsCoordinatesTests);
   }
 
-  private void assertWithinThreeMetersPrecision(
+  private void assertUpsCoordIsClose(
       final UpsCoordinate result, final UtmUpsTestData expected) {
-    assertThat(
-        result.getEasting() >= expected.easting - THREE_METERS
-            && result.getEasting() <= expected.easting + THREE_METERS,
+    assertThat(String.format("Easting %f must be within %fm of %f!", result.getEasting(), EASTING_NORTHING_DEVIATION, expected.easting),
+        result.getEasting() >= expected.easting - EASTING_NORTHING_DEVIATION
+            && result.getEasting() <= expected.easting + EASTING_NORTHING_DEVIATION,
         is(true));
-    assertThat(
-        result.getNorthing() >= expected.northing - THREE_METERS
-            && result.getNorthing() <= expected.northing + THREE_METERS,
+    assertThat(String.format("Northing %f must be within %fm of %f!", result.getNorthing(), EASTING_NORTHING_DEVIATION, expected.northing),
+        result.getNorthing() >= expected.northing - EASTING_NORTHING_DEVIATION
+            && result.getNorthing() <= expected.northing + EASTING_NORTHING_DEVIATION,
         is(true));
     assertThat(result.getNSIndicator(), is(expected.nsIndicator));
   }

@@ -27,11 +27,11 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
             expectedTestDataSingleCoordinate.easting,
             expectedTestDataSingleCoordinate.northing,
             expectedTestDataSingleCoordinate.nsIndicator);
-    testFullUpsUtmProlertiesSet(
+    testFullUpsUtmPropertiesSet(
         testCoordinate, expectedTestDataSingleCoordinate, true, false, 0, 'Z');
   }
 
-  private static void testFullUpsUtmProlertiesSet(
+  private static void testFullUpsUtmPropertiesSet(
       final UtmUpsCoordinate testedCoordinate,
       final UtmUpsTestData expectedData,
       final boolean expectedIsUps,
@@ -62,7 +62,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
             expectedTestDataSingleCoordinate.easting,
             expectedTestDataSingleCoordinate.northing,
             expectedTestDataSingleCoordinate.nsIndicator);
-    testFullUpsUtmProlertiesSet(
+    testFullUpsUtmPropertiesSet(
         testCoordinate, expectedTestDataSingleCoordinate, true, false, 0, null);
   }
 
@@ -75,7 +75,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
             expectedTestDataSingleCoordinate.easting,
             expectedTestDataSingleCoordinate.northing,
             null);
-    testFullUpsUtmProlertiesSet(
+    testFullUpsUtmPropertiesSet(
         testCoordinate, expectedTestDataSingleCoordinate, true, false, 0, 'Z');
   }
 
@@ -87,7 +87,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
             'Z',
             expectedTestDataSingleCoordinate.easting,
             expectedTestDataSingleCoordinate.northing);
-    testFullUpsUtmProlertiesSet(
+    testFullUpsUtmPropertiesSet(
         testCoordinate, expectedTestDataSingleCoordinate, true, false, 0, 'Z');
   }
 
@@ -174,7 +174,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
   public void testParsingUpsAsUps() throws ParseException {
     final UtmUpsCoordinate testCoordinate =
         UtmUpsCoordinateImpl.parseUtmUpsString(expectedTestDataSingleCoordinate.upsString);
-    testFullUpsUtmProlertiesSet(
+    testFullUpsUtmPropertiesSet(
         testCoordinate, expectedTestDataSingleCoordinate, true, false, 0, 'Z');
   }
 

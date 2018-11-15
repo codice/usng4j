@@ -98,7 +98,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     this.precision = CoordinatePrecision.forEastNorth((int) easting, (int) northing);
   }
 
-  private static UtmUpsCoordinate fromZoneBandNorthingEastingNSI(
+  static UtmUpsCoordinate fromZoneBandNorthingEastingNSI(
       final int zone,
       @Nullable final Character latitudeBand,
       final double easting,

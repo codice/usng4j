@@ -237,7 +237,7 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     String utmCoordinateString = "5 000001 2199600 N";
     UtmCoordinate utmCoordinate = coordinateSystemTranslator.parseUtmString(utmCoordinateString);
     assertEquals(5, utmCoordinate.getZoneNumber());
-    assertNull(utmCoordinate.getLattitudeBand());
+    assertNull(utmCoordinate.getLatitudeBand());
     assertEquals(1, utmCoordinate.getEasting(), 0);
     assertEquals(NSIndicator.NORTH, utmCoordinate.getNSIndicator());
     assertEquals(2199600.0, utmCoordinate.getNorthing(), 0);
@@ -247,7 +247,7 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     utmCoordinateString = "5Q 000001 2199600";
     utmCoordinate = coordinateSystemTranslator.parseUtmString(utmCoordinateString);
     assertEquals(5, utmCoordinate.getZoneNumber());
-    assertEquals('Q', utmCoordinate.getLattitudeBand().charValue());
+    assertEquals('Q', utmCoordinate.getLatitudeBand().charValue());
     assertEquals(1, utmCoordinate.getEasting(), 0);
     assertEquals(2199600.0, utmCoordinate.getNorthing(), 0);
     assertEquals(CoordinatePrecision.ONE_METER, utmCoordinate.getPrecision());

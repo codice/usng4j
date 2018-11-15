@@ -538,29 +538,11 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
   }
 
   BoundingBox toBoundingBox(final UtmCoordinate utmCoordinate, final Integer accuracy) {
-    /**
-     * ************ convert UTM coords to decimal degrees *********************
-     *
-     * <p>Equations from USGS Bulletin 1532 (or USGS Professional Paper 1395) East Longitudes are
-     * positive, West longitudes are negative. North latitudes are positive, South latitudes are
-     * negative.
-     *
-     * <p>Expected Input args: DecimalDegreesCoordinate : northing-m (numeric), eg. 432001.8
-     * southern hemisphere NEGATIVE from equator ('real' value - 10,000,000) UTMEasting : easting-m
-     * (numeric), eg. 4000000.0 UTMZoneNumber : 6-deg longitudinal zone (numeric), eg. 18
-     *
-     * <p>lat-lon coordinates are turned in the object 'ret' : ret.lat and ret.lon
-     *
-     * <p>*************************************************************************
-     */
-
-    // remove 500,000 meter offset for longitude
-
     BoundingBox result = null;
 
     DecimalDegreesCoordinate southWest = toLatLon(utmCoordinate);
 
-    if (accuracy <= 100000) {
+    if (accuracy != null && accuracy <= 100_000) {
       UtmCoordinate tempUtmCoordinate =
           new UtmCoordinateImpl(
               utmCoordinate.getZoneNumber(),
@@ -656,6 +638,21 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
       }
     }
     return tau;
+  }
+
+  private DecimalDegreesCoordinate upsToLatLonNsNormalized(final UpsCoordinate upsCoordinate) {
+    final double northing = upsCoordinate.getNorthing() - FALSE_UPS_NORTHING;
+    final double easting = upsCoordinate.getEasting() - FALSE_UTM_EASTING;
+
+    final double rho = Math.hypot(easting, northing);
+    final double t = rho != 0.0 ? rho / RHO_ADJUSTER_VALUE : Math.pow(EPSILON, 2);
+    final double taup = (1 / t - t) / 2;
+    final double tau = tauf(taup);
+
+    final boolean isNorth = upsCoordinate.getLatitudeBand() >= 'Y';
+    final double lat = (isNorth ? 1 : -1) * Math.atan(tau) * RAD_2_DEG;
+    final double lon = Math.atan2(easting, isNorth ? -northing : northing) * RAD_2_DEG;
+    return new DecimalDegreesCoordinateImpl(lat, lon);
   }
 
   private DecimalDegreesCoordinate utmToLatLonNsNormalized(UtmCoordinate utmCoordinate) {

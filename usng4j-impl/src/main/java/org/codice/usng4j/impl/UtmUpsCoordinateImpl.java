@@ -98,7 +98,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     this.precision = CoordinatePrecision.forEastNorth((int) easting, (int) northing);
   }
 
-  static UtmUpsCoordinate fromZoneBandNorthingEastingNSI(
+  static UtmUpsCoordinate fromZoneBandEastingNorthingNSI(
       final int zone,
       @Nullable final Character latitudeBand,
       final double easting,
@@ -150,7 +150,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
 
   static UtmUpsCoordinate fromZoneBandNorthingEasting(
       final int zone, final Character latitudeBand, final double easting, final double northing) {
-    return fromZoneBandNorthingEastingNSI(zone, latitudeBand, easting, northing, null);
+    return fromZoneBandEastingNorthingNSI(zone, latitudeBand, easting, northing, null);
   }
 
   @Override
@@ -223,7 +223,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     final String nsIndicatorString = matcher.group(NS_INDICATOR_RE_GROUP).trim();
     final NSIndicator nsIndicator =
         nsIndicatorString.length() > 0 ? nsIndicatorString.charAt(0) == 'N' ? NORTH : SOUTH : null;
-    return fromZoneBandNorthingEastingNSI(
+    return fromZoneBandEastingNorthingNSI(
         zoneNumber.length() > 0 ? Integer.parseInt(zoneNumber) : 0,
         latitudeBandString.length() > 0 ? latitudeBandString.charAt(0) : null,
         easting,

@@ -315,7 +315,7 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     final double x = Math.sin(decimalDegreesCoordinate.getLon() * DEG_2_RAD) * rho;
     final double y =
         Math.cos(decimalDegreesCoordinate.getLon() * DEG_2_RAD) * (northPole ? -rho : rho);
-    return UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+    return UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
         0, null, x + FALSE_UPS_EASTING, y + FALSE_UPS_NORTHING, northPole ? NORTH : SOUTH);
   }
 

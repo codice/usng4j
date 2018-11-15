@@ -20,7 +20,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
   @Test
   public void testCreatingValidUtmUpsCoordinateInstanceWithAllFieldsSupplied() {
     final UtmUpsCoordinate testCoordinate =
-        UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+        UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
             0,
             'Z',
             expectedTestDataSingleCoordinate.easting,
@@ -49,13 +49,13 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testFailingCreatingUtmUpsCoordinateInstanceWithNoLatBandAndNoNSISupplied() {
-    UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(0, null, 1, 1, null);
+    UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(0, null, 1, 1, null);
   }
 
   @Test
   public void testCreatingUtmUpsCoordinateInstanceWithNoLatBandAndWithNSISupplied() {
     final UtmUpsCoordinate testCoordinate =
-        UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+        UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
             0,
             null,
             expectedTestDataSingleCoordinate.easting,
@@ -68,7 +68,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
   @Test
   public void testCreatingUtmUpsCoordinateInstanceWithLatBandAndNoNSISupplied() {
     final UtmUpsCoordinate testCoordinate =
-        UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+        UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
             0,
             'Z',
             expectedTestDataSingleCoordinate.easting,
@@ -92,7 +92,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testFailingCreatingUtmUpsCoordinateInstanceWithIllegalLatBandSupplied() {
-    UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+    UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
         0,
         'I',
         expectedTestDataSingleCoordinate.easting,
@@ -102,7 +102,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testFailingCreatingUtmUpsCoordinateInstanceWithIllegalEastingSupplied() {
-    UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+    UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
         0,
         'Z',
         0 - expectedTestDataSingleCoordinate.easting,
@@ -112,7 +112,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testFailingCreatingUtmUpsCoordinateInstanceWithIllegalNorthingSupplied() {
-    UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+    UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
         0,
         'Z',
         expectedTestDataSingleCoordinate.easting,
@@ -122,7 +122,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testFailingCreatingUtmUpsCoordinateInstanceWithIllegalZoneSupplied() {
-    UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+    UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
         66,
         'M',
         expectedTestDataSingleCoordinate.easting,
@@ -206,7 +206,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
   @Test
   public void testEquals() throws ParseException {
     final UtmUpsCoordinate testCoordinateOne =
-        UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+        UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
             0,
             'Z',
             expectedTestDataSingleCoordinate.easting,
@@ -220,7 +220,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
   @Test
   public void testHashcode() throws ParseException {
     final UtmUpsCoordinate testCoordinateOne =
-        UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+        UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
             0,
             'Z',
             expectedTestDataSingleCoordinate.easting,

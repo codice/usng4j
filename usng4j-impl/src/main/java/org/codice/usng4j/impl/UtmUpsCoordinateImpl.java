@@ -42,7 +42,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
   public static final double NORTHING_OFFSET = 10_000_000; // (meters)
   private static final Set<Character> upsNorthenBands = new HashSet<>(Arrays.asList('Y', 'Z'));
   private static final Set<Character> upsSothernBands = new HashSet<>(Arrays.asList('A', 'B'));
-  private static final Set<Character> utmNorthenBands =
+  private static final Set<Character> utmNorthernBands =
       new HashSet<>(Arrays.asList('C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'));
   private static final Set<Character> utmSothernBands =
       new HashSet<>(Arrays.asList('N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'));
@@ -56,7 +56,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     allValidUpsBands = unifiedBandSet(upsNorthenBands, upsSothernBands);
     allAcceptableUpsBands = new HashSet<>(allValidUpsBands);
     allAcceptableUpsBands.add(null);
-    allValidUtmBands = unifiedBandSet(utmNorthenBands, upsSothernBands);
+    allValidUtmBands = unifiedBandSet(utmNorthernBands, upsSothernBands);
     allAcceptableUtmBands = new HashSet<>(allValidUtmBands);
     allAcceptableUtmBands.add(null);
   }
@@ -88,7 +88,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
       final double easting,
       final double northing,
       @Nullable final NSIndicator nsIndicator) {
-    return fromZoneBandNorthingEastingNSIIfPossible(
+    return fromZoneBandEastingNorthingNSIIfPossible(
             zone, latitudeBand, easting, northing, nsIndicator)
         .orElseThrow(
             () ->
@@ -97,7 +97,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
                         + " is neither UTM nor UPS coordinate"));
   }
 
-  static Optional<UtmUpsCoordinate> fromZoneBandNorthingEastingNSIIfPossible(
+  static Optional<UtmUpsCoordinate> fromZoneBandEastingNorthingNSIIfPossible(
       final int zone,
       final Character latitudeBand,
       final double easting,
@@ -145,7 +145,7 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
   public double getNorthingWithOffset() {
     return isUTM()
             && ((getNSIndicator() != null && getNSIndicator().equals(NORTH))
-                || utmNorthenBands.contains(getLattitudeBand()))
+                || utmNorthernBands.contains(getLattitudeBand()))
         ? getNorthing()
         : getNorthing() - NORTHING_OFFSET;
   }

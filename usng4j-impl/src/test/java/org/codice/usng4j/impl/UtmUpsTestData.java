@@ -37,7 +37,7 @@ class UtmUpsTestData {
   @Override
   public String toString() {
     return String.format(
-        "Lat: %f,  Lon: %f,  E: %f,  N: %f,  NP: %s",
+        "Lat: %f,  Lon: %f,  E: %f,  N: %f,  NSI: %s",
         latitude, longitude, easting, northing, nsIndicator);
   }
 }

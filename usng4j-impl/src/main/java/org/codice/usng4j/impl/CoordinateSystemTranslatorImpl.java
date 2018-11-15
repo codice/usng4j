@@ -291,8 +291,11 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
   @Override
   public UpsCoordinate toUps(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
-    // TODO:  implement
-    throw new RuntimeException("NEEDS IMPLEMENTATION!");
+    final UtmUpsCoordinate utmUpsCoordinate = toUtmUps(decimalDegreesCoordinate);
+    if (utmUpsCoordinate.isUPS()) {
+      throw new IllegalArgumentException(utmUpsCoordinate + " is a UPS coordinate");
+    }
+    return utmUpsCoordinate;
   }
 
   @Override

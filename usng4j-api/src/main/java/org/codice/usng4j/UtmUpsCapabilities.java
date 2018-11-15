@@ -30,7 +30,8 @@ interface UtmUpsCapabilities {
   /** @return the zone number of this UTM coordinate. */
   int getZoneNumber();
 
-  /** @return the latitude band for this UTM coordinate or null if not specified. */
+  /** @return the latitude band for this UTM coordinate or null if not specified.
+   * @deprecated in favor of {@link #getLatitudeBand()} to correct spelling */
   @Deprecated
   Character getLattitudeBand();
 

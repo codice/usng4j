@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 public abstract class BaseClassForUsng4jTest {
   static final List<UtmUpsTestData> validUpsCoordinatesTests = new ArrayList<>();
   static final List<UtmUpsTestData> validUtmCoordinatesTests = new ArrayList<>();
+  static UtmUpsTestData expectedTestDataSingleCoordinate;
 
   private static InputStreamReader reader(final String fileName) throws IOException {
     return new InputStreamReader(
@@ -30,6 +31,7 @@ public abstract class BaseClassForUsng4jTest {
     final Type testDataListType = new TypeToken<List<UtmUpsTestData>>() {}.getType();
     validUpsCoordinatesTests.addAll(
         gson.fromJson(reader("/ValidUpsCoordinates.json"), testDataListType));
+    expectedTestDataSingleCoordinate = validUpsCoordinatesTests.get(0);
     // TODO:  add a set of valid UTM coordinates test data
     // validUtmCoordinatesTests.addAll(gson.fromJson(
     //  reader("/ValidUtmCoordinates.json"), testDataListType));

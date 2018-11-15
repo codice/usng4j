@@ -7,7 +7,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.util.Optional;
@@ -1047,7 +1046,7 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
   }
 
   @Test
-  public void testGithubData() throws ParseException {
+  public void testUsngGithubData() throws ParseException {
 
     double[][] latLons = {
       {39.9489, -75.15},
@@ -1157,7 +1156,7 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
   }
 
   @Test
-  public void testLLPointtoUSNG() throws ParseException {
+  public void testLLPointToUSNG() throws ParseException {
 
     String[] usngStrings = {"18S UJ 23487 06483", "18S UJ 23 06", "18S UJ 2 0", "18S UJ", "17S"};
 
@@ -1226,5 +1225,25 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     assertEquals(expectedValues[1], result.getWest(), 0.0001);
     assertEquals(expectedValues[2], result.getEast(), 0.0001);
     assertEquals(expectedValues[3], result.getSouth(), 0.0001);
+  }
+
+  @Test
+  public void testLLtoUPSConversion() {
+    runTestWithWithData(
+        upsTestData -> {
+          final DecimalDegreesCoordinate decimalDegreesCoordinate =
+              new DecimalDegreesCoordinateImpl(upsTestData.latitude, upsTestData.longitude);
+          final UpsCoordinate result = coordinateSystemTranslator.toUps(decimalDegreesCoordinate);
+          assertThat(
+              result,
+              is(
+                  UtmUpsCoordinateImpl.fromZoneBandNorthingEastingNSI(
+                      0,
+                      null,
+                      upsTestData.easting,
+                      upsTestData.northing,
+                      upsTestData.nsIndicator)));
+        },
+        validUpsCoordinatesTests);
   }
 }

@@ -42,7 +42,7 @@ public abstract class BaseClassForUsng4jTest {
     final List<String> errorMessages = runTestsCollectErrors(testDataConsumer, testDataList);
     if (!errorMessages.isEmpty()) {
       fail(
-          "Some valid UPS coordinates could not be converted to lat-lon: "
+          "Tests failures:\n"
               + errorMessages.stream().map(String::toString).collect(Collectors.joining("\n")));
     }
   }
@@ -56,8 +56,9 @@ public abstract class BaseClassForUsng4jTest {
               try {
                 testDataConsumer.accept(testData);
                 return Optional.<String>empty();
-              } catch (AssertionError assertionFailure) {
-                return Optional.of(assertionFailure.getMessage());
+              } catch (Exception failure) {
+                return Optional.of(
+                    failure.getMessage() + String.format("\n\t\t[Input Data:  %s]", testData));
               }
             })
         .filter(Optional::isPresent)

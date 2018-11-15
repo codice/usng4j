@@ -1,19 +1,30 @@
 package org.codice.usng4j.impl;
 
+import static java.util.Optional.of;
+import static java.util.stream.Collectors.joining;
 import static org.codice.usng4j.impl.CoordinateSystemTranslatorImpl.NORTHING_OFFSET;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.text.ParseException;
+import java.util.Optional;
+
 import org.codice.usng4j.BoundingBox;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.DecimalDegreesCoordinate;
 import org.codice.usng4j.NSIndicator;
+import org.codice.usng4j.UpsCoordinate;
 import org.codice.usng4j.UsngCoordinate;
 import org.codice.usng4j.UtmCoordinate;
+import org.codice.usng4j.UtmUpsCoordinate;
 import org.junit.Test;
 
 public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
+  private static final double LAT_LON_DEVIATION = 0.5;
+
   private CoordinateSystemTranslatorImpl coordinateSystemTranslator =
       new CoordinateSystemTranslatorImpl(true);
 
@@ -340,6 +351,70 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     latLon = coordinateSystemTranslator.toLatLon(utmCoordinate);
     assertEquals(-35.0, Math.floor(latLon.getLat()), 0);
     assertEquals(-59.0, Math.floor(latLon.getLon()), 0);
+  }
+
+  private void assertLatOrLonIsClose(final boolean latitude, final double actual, final double expected) throws AssertionError {
+    final String latOrLonCapitalized = latitude ? "Latitude" : "Longitude";
+    final int maxAbsValue = latitude ? 90 : 180;
+
+    final String withinMaxError = String.format("%ss must be <= %d!", latOrLonCapitalized, maxAbsValue);
+    assertThat(withinMaxError, actual <= maxAbsValue, is(true));
+
+    final String withinMinError = String.format("%ss must be >= -%d!", latOrLonCapitalized, maxAbsValue);
+    assertThat(withinMinError, actual >= -maxAbsValue, is(true));
+
+    final String nearExpectedError = String.format(latOrLonCapitalized + " %f must be within %f of %f!", actual, LAT_LON_DEVIATION, expected);
+    assertThat(nearExpectedError, actual <= expected + LAT_LON_DEVIATION && actual >= expected - LAT_LON_DEVIATION, is(true));
+  }
+
+  private void testConvertValidUpsToLatLon(UtmUpsTestData testData) throws AssertionError {
+    final char upsZone = testData.upsString.charAt(0);
+    final Optional<UtmUpsCoordinate> utmUpsCoordinateOptional =
+        UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSIIfPossible(
+            0 /* UPS zone = 0 */,
+            upsZone,
+            testData.easting,
+            testData.northing,
+            testData.nsIndicator);
+    if (!utmUpsCoordinateOptional.isPresent()) {
+      fail(
+          String.format(
+              "The UPS coordinate with band='%c', northing=%f, easting=%f, and north/south "
+                  + "indicator=%s could not be constructed!",
+              upsZone,
+              testData.northing,
+              testData.easting,
+              testData.nsIndicator));
+    }
+    final UtmUpsCoordinate utmUpsCoordinate = utmUpsCoordinateOptional.get();
+
+    final DecimalDegreesCoordinate latLon = coordinateSystemTranslator.toLatLon((UpsCoordinate) utmUpsCoordinate);
+    assertLatOrLonIsClose(true /* latitude */, latLon.getLat(), testData.latitude);
+    if (Math.abs(testData.latitude) != 90.0) {
+      assertLatOrLonIsClose(false /* longitude */, latLon.getLon(), testData.longitude);
+    }
+  }
+
+  @Test
+  public void testConvertAllValidUpsToLatLon() {
+    final String upsConversionError =
+        validUpsCoordinatesTests
+            .stream()
+            .map(
+                upsTestData -> {
+                  try {
+                    testConvertValidUpsToLatLon(upsTestData);
+                    return Optional.<String>empty();
+                  } catch (AssertionError assertionFailure) {
+                    return of(assertionFailure.getMessage());
+                  }
+                })
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(joining("\n"));
+    if (!upsConversionError.isEmpty()) {
+      fail("Some valid UPS coordinates were not correctly converted to lat-lon: " + upsConversionError);
+    }
   }
 
   @Test

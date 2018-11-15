@@ -39,7 +39,7 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
   public static final double NORTHING_OFFSET = 10000000.0; // (meters)
 
-  private static final double DEG_2_RAD = Math.PI / 180;
+  private static final double DEG_2_RAD = Math.PI / 180.0;
 
   private static final double RAD_2_DEG = 180.0 / Math.PI;
 
@@ -62,7 +62,7 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
   // UPS offsets
   private static final int FALSE_UPS_NORTHING = 2_000_000;
 
-  private static final int FALSE_UTM_EASTING = 2_000_000;
+  private static final int FALSE_UPS_EASTING = 2_000_000;
 
   // scale factor of central meridian
   private static final double K0 = 0.9996;
@@ -591,16 +591,24 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
   @Override
   public DecimalDegreesCoordinate toLatLon(final UpsCoordinate upsCoordinate) {
-    final UpsCoordinate normalizedUps =
-        upsCoordinate.getNSIndicator() == NSIndicator.SOUTH
-            ? UtmUpsCoordinateImpl.fromZoneBandNorthingEasting(
-                upsCoordinate.getZoneNumber(),
-                upsCoordinate.getLattitudeBand(),
-                upsCoordinate.getEasting(),
-                upsCoordinate.getNorthing() - NORTHING_OFFSET)
-            : upsCoordinate;
+    final double northing = upsCoordinate.getNorthing() - FALSE_UPS_NORTHING;
+    final double easting = upsCoordinate.getEasting() - FALSE_UPS_EASTING;
 
-    return upsToLatLonNsNormalized(normalizedUps);
+    final boolean isNorth = upsCoordinate.getLattitudeBand() >= 'Y';
+
+    final double lat;
+    if (northing == 0.0 && easting == 0.0) {
+      lat = isNorth ? 90.0 : -90.0;
+    } else {
+      final double rho = Math.hypot(easting, northing);
+      final double t = rho != 0.0 ? rho / RHO_ADJUSTER_VALUE : Math.pow(EPSILON, 2.0);
+      final double taup = (1.0 / t - t) / 2.0;
+      final double tau = tauf(taup);
+      lat = (isNorth ? 1 : -1) * Math.atan(tau) * RAD_2_DEG;
+    }
+
+    final double lon = Math.atan2(easting, isNorth ? -northing : northing) * RAD_2_DEG;
+    return new DecimalDegreesCoordinateImpl(lat, lon);
   }
 
   @Override
@@ -617,13 +625,13 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
   }
 
   private static double taupf(final double tauValue) {
-    final double tau1 = Math.hypot(1, tauValue);
+    final double tau1 = Math.hypot(1.0, tauValue);
     final double sig = Math.sinh(eatanhe(tauValue / tau1));
     return Math.hypot(1.0, sig) * tauValue - sig * tau1;
   }
 
   private static double tauf(final double taupValue) {
-    final double e2m = 1.0 - Math.pow(ES, 2);
+    final double e2m = 1.0 - Math.pow(ES, 2.0);
     // To lowest order in e^2, taup = (1 - e^2) * tau = _e2m * tau; so use
     // tau = taup/_e2m as a starting guess.  (This starting guess is the
     // geocentric latitude which, to first order in the flattening, is equal
@@ -632,33 +640,19 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     // is used the mean number of iterations increases to 1.99 (2 iterations
     // are needed except near tau = 0).
     double tau = taupValue / e2m;
-    final double stol = Math.sqrt(EPSILON) / 10 * Math.max(1, Math.abs(taupValue));
+    final double stol = Math.sqrt(EPSILON) / 10.0 * Math.max(1.0, Math.abs(taupValue));
     // min iterations = 1, max iterations = 2; mean = 1.94; 5 iterations panic
     for (int i = 0; i < 5; i++) {
       final double taupa = taupf(tau);
-      final double dtau =
-          (taupValue - taupa) * (1 + e2m * Math.hypot(1, tau) * Math.hypot(1, taupa));
+      final double dtau = (taupValue - taupa) *
+          (1.0 + e2m * Math.pow(tau, 2.0)) /
+          (e2m * Math.hypot(1.0, tau) * Math.hypot(1.0, taupa));
       tau += dtau;
       if (!(Math.abs(dtau) >= stol)) {
         break;
       }
     }
     return tau;
-  }
-
-  private DecimalDegreesCoordinate upsToLatLonNsNormalized(final UpsCoordinate upsCoordinate) {
-    final double northing = upsCoordinate.getNorthing() - FALSE_UPS_NORTHING;
-    final double easting = upsCoordinate.getEasting() - FALSE_UTM_EASTING;
-
-    final double rho = Math.hypot(easting, northing);
-    final double t = rho != 0.0 ? rho / RHO_ADJUSTER_VALUE : Math.pow(EPSILON, 2);
-    final double taup = (1 / t - t) / 2;
-    final double tau = tauf(taup);
-
-    final boolean isNorth = upsCoordinate.getLattitudeBand() >= 'Y';
-    final double lat = (isNorth ? 1 : -1) * Math.atan(tau) * RAD_2_DEG;
-    final double lon = Math.atan2(easting, isNorth ? -northing : northing) * RAD_2_DEG;
-    return new DecimalDegreesCoordinateImpl(lat, lon);
   }
 
   private DecimalDegreesCoordinate utmToLatLonNsNormalized(UtmCoordinate utmCoordinate) {

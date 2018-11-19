@@ -131,7 +131,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
   }
 
   // UTM parsing tests
-  // TODO Issue 9: implement the UTM parsing tests,
+  // TODO https://github.com/codice/usng4j/issues/9: implement the UTM parsing tests,
   //       some of the tests ignored for now as no UTM changes were made to the library.
 
   @Test

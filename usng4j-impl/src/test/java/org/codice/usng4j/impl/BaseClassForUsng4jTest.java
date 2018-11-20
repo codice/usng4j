@@ -32,11 +32,8 @@ public abstract class BaseClassForUsng4jTest {
     validUpsCoordinatesTests.addAll(
         gson.fromJson(reader("/ValidUpsCoordinates.json"), testDataListType));
     expectedTestDataSingleCoordinate = validUpsCoordinatesTests.get(0);
-    // TODO:  add a set of valid UTM coordinates test data
-    // validUtmCoordinatesTests.addAll(gson.fromJson(
-    //  reader("/ValidUtmCoordinates.json"), testDataListType));
-    // TODO:  add a set of invalid UPS and UTM coordinates test data
-    // TODO:  add reading invalid tests
+    // TODO https://github.com/codice/usng4j/issues/9: add a set of valid and invalid UTM
+    // coordinates test data
   }
 
   void runTestWithWithData(

@@ -28,6 +28,7 @@ import static org.codice.usng4j.NSIndicator.SOUTH;
 
 import java.text.ParseException;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import org.codice.usng4j.BoundingBox;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.CoordinateSystemTranslator;
@@ -404,12 +405,7 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
 
   @Override
   public BoundingBox toBoundingBox(final UtmCoordinate utmCoordinate) {
-    final UtmUpsCoordinate suppliedCoordinate = (UtmUpsCoordinate) utmCoordinate;
-    if (suppliedCoordinate.isUTM()) {
-      return toBoundingBox((UtmUpsCoordinate) utmCoordinate);
-    } else {
-      throw new IllegalArgumentException(utmCoordinate + " is not a UTM coordinate");
-    }
+    return toBoundingBox(utmCoordinate, null);
   }
 
   String getUtmLetterDesignator(double lat) {
@@ -562,7 +558,7 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
     return toBoundingBox(utmUpsCoordinate, null);
   }
 
-  BoundingBox toBoundingBox(final UtmCoordinate utmCoordinate, final Integer accuracy) {
+  BoundingBox toBoundingBox(final UtmCoordinate utmCoordinate, @Nullable final Integer accuracy) {
     BoundingBox result = null;
 
     DecimalDegreesCoordinate southWest = toLatLon(utmCoordinate);

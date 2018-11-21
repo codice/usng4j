@@ -38,6 +38,19 @@ package org.codice.usng4j;
  */
 public interface UsngCoordinate {
 
+  /** RegEx expressions for USNG/MGRS Zone parsing */
+  final String ZONE_REGEX_STRING = "([1-9]|[1-5][0-9]|60)";
+
+  /** RegEx expressions for USNG/MGRS Latitude Bands parsing */
+  final String LATITUDE_BAND_REGEX_STRING =
+      "([CDEFGHJKLMNPQRSTUVWX])\\W?([ABCDEFGHJKLMNPQRSTUVWXYZ][ABCDEFGHJKLMNPQRSTUV])?";
+
+  /** RegEx expressions for USNG Northing and Easting parsing */
+  final String USNG_COORDINATE_PART_REGEX_STRING = "(\\W\\d{0,5})?(\\W\\d{0,5})?";
+
+  /** RegEx expressions for MGRS Northing and Easting parsing */
+  final String MGRS_COORDINATE_PART_REGEX_STRING = "(\\d{0,5})\\W*(\\d{0,5})\\W*";
+
   /** @return the zone number of this USNG coordinate. */
   int getZoneNumber();
 

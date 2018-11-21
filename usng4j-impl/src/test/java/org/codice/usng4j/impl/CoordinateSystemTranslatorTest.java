@@ -230,6 +230,16 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     assertEquals(43292, parts.getNorthing(), 0);
   }
 
+  @Test(expected = ParseException.class)
+  public void testFailingUsngParsingWithZonesAboveSixty() throws ParseException {
+    UsngCoordinateImpl.parseUsngString("61Q");
+  }
+
+  @Test(expected = ParseException.class)
+  public void testFailingMgrsParsingWithZonesAboveSixty() throws ParseException {
+    UsngCoordinateImpl.parseMgrsString("66QKB4278531517");
+  }
+
   @Test
   public void testParseUtm() throws ParseException {
     // should return zone=5; letter=null; easting=00001; northing=2199600;

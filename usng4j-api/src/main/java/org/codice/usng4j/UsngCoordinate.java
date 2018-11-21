@@ -43,7 +43,7 @@ public interface UsngCoordinate {
 
   /** RegEx expressions for USNG/MGRS Latitude Bands parsing */
   final String LATITUDE_BAND_REGEX_STRING =
-      "([CDEFGHJKLMNPQRSTUVWX])\\W?([ABCDEFGHJKLMNPQRSTUVWXYZ][ABCDEFGHJKLMNPQRSTUV])?";
+      "([C-JK-NP-X])\\W?([A-JK-NP-Z][A-JK-NP-V])?";
 
   /** RegEx expressions for USNG Northing and Easting parsing */
   final String USNG_COORDINATE_PART_REGEX_STRING = "(\\W\\d{0,5})?(\\W\\d{0,5})?";

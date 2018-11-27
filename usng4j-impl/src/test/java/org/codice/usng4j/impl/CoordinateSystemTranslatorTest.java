@@ -1254,7 +1254,7 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
                 "15K AW", "15K AX", "15K AY", "15K AZ"));
     for (final String invalidValue : invalidUsngStrings) {
       try {
-        UsngCoordinateImpl.parseUsngString("18I");
+        UsngCoordinateImpl.parseUsngString(invalidValue);
       } catch (ParseException e) {
         continue;
       }

@@ -42,7 +42,7 @@ public interface UsngCoordinate {
   public final String ZONE_REGEX_STRING = "([1-9]|[1-5][0-9]|60)";
 
   /** RegEx expressions for USNG/MGRS Latitude Bands parsing */
-  public final String LATITUDE_BAND_REGEX_STRING = "([C-JK-NP-X])\\W?([A-JK-NP-Z][A-JK-NP-V])?";
+  public final String LATITUDE_BAND_REGEX_STRING = "([C-HJ-NP-X])\\W?([A-HJ-NP-Z][A-HJ-NP-V])?";
 
   /** RegEx expressions for USNG Northing and Easting parsing */
   public final String USNG_COORDINATE_PART_REGEX_STRING = "(\\W\\d{0,5})?(\\W\\d{0,5})?";

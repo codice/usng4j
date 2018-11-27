@@ -1246,7 +1246,7 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
   }
 
   @Test
-  public void testParsingInvalidLatitutedZonesToUsng() throws ParseException {
+  public void testParsingInvalidLatitutedZonesToUsng() {
     final Set<String> invalidUsngStrings =
         new HashSet<>(
             Arrays.asList(

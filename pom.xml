@@ -6,7 +6,7 @@
 
   <groupId>org.codice</groupId>
   <artifactId>usng4j</artifactId>
-  <version>0.3</version>
+  <version>0.4-SNAPSHOT</version>
   <modules>
     <module>usng4j-api</module>
     <module>usng4j-impl</module>

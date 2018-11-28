@@ -41,8 +41,15 @@ public interface UsngCoordinate {
   /** RegEx expressions for USNG/MGRS Zone parsing */
   public final String ZONE_REGEX_STRING = "([1-9]|[1-5][0-9]|60)";
 
-  /** RegEx expressions for USNG/MGRS Latitude Bands parsing */
-  public final String LATITUDE_BAND_REGEX_STRING = "([C-HJ-NP-X])\\W?([A-HJ-NP-Z][A-HJ-NP-V])?";
+  /** RegEx expressions for USNG/MGRS Latitude Bands parsing, part one */
+  public final String LATITUDE_BAND_PART_ONE_REGEX_STRING = "([C-HJ-NP-X])";
+
+  /** RegEx expressions for USNG/MGRS Latitude Bands parsing, part two */
+  public final String LATITUDE_BAND_PART_TWO_REGEX_STRING = "\\W?([A-HJ-NP-Z][A-HJ-NP-V])?";
+
+  /** RegEx expressions for USNG/MGRS Latitude Bands parsing, combined */
+  public final String LATITUDE_BAND_REGEX_STRING =
+      LATITUDE_BAND_PART_ONE_REGEX_STRING + LATITUDE_BAND_PART_TWO_REGEX_STRING;
 
   /** RegEx expressions for USNG Northing and Easting parsing */
   public final String USNG_COORDINATE_PART_REGEX_STRING = "(\\W\\d{0,5})?(\\W\\d{0,5})?";

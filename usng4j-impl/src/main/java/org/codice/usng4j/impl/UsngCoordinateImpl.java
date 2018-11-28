@@ -33,10 +33,19 @@ import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.UsngCoordinate;
 
 final class UsngCoordinateImpl implements UsngCoordinate {
+  private static final String REGEX_GROUPING_FORMAT = "(%s)%s%s";
   private static final String USNG_REGEXP =
-      ZONE_REGEX_STRING + LATITUDE_BAND_REGEX_STRING + USNG_COORDINATE_PART_REGEX_STRING;
+      String.format(
+          REGEX_GROUPING_FORMAT,
+          ZONE_REGEX_STRING,
+          LATITUDE_BAND_REGEX_STRING,
+          USNG_COORDINATE_PART_REGEX_STRING);
   private static final String MGRS_REGEXP =
-      ZONE_REGEX_STRING + LATITUDE_BAND_REGEX_STRING + MGRS_COORDINATE_PART_REGEX_STRING;
+      String.format(
+          REGEX_GROUPING_FORMAT,
+          ZONE_REGEX_STRING,
+          LATITUDE_BAND_REGEX_STRING,
+          MGRS_COORDINATE_PART_REGEX_STRING);
 
   private int zoneNumber;
 

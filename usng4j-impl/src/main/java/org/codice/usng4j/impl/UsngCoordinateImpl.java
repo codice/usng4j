@@ -32,13 +32,20 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.UsngCoordinate;
 
-/** {@inheritDoc} */
 final class UsngCoordinateImpl implements UsngCoordinate {
+  private static final String REGEX_GROUPING_FORMAT = "(%s)%s%s";
   private static final String USNG_REGEXP =
-      "(\\d\\d?)([CDEFGHJKLMNPQRSTUVWX])\\W?([ABCDEFGHJKLMNPQRSTUVWXYZ][ABCDEFGHJKLMNPQRSTUV])?(\\W\\d{0,5})?(\\W\\d{0,5})?";
-
+      String.format(
+          REGEX_GROUPING_FORMAT,
+          ZONE_REGEX_STRING,
+          LATITUDE_BAND_REGEX_STRING,
+          USNG_COORDINATE_PART_REGEX_STRING);
   private static final String MGRS_REGEXP =
-      "(\\d\\d?)([CDEFGHJKLMNPQRSTUVWX])\\W?([ABCDEFGHJKLMNPQRSTUVWXYZ][ABCDEFGHJKLMNPQRSTUV])?(\\d{0,5})\\W*(\\d{0,5})\\W*";
+      String.format(
+          REGEX_GROUPING_FORMAT,
+          ZONE_REGEX_STRING,
+          LATITUDE_BAND_REGEX_STRING,
+          MGRS_COORDINATE_PART_REGEX_STRING);
 
   private int zoneNumber;
 

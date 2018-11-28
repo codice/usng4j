@@ -10,7 +10,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import org.codice.usng4j.BoundingBox;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.DecimalDegreesCoordinate;
@@ -228,6 +231,16 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     assertEquals(5, parts.getPrecision().getIntValue());
     assertEquals(12900, parts.getEasting(), 0);
     assertEquals(43292, parts.getNorthing(), 0);
+  }
+
+  @Test(expected = ParseException.class)
+  public void testFailingUsngParsingWithZonesAboveSixty() throws ParseException {
+    UsngCoordinateImpl.parseUsngString("61Q");
+  }
+
+  @Test(expected = ParseException.class)
+  public void testFailingMgrsParsingWithZonesAboveSixty() throws ParseException {
+    UsngCoordinateImpl.parseMgrsString("66QKB4278531517");
   }
 
   @Test
@@ -1229,6 +1242,23 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
       usng = UsngCoordinateImpl.parseUsngString(inputValues[i]);
       BoundingBox result = coordinateSystemTranslator.toBoundingBox(usng);
       validateUsngToLatLonResult(expectedValues[i], result);
+    }
+  }
+
+  @Test
+  public void testParsingInvalidLatitutedZonesToUsng() {
+    final Set<String> invalidUsngStrings =
+        new HashSet<>(
+            Arrays.asList(
+                "15A", "15B", "15I", "15O", "15Y", "15Z", "15K IC", "15K OC", "15K AI", "15K AO",
+                "15K AW", "15K AX", "15K AY", "15K AZ"));
+    for (final String invalidValue : invalidUsngStrings) {
+      try {
+        UsngCoordinateImpl.parseUsngString(invalidValue);
+      } catch (ParseException e) {
+        continue;
+      }
+      fail(invalidValue + " is not valid USNG");
     }
   }
 

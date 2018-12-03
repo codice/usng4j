@@ -59,9 +59,9 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
   private static final Set<Character> upsNorthenBands = new HashSet<>(Arrays.asList('Y', 'Z'));
   private static final Set<Character> upsSothernBands = new HashSet<>(Arrays.asList('A', 'B'));
   private static final Set<Character> utmNorthenBands =
-      new HashSet<>(Arrays.asList('C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'));
-  private static final Set<Character> utmSothernBands =
       new HashSet<>(Arrays.asList('N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'));
+  private static final Set<Character> utmSothernBands =
+      new HashSet<>(Arrays.asList('C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'));
   // The following static sets are added for performance and readability
   private static final Set<Character> allValidUpsBands;
   private static final Set<Character> allValidUtmBands;

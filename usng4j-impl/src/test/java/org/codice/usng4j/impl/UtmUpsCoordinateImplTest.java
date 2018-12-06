@@ -1,7 +1,6 @@
 package org.codice.usng4j.impl;
 
 import static org.codice.usng4j.NSIndicator.NORTH;
-import static org.codice.usng4j.NSIndicator.SOUTH;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -142,7 +141,7 @@ public class UtmUpsCoordinateImplTest extends BaseClassForUsng4jTest {
     assertThat(utmCoordinateWithLatitudeBand.getLatitudeBand(), is('Q'));
     assertThat(utmCoordinateWithLatitudeBand.getEasting(), is(1.0));
     assertThat(utmCoordinateWithLatitudeBand.getNorthing(), is(2199600.0));
-    assertThat(utmCoordinateWithLatitudeBand.getNSIndicator(), is(SOUTH));
+    assertThat(utmCoordinateWithLatitudeBand.getNSIndicator(), is(NORTH));
     assertThat(((UtmUpsCoordinate) utmCoordinateWithLatitudeBand).isUTM(), is(true));
     assertThat(utmCoordinateWithLatitudeBand.getPrecision(), is(CoordinatePrecision.ONE_METER));
 

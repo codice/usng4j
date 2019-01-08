@@ -426,6 +426,42 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
   }
 
   @Test
+  public void testIsInUPSSpaceAtNorthPole() {
+    DecimalDegreesCoordinate[] latLons = {
+      new DecimalDegreesCoordinateImpl(85, 0),
+      new DecimalDegreesCoordinateImpl(88, 0),
+      new DecimalDegreesCoordinateImpl(90, 0)
+    };
+    assertThat(coordinateSystemTranslator.isInUPSSpace(latLons[0]), is(true));
+    assertThat(coordinateSystemTranslator.isInUPSSpace(latLons[1]), is(true));
+    assertThat(coordinateSystemTranslator.isInUPSSpace(latLons[2]), is(true));
+  }
+
+  @Test
+  public void testIsInUPSSpaceAtSouthPole() {
+    DecimalDegreesCoordinate[] latLons = {
+      new DecimalDegreesCoordinateImpl(-81, 0),
+      new DecimalDegreesCoordinateImpl(-88, 0),
+      new DecimalDegreesCoordinateImpl(-90, 0)
+    };
+    assertThat(coordinateSystemTranslator.isInUPSSpace(latLons[0]), is(true));
+    assertThat(coordinateSystemTranslator.isInUPSSpace(latLons[1]), is(true));
+    assertThat(coordinateSystemTranslator.isInUPSSpace(latLons[2]), is(true));
+  }
+
+  @Test
+  public void testIsInUPSSpaceAtOutsideUPSSpaceCoordinates() {
+    DecimalDegreesCoordinate[] latLons = {
+      new DecimalDegreesCoordinateImpl(35, 0),
+      new DecimalDegreesCoordinateImpl(75, 0),
+      new DecimalDegreesCoordinateImpl(13, 0)
+    };
+    assertThat(coordinateSystemTranslator.isInUPSSpace(latLons[0]), is(false));
+    assertThat(coordinateSystemTranslator.isInUPSSpace(latLons[1]), is(false));
+    assertThat(coordinateSystemTranslator.isInUPSSpace(latLons[2]), is(false));
+  }
+
+  @Test
   public void testToUtmUpsAtUTMCoordinate() {
     final DecimalDegreesCoordinate latLon = new DecimalDegreesCoordinateImpl(23, 56);
     final UtmUpsCoordinate result = coordinateSystemTranslator.toUtmUps(latLon);

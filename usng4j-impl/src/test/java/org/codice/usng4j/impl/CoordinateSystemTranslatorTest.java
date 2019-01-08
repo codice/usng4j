@@ -4,6 +4,7 @@ import static java.util.Optional.of;
 import static java.util.stream.Collectors.joining;
 import static org.codice.usng4j.impl.CoordinateSystemTranslatorImpl.NORTHING_OFFSET;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -422,6 +423,46 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     if (Math.abs(testData.latitude) != 90.0) {
       assertLatOrLonIsClose(false /* longitude */, latLon.getLon(), testData.longitude);
     }
+  }
+
+  @Test
+  public void testToUtmUpsAtUTMCoordinate() {
+    final DecimalDegreesCoordinate latLon = new DecimalDegreesCoordinateImpl(23, 56);
+    final UtmUpsCoordinate result = coordinateSystemTranslator.toUtmUps(latLon);
+    assertThat(result.isUPS(), is(false));
+    assertThat(result.getZoneNumber(), is(40));
+    assertThat(result.getEasting(), closeTo(397514, 1.0));
+    assertThat(result.getNorthing(), closeTo(2543869, 1.0));
+  }
+
+  @Test
+  public void testToUtmUpsAt80S() {
+    final DecimalDegreesCoordinate latLon = new DecimalDegreesCoordinateImpl(-80, 0);
+    final UtmUpsCoordinate result = coordinateSystemTranslator.toUtmUps(latLon);
+    assertThat(result.isUPS(), is(false));
+    assertThat(result.getZoneNumber(), is(31));
+    assertThat(result.getEasting(), closeTo(441867, 1.0));
+    assertThat(result.getNorthing(), closeTo(1116915, 1.0));
+  }
+
+  @Test
+  public void testToUtmUpsAt84N() {
+    final DecimalDegreesCoordinate latLon = new DecimalDegreesCoordinateImpl(84, 0);
+    final UtmUpsCoordinate result = coordinateSystemTranslator.toUtmUps(latLon);
+    assertThat(result.isUPS(), is(false));
+    assertThat(result.getZoneNumber(), is(31));
+    assertThat(result.getEasting(), closeTo(465005, 1.0));
+    assertThat(result.getNorthing(), closeTo(9329005, 1.0));
+  }
+
+  @Test
+  public void testToUtmUpsAt0N() {
+    final DecimalDegreesCoordinate latLon = new DecimalDegreesCoordinateImpl(0, 0);
+    final UtmUpsCoordinate result = coordinateSystemTranslator.toUtmUps(latLon);
+    assertThat(result.isUPS(), is(false));
+    assertThat(result.getZoneNumber(), is(31));
+    assertThat(result.getEasting(), closeTo(166021, 1.0));
+    assertThat(result.getNorthing(), closeTo(0, 1.0));
   }
 
   @Test
@@ -1030,12 +1071,12 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
       {500000, 3762155, 12},
       {362289, 3818618, 12},
       {365575, 3823561, 12},
-      {640915, -3596850, 21},
-      {362289, -3818618, 21},
-      {341475, -3836700, 21},
-      {658354, -2046162, 38},
-      {345704, -2488944, 38},
-      {364050, -2583444, 38},
+      {640915, 6403149, 21},
+      {362289, 6181381, 21},
+      {341475, 6163299, 21},
+      {658354, 7953837, 38},
+      {345704, 7511055, 38},
+      {364050, 7416555, 38},
       {455511, 4094989, 54},
       {363955, 3929527, 54},
       {388708, 3950262, 54},
@@ -1043,20 +1084,20 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
       {646806, 3153509, 1},
       {206331, 3156262, 1},
       {222576, 497870, 58},
-      {222576, -497870, 58},
+      {222576, 9502129, 58},
       {221723, 0, 58},
       {333579, 497566, 60},
-      {333579, -497566, 60},
+      {333579, 9502433, 60},
       {666420, 497566, 1},
-      {666420, -497566, 1},
+      {666420, 9502433, 1},
       {166021, 0, 1},
       {353193, 3153509, 30},
       {646806, 3153509, 31},
       {206331, 3156262, 31},
       {333579, 497566, 30},
-      {333579, -497566, 30},
+      {333579, 9502433, 30},
       {666420, 497566, 31},
-      {666420, -497566, 31},
+      {666420, 9502433, 31},
       {166021, 0, 31}
     };
 
@@ -1100,9 +1141,9 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
       {4306483, 323486, 18},
       {4075469, 407844, 18},
       {3792316, 227899, 18},
-      {6004156, 697374, 18},
-      {5998991, 699464, 18},
-      {6000266, 697593, 18}
+      {6004155, 697374, 18},
+      {5998990, 699464, 18},
+      {6000265, 697593, 18}
     };
 
     String[] usngStrings = {
@@ -1127,9 +1168,6 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
 
   private void executeGithubDataTest(
       double lat, double lon, int utmNorthing, int utmEasting, int zoneNum, UsngCoordinate usng) {
-    if (lat < 0) {
-      utmNorthing -= 10000000.0;
-    }
 
     UtmCoordinate utmCoordinate;
     DecimalDegreesCoordinate utmToLL;
@@ -1140,7 +1178,9 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     assertEquals(utmNorthing, (int) utmCoordinate.getNorthing());
     assertEquals(zoneNum, utmCoordinate.getZoneNumber());
 
-    utmCoordinate = new UtmCoordinateImpl(zoneNum, utmEasting, utmNorthing);
+    utmCoordinate =
+        new UtmCoordinateImpl(
+            zoneNum, utmEasting, utmNorthing, lat < 0 ? NSIndicator.SOUTH : NSIndicator.NORTH);
     utmToLL = coordinateSystemTranslator.toLatLon(utmCoordinate);
 
     assertEquals(Math.round(lat * 10000), Math.round(utmToLL.getLat() * 10000));

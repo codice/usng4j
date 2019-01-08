@@ -42,6 +42,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.codice.usng4j.CoordinatePrecision;
 import org.codice.usng4j.NSIndicator;
+import org.codice.usng4j.UpsCoordinate;
+import org.codice.usng4j.UtmCoordinate;
 import org.codice.usng4j.UtmUpsCoordinate;
 
 public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
@@ -96,6 +98,24 @@ public class UtmUpsCoordinateImpl implements UtmUpsCoordinate {
     this.northing = northing;
     this.nsIndicator = nsIndicator;
     this.precision = CoordinatePrecision.forEastNorth((int) easting, (int) northing);
+  }
+
+  static UtmUpsCoordinate fromUtmCoordinate(UtmCoordinate utmCoordinate) {
+    return new UtmUpsCoordinateImpl(
+        utmCoordinate.getZoneNumber(),
+        utmCoordinate.getLatitudeBand(),
+        utmCoordinate.getEasting(),
+        utmCoordinate.getNorthing(),
+        utmCoordinate.getNSIndicator());
+  }
+
+  static UtmUpsCoordinate fromUpsCoordinate(UpsCoordinate upsCoordinate) {
+    return new UtmUpsCoordinateImpl(
+        upsCoordinate.getZoneNumber(),
+        upsCoordinate.getLatitudeBand(),
+        upsCoordinate.getEasting(),
+        upsCoordinate.getNorthing(),
+        upsCoordinate.getNSIndicator());
   }
 
   static UtmUpsCoordinate fromZoneBandEastingNorthingNSI(

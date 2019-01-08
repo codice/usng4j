@@ -167,4 +167,10 @@ public interface CoordinateSystemTranslator {
    * @throws ParseException when 'msgrsString' isn't in MGRS format.
    */
   UsngCoordinate parseMgrsString(String mgrsString) throws ParseException;
+
+  /**
+   * @param decimalDegreesCoordinate longitude latitude coordinate
+   * @return true if latitude is in UPS space
+   */
+  boolean isInUPSSpace(DecimalDegreesCoordinate decimalDegreesCoordinate);
 }

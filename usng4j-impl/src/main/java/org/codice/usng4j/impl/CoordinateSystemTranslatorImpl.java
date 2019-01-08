@@ -288,23 +288,18 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
                         + (61 - 58 * T + T * T + 600 * C - 330 * this.eccPrimeSquared)
                             * (A * A * A * A * A * A)
                             / 720)));
+    UTMNorthing += (UTMNorthing < 0) ? NORTHING_OFFSET : 0;
 
     return new UtmCoordinateImpl(zoneNumber, UTMEasting, UTMNorthing);
   }
 
   @Override
   public UpsCoordinate toUps(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
-    final UtmUpsCoordinate utmUpsCoordinate = toUtmUps(decimalDegreesCoordinate);
-    if (utmUpsCoordinate.isUTM()) {
+    if (!isInUPSSpace(decimalDegreesCoordinate)) {
       throw new IllegalArgumentException(
-          utmUpsCoordinate + " is a UTM coordinate, please use toUtm or toUtmUps functions.");
+          decimalDegreesCoordinate.toString()
+              + " is a UTM coordinate, please use toUtm or toUtmUps functions.");
     }
-    return utmUpsCoordinate;
-  }
-
-  @Override
-  public UtmUpsCoordinate toUtmUps(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
-    validateDecimalDegreeInput(decimalDegreesCoordinate);
     final boolean northPole = decimalDegreesCoordinate.getLat() >= 0.0;
     final double tau = Math.tan(Math.abs(decimalDegreesCoordinate.getLat()) * DEG_2_RAD);
     final double taup = taupf(tau);
@@ -318,6 +313,21 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
         Math.cos(decimalDegreesCoordinate.getLon() * DEG_2_RAD) * (northPole ? -rho : rho);
     return UtmUpsCoordinateImpl.fromZoneBandEastingNorthingNSI(
         0, null, x + FALSE_UPS_EASTING, y + FALSE_UPS_NORTHING, northPole ? NORTH : SOUTH);
+  }
+
+  @Override
+  public boolean isInUPSSpace(DecimalDegreesCoordinate decimalDegreesCoordinate) {
+    return decimalDegreesCoordinate.getLat() > 84.0 || decimalDegreesCoordinate.getLat() < -80;
+  }
+
+  @Override
+  public UtmUpsCoordinate toUtmUps(final DecimalDegreesCoordinate decimalDegreesCoordinate) {
+    validateDecimalDegreeInput(decimalDegreesCoordinate);
+    if (isInUPSSpace(decimalDegreesCoordinate)) {
+      return UtmUpsCoordinateImpl.fromUpsCoordinate(toUps(decimalDegreesCoordinate));
+    } else {
+      return UtmUpsCoordinateImpl.fromUtmCoordinate(toUtm(decimalDegreesCoordinate));
+    }
   }
 
   private static void validateDecimalDegreeInput(

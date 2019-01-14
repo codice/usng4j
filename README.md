@@ -42,4 +42,4 @@ MGRS (Military Grid Reference System)
  * Convert UTM to Lat/Lon
  * Convert USNG to UTM
  * Convert USNG to Lat/Lon
- * Convert Lat/Lon to MGRS
+ * Convert MGRS to USNG

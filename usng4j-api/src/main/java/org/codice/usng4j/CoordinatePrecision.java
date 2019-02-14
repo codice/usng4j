@@ -64,16 +64,16 @@ public enum CoordinatePrecision {
     return this.precisionValue;
   }
 
-  public static CoordinatePrecision forEastNorth(int easting, int northing) {
-    int maxValue = Math.max(easting, northing);
+  public static CoordinatePrecision forEastNorth(String easting, String northing) {
+    int maxLength = Math.max(easting.length(), northing.length());
 
-    if (maxValue > 9999) {
+    if (maxLength > 4) {
       return CoordinatePrecision.ONE_METER;
-    } else if (maxValue > 999) {
+    } else if (maxLength > 3) {
       return CoordinatePrecision.TEN_METERS;
-    } else if (maxValue > 99) {
+    } else if (maxLength > 2) {
       return CoordinatePrecision.ONE_HUNDRED_METERS;
-    } else if (maxValue > 9) {
+    } else if (maxLength > 1) {
       return CoordinatePrecision.ONE_KILOMETER;
     }
 

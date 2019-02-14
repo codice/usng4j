@@ -59,7 +59,7 @@ public interface UsngCoordinate {
   public final String USNG_COORDINATE_PART_REGEX_STRING = "(\\W\\d{0,5})?(\\W\\d{0,5})?";
 
   /** RegEx expressions for MGRS Northing and Easting parsing */
-  public final String MGRS_COORDINATE_PART_REGEX_STRING = "(\\d{0,5})\\W*(\\d{0,5})\\W*";
+  public final String MGRS_COORDINATE_PART_REGEX_STRING = "(\\d{0,12})\\W*";
 
   /** @return the zone number of this USNG coordinate. */
   int getZoneNumber();

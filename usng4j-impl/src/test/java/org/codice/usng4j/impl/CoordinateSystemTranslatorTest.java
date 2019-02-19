@@ -270,8 +270,8 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     String onlineUTMString = "12R 569580 3502650";
     UtmCoordinate onlineUtmCoord = coordinateSystemTranslator.parseUtmString(onlineUTMString);
     assertEquals(onlineUtmCoord.getZoneNumber(), utmCoord.getZoneNumber());
-    assertEquals(onlineUtmCoord.getLatitudeBand().charValue(),
-          utmCoord.getLatitudeBand().charValue());
+    assertEquals(
+        onlineUtmCoord.getLatitudeBand().charValue(), utmCoord.getLatitudeBand().charValue());
     assertEquals(onlineUtmCoord.getEasting(), utmCoord.getEasting(), 0);
     assertEquals(onlineUtmCoord.getNorthing(), utmCoord.getNorthing(), 0);
     assertEquals(onlineUtmCoord.getPrecision(), utmCoord.getPrecision());
@@ -282,8 +282,8 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     onlineUTMString = "12R 500580 3500650";
     onlineUtmCoord = coordinateSystemTranslator.parseUtmString(onlineUTMString);
     assertEquals(onlineUtmCoord.getZoneNumber(), utmCoord.getZoneNumber());
-    assertEquals(onlineUtmCoord.getLatitudeBand().charValue(),
-        utmCoord.getLatitudeBand().charValue());
+    assertEquals(
+        onlineUtmCoord.getLatitudeBand().charValue(), utmCoord.getLatitudeBand().charValue());
     assertEquals(onlineUtmCoord.getEasting(), utmCoord.getEasting(), 0);
     assertEquals(onlineUtmCoord.getNorthing(), utmCoord.getNorthing(), 0);
     assertEquals(onlineUtmCoord.getPrecision(), utmCoord.getPrecision());

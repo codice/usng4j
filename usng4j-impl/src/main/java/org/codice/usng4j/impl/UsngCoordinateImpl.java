@@ -215,8 +215,8 @@ final class UsngCoordinateImpl implements UsngCoordinate {
       char columnLetter = m.group(3).toCharArray()[0];
       char rowLetter = m.group(3).toCharArray()[1];
 
-      if (captureGroupsCount > 4 &&
-          !(StringUtils.isEmpty(m.group(4)) || StringUtils.isEmpty(m.group(5)))) {
+      if (captureGroupsCount > 4
+          && !(StringUtils.isEmpty(m.group(4)) || StringUtils.isEmpty(m.group(5)))) {
         String easting = m.group(4).trim();
         String northing = m.group(5).trim();
         int eastingInt = Integer.parseInt(easting);
@@ -238,7 +238,12 @@ final class UsngCoordinateImpl implements UsngCoordinate {
 
         result =
             new UsngCoordinateImpl(
-                zoneNumber, latitudeBandLetter, columnLetter, rowLetter, eastingInt, northingInt,
+                zoneNumber,
+                latitudeBandLetter,
+                columnLetter,
+                rowLetter,
+                eastingInt,
+                northingInt,
                 precision);
       } else {
         result = new UsngCoordinateImpl(zoneNumber, latitudeBandLetter, columnLetter, rowLetter);

@@ -65,7 +65,7 @@ public enum CoordinatePrecision {
   }
 
   public static CoordinatePrecision forEastNorth(String easting, String northing) {
-    int maxLength = Math.max(easting.length(), northing.length());
+    int maxLength = Math.max(easting.trim().length(), northing.trim().length());
 
     if (maxLength > 4) {
       return CoordinatePrecision.ONE_METER;

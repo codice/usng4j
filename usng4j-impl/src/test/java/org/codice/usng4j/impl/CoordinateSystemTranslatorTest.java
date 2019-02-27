@@ -233,6 +233,39 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     assertEquals(43292, parts.getNorthing(), 0);
   }
 
+  @Test(expected = ParseException.class)
+  public void testUsngStringUnequalEastingNorthingLengths() throws ParseException {
+    String usngString = "12R WA 6958 026";
+    UsngCoordinateImpl.parseUsngString(usngString);
+  }
+
+  @Test(expected = ParseException.class)
+  public void testMgrsStringUnequalEastingNorthingLengths() throws ParseException {
+    String mgrsString = "12RWA69580";
+    UsngCoordinateImpl.parseMgrsString(mgrsString);
+  }
+
+  @Test
+  public void testUsngConversionToMgrs() throws ParseException {
+    String usngString = "12R WA 6958 0265";
+    UsngCoordinate usngCoord = UsngCoordinateImpl.parseUsngString(usngString);
+    String convertedToMgrs = usngCoord.toMgrsString();
+    String expectedMgrsString = "12RWA69580265";
+    assertEquals(expectedMgrsString, convertedToMgrs);
+
+    usngString = "12R WA 0058 0265";
+    usngCoord = UsngCoordinateImpl.parseUsngString(usngString);
+    convertedToMgrs = usngCoord.toMgrsString();
+    expectedMgrsString = "12RWA00580265";
+    assertEquals(expectedMgrsString, convertedToMgrs);
+
+    usngString = "12R WA 9 2";
+    usngCoord = UsngCoordinateImpl.parseUsngString(usngString);
+    convertedToMgrs = usngCoord.toMgrsString();
+    expectedMgrsString = "12RWA92";
+    assertEquals(expectedMgrsString, convertedToMgrs);
+  }
+
   @Test
   public void testMgrsConversionConsistency() throws ParseException {
     // a MGRS string converted to a USNG coordinate and converted back to MGRS should be unchanged

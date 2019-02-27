@@ -207,7 +207,6 @@ final class UsngCoordinateImpl implements UsngCoordinate {
       throw new ParseException(message, 0);
     }
 
-    int captureGroupsCount = m.groupCount();
     int zoneNumber = Integer.parseInt(m.group(1));
     char latitudeBandLetter = m.group(2).toCharArray()[0];
 
@@ -215,19 +214,23 @@ final class UsngCoordinateImpl implements UsngCoordinate {
       char columnLetter = m.group(3).toCharArray()[0];
       char rowLetter = m.group(3).toCharArray()[1];
 
-      if (captureGroupsCount > 4
-          && !(StringUtils.isEmpty(m.group(4)) || StringUtils.isEmpty(m.group(5)))) {
-        String easting = m.group(4).trim();
-        String northing = m.group(5).trim();
-        int eastingInt = Integer.parseInt(easting);
-        int northingInt = Integer.parseInt(northing);
-
-        result =
-            new UsngCoordinateImpl(
-                zoneNumber, latitudeBandLetter, columnLetter, rowLetter, eastingInt, northingInt);
-      } else if (!StringUtils.isEmpty(m.group(4))) {
+      // the 4th regex capture group for USNG and MGRS coordinates contains the full numerical
+      // location, including any whitespace
+      if (!StringUtils.isEmpty(m.group(4))) {
         // full numerical location with easting and northing values given as n+n digits
-        String numericalLocation = m.group(4).trim();
+        String numericalLocation = m.group(4).replaceAll("\\s", "");
+
+        // the numerical location should be 2, 4, 6, 8, or 10 digits long
+        if (numericalLocation.length() % 2 != 0 && numericalLocation.length() <= 10) {
+          String message =
+              String.format(
+                  "Supplied argument '%s' is not a valid USNG formatted String. '%s' is an invalid "
+                      + "numerical location.",
+                  coordinateString, numericalLocation);
+
+          throw new ParseException(message, 0);
+        }
+
         int splitIndex = numericalLocation.length() / 2;
         // easting value is first n digits and northing value is last n digits
         String easting = numericalLocation.substring(0, splitIndex);

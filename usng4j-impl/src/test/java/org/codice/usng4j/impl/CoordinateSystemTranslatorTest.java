@@ -434,11 +434,11 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     char sq1 = 'U';
     char sq2 = 'J';
     int easting = 23487;
-    int northing = 6483;
+    int northing = 64830;
     UtmCoordinate coords =
         coordinateSystemTranslator.toUtm(
             new UsngCoordinateImpl(zone, letter, sq1, sq2, easting, northing));
-    assertEquals(4306483, Math.floor(coords.getNorthing()), 0);
+    assertEquals(4364830, Math.floor(coords.getNorthing()), 0);
     assertEquals(323487, Math.floor(coords.getEasting()), 0);
     assertEquals(18, coords.getZoneNumber());
     assertEquals('S', coords.getLattitudeBand().charValue());

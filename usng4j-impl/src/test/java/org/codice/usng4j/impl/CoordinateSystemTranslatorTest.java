@@ -234,6 +234,155 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
   }
 
   @Test(expected = ParseException.class)
+  public void testUsngStringUnequalEastingNorthingLengths() throws ParseException {
+    String usngString = "12R WA 6958 026";
+    UsngCoordinateImpl.parseUsngString(usngString);
+  }
+
+  @Test(expected = ParseException.class)
+  public void testMgrsStringUnequalEastingNorthingLengths() throws ParseException {
+    String mgrsString = "12RWA69580";
+    UsngCoordinateImpl.parseMgrsString(mgrsString);
+  }
+
+  @Test
+  public void testUsngConversionToMgrs() throws ParseException {
+    String usngString = "12R WA 6958 0265";
+    UsngCoordinate usngCoord = UsngCoordinateImpl.parseUsngString(usngString);
+    String convertedToMgrs = usngCoord.toMgrsString();
+    String expectedMgrsString = "12RWA69580265";
+    assertEquals(expectedMgrsString, convertedToMgrs);
+
+    usngString = "12R WA 0058 0265";
+    usngCoord = UsngCoordinateImpl.parseUsngString(usngString);
+    convertedToMgrs = usngCoord.toMgrsString();
+    expectedMgrsString = "12RWA00580265";
+    assertEquals(expectedMgrsString, convertedToMgrs);
+
+    usngString = "12R WA 9 2";
+    usngCoord = UsngCoordinateImpl.parseUsngString(usngString);
+    convertedToMgrs = usngCoord.toMgrsString();
+    expectedMgrsString = "12RWA92";
+    assertEquals(expectedMgrsString, convertedToMgrs);
+  }
+
+  @Test
+  public void testMgrsConversionConsistency() throws ParseException {
+    // a MGRS string converted to a USNG coordinate and converted back to MGRS should be unchanged
+
+    String mgrsString = "12RWA69580265";
+    UsngCoordinate usngCoord = UsngCoordinateImpl.parseMgrsString(mgrsString);
+    String convertedToMgrs = usngCoord.toMgrsString();
+    assertEquals(mgrsString, convertedToMgrs);
+
+    mgrsString = "12RWA00580065";
+    usngCoord = UsngCoordinateImpl.parseMgrsString(mgrsString);
+    convertedToMgrs = usngCoord.toMgrsString();
+    assertEquals(mgrsString, convertedToMgrs);
+
+    mgrsString = "12RWA92";
+    usngCoord = UsngCoordinateImpl.parseMgrsString(mgrsString);
+    convertedToMgrs = usngCoord.toMgrsString();
+    assertEquals(mgrsString, convertedToMgrs);
+
+    mgrsString = "12RWA0000200006";
+    usngCoord = UsngCoordinateImpl.parseMgrsString(mgrsString);
+    convertedToMgrs = usngCoord.toMgrsString();
+    assertEquals(mgrsString, convertedToMgrs);
+  }
+
+  @Test
+  public void testMgrsUTMConversionWithOnline() throws ParseException {
+    // a MGRS to a UTM coordinate should be consistent with a chosen online source
+    // (http://www.earthpoint.us)
+
+    String mgrsString = "12RWA69580265";
+    UsngCoordinate usngCoord = UsngCoordinateImpl.parseMgrsString(mgrsString);
+    UtmCoordinate utmCoord = coordinateSystemTranslator.toUtm(usngCoord);
+    // converted MGRS string from online source (http://www.earthpoint.us/Convert.aspx)
+    String onlineUTMString = "12R 569580 3502650";
+    UtmCoordinate onlineUtmCoord = coordinateSystemTranslator.parseUtmString(onlineUTMString);
+    assertEquals(onlineUtmCoord.getZoneNumber(), utmCoord.getZoneNumber());
+    assertEquals(
+        onlineUtmCoord.getLatitudeBand().charValue(), utmCoord.getLatitudeBand().charValue());
+    assertEquals(onlineUtmCoord.getEasting(), utmCoord.getEasting(), 0);
+    assertEquals(onlineUtmCoord.getNorthing(), utmCoord.getNorthing(), 0);
+    assertEquals(onlineUtmCoord.getPrecision(), utmCoord.getPrecision());
+
+    mgrsString = "12RWA00580065";
+    usngCoord = UsngCoordinateImpl.parseMgrsString(mgrsString);
+    utmCoord = coordinateSystemTranslator.toUtm(usngCoord);
+    onlineUTMString = "12R 500580 3500650";
+    onlineUtmCoord = coordinateSystemTranslator.parseUtmString(onlineUTMString);
+    assertEquals(onlineUtmCoord.getZoneNumber(), utmCoord.getZoneNumber());
+    assertEquals(
+        onlineUtmCoord.getLatitudeBand().charValue(), utmCoord.getLatitudeBand().charValue());
+    assertEquals(onlineUtmCoord.getEasting(), utmCoord.getEasting(), 0);
+    assertEquals(onlineUtmCoord.getNorthing(), utmCoord.getNorthing(), 0);
+    assertEquals(onlineUtmCoord.getPrecision(), utmCoord.getPrecision());
+  }
+
+  @Test
+  public void testMgrsLatLonWithOnline() throws ParseException {
+    // a MGRS to a latitude/longitude coordinate should be consistent with a chosen online source
+    // (http://www.earthpoint.us)
+
+    String mgrsString = "12RWA69580265";
+    UsngCoordinate usngCoord = UsngCoordinateImpl.parseMgrsString(mgrsString);
+    DecimalDegreesCoordinate latLon = coordinateSystemTranslator.toLatLon(usngCoord);
+    double onlineLatitude = 31.6569851;
+    double onlineLongitude = -110.2660838;
+    assertLatOrLonIsClose(true, onlineLatitude, latLon.getLat());
+    assertLatOrLonIsClose(false, onlineLongitude, latLon.getLon());
+
+    mgrsString = "12RWA00580065";
+    usngCoord = UsngCoordinateImpl.parseMgrsString(mgrsString);
+    latLon = coordinateSystemTranslator.toLatLon(usngCoord);
+    onlineLatitude = 31.6410506;
+    onlineLongitude = -110.9938832;
+    assertLatOrLonIsClose(true, onlineLatitude, latLon.getLat());
+    assertLatOrLonIsClose(false, onlineLongitude, latLon.getLon());
+
+    mgrsString = "12RWA92";
+    usngCoord = UsngCoordinateImpl.parseMgrsString(mgrsString);
+    latLon = coordinateSystemTranslator.toLatLon(usngCoord);
+    onlineLatitude = 31.8120783;
+    onlineLongitude = -110.0491227;
+    assertLatOrLonIsClose(true, onlineLatitude, latLon.getLat());
+    assertLatOrLonIsClose(false, onlineLongitude, latLon.getLon());
+
+    mgrsString = "12RWA0000200006";
+    usngCoord = UsngCoordinateImpl.parseMgrsString(mgrsString);
+    latLon = coordinateSystemTranslator.toLatLon(usngCoord);
+    onlineLatitude = 31.6352404;
+    onlineLongitude = -110.9999789;
+    assertLatOrLonIsClose(true, onlineLatitude, latLon.getLat());
+    assertLatOrLonIsClose(false, onlineLongitude, latLon.getLon());
+  }
+
+  @Test
+  public void testUtmLatLongWithOnline() throws ParseException {
+    // a UTM to a latitude/longitude coordinate should be consistent with a chosen online source
+    // (http://www.earthpoint.us)
+
+    String utmString = "19T 330395 4691720";
+    UtmCoordinate utmCoord = UtmCoordinateImpl.parseUtmString(utmString);
+    DecimalDegreesCoordinate latLon = coordinateSystemTranslator.toLatLon(utmCoord);
+    double onlineLatitude = 42.3592599;
+    double onlineLongitude = -071.0595174;
+    assertLatOrLonIsClose(true, onlineLatitude, latLon.getLat());
+    assertLatOrLonIsClose(false, onlineLongitude, latLon.getLon());
+
+    utmString = "19T 318612 4705686";
+    utmCoord = UtmCoordinateImpl.parseUtmString(utmString);
+    latLon = coordinateSystemTranslator.toLatLon(utmCoord);
+    onlineLatitude = 42.4822858;
+    onlineLongitude = -071.2069045;
+    assertLatOrLonIsClose(true, onlineLatitude, latLon.getLat());
+    assertLatOrLonIsClose(false, onlineLongitude, latLon.getLon());
+  }
+
+  @Test(expected = ParseException.class)
   public void testFailingUsngParsingWithZonesAboveSixty() throws ParseException {
     UsngCoordinateImpl.parseUsngString("61Q");
   }
@@ -285,11 +434,11 @@ public class CoordinateSystemTranslatorTest extends BaseClassForUsng4jTest {
     char sq1 = 'U';
     char sq2 = 'J';
     int easting = 23487;
-    int northing = 6483;
+    int northing = 64830;
     UtmCoordinate coords =
         coordinateSystemTranslator.toUtm(
             new UsngCoordinateImpl(zone, letter, sq1, sq2, easting, northing));
-    assertEquals(4306483, Math.floor(coords.getNorthing()), 0);
+    assertEquals(4364830, Math.floor(coords.getNorthing()), 0);
     assertEquals(323487, Math.floor(coords.getEasting()), 0);
     assertEquals(18, coords.getZoneNumber());
     assertEquals('S', coords.getLattitudeBand().charValue());

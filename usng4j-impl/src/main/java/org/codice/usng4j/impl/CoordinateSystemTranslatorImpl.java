@@ -894,7 +894,8 @@ public final class CoordinateSystemTranslatorImpl implements CoordinateSystemTra
                 Optional.ofNullable(usngCoordinate.getColumnLetter()).orElse((char) 0),
                 Optional.ofNullable(usngCoordinate.getRowLetter()).orElse((char) 0),
                 Optional.ofNullable(usngCoordinate.getEasting()).orElse(0),
-                Optional.ofNullable(usngCoordinate.getNorthing()).orElse(0)));
+                Optional.ofNullable(usngCoordinate.getNorthing()).orElse(0),
+                usngCoordinate.getPrecision()));
 
     double northing = coords.getNorthing();
 

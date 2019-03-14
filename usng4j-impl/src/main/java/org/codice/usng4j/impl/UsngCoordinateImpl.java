@@ -106,7 +106,31 @@ final class UsngCoordinateImpl implements UsngCoordinate {
     this(zoneNumber, latitudeBandLetter, columnLetter, rowLetter);
     this.easting = easting;
     this.northing = northing;
-    this.precision = CoordinatePrecision.forEastNorth(easting, northing);
+    this.precision =
+        CoordinatePrecision.forEastNorth(Integer.toString(easting), Integer.toString(northing));
+  }
+
+  /**
+   * @param zoneNumber the zone number of this USNG coordinate.
+   * @param latitudeBandLetter the latitude band letter of this USNG coordinate.
+   * @param columnLetter the grid column letter of this USNG coordinate.
+   * @param rowLetter the grid row letter of this USNG coordinate.
+   * @param easting - the easting value of this USNG coordinate.
+   * @param northing - the northing value of this USNG coordinate.
+   * @param precision - the precision value of this USNG coordinate.
+   */
+  UsngCoordinateImpl(
+      final int zoneNumber,
+      final char latitudeBandLetter,
+      final char columnLetter,
+      char rowLetter,
+      int easting,
+      int northing,
+      CoordinatePrecision precision) {
+    this(zoneNumber, latitudeBandLetter, columnLetter, rowLetter);
+    this.easting = easting;
+    this.northing = northing;
+    this.precision = precision;
   }
 
   /** {@inheritDoc} */
@@ -190,13 +214,40 @@ final class UsngCoordinateImpl implements UsngCoordinate {
       char columnLetter = m.group(3).toCharArray()[0];
       char rowLetter = m.group(3).toCharArray()[1];
 
-      if (!(StringUtils.isEmpty(m.group(4)) || StringUtils.isEmpty(m.group(5)))) {
-        int easting = Integer.parseInt(m.group(4).trim());
-        int northing = Integer.parseInt(m.group(5).trim());
+      // the 4th regex capture group for USNG and MGRS coordinates contains the full numerical
+      // location, including any whitespace
+      if (!StringUtils.isEmpty(m.group(4))) {
+        // full numerical location with easting and northing values given as n+n digits
+        String numericalLocation = m.group(4).replaceAll("\\s", "");
+
+        // the numerical location should be 2, 4, 6, 8, or 10 digits long
+        if (numericalLocation.length() % 2 != 0 && numericalLocation.length() <= 10) {
+          String message =
+              String.format(
+                  "Supplied argument '%s' is not a valid USNG formatted String. '%s' is an invalid "
+                      + "numerical location.",
+                  coordinateString, numericalLocation);
+
+          throw new ParseException(message, 0);
+        }
+
+        int splitIndex = numericalLocation.length() / 2;
+        // easting value is first n digits and northing value is last n digits
+        String easting = numericalLocation.substring(0, splitIndex);
+        String northing = numericalLocation.substring(splitIndex);
+        int eastingInt = Integer.parseInt(easting);
+        int northingInt = Integer.parseInt(northing);
+        CoordinatePrecision precision = CoordinatePrecision.forEastNorth(easting, northing);
 
         result =
             new UsngCoordinateImpl(
-                zoneNumber, latitudeBandLetter, columnLetter, rowLetter, easting, northing);
+                zoneNumber,
+                latitudeBandLetter,
+                columnLetter,
+                rowLetter,
+                eastingInt,
+                northingInt,
+                precision);
       } else {
         result = new UsngCoordinateImpl(zoneNumber, latitudeBandLetter, columnLetter, rowLetter);
       }

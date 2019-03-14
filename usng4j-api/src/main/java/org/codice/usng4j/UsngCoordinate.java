@@ -56,10 +56,10 @@ public interface UsngCoordinate {
           + ")?";
 
   /** RegEx expressions for USNG Northing and Easting parsing */
-  public final String USNG_COORDINATE_PART_REGEX_STRING = "(\\W\\d{0,5})?(\\W\\d{0,5})?";
+  public final String USNG_COORDINATE_PART_REGEX_STRING = "([\\d|\\s]{0,12})";
 
   /** RegEx expressions for MGRS Northing and Easting parsing */
-  public final String MGRS_COORDINATE_PART_REGEX_STRING = "(\\d{0,5})\\W*(\\d{0,5})\\W*";
+  public final String MGRS_COORDINATE_PART_REGEX_STRING = "(\\d{0,10})";
 
   /** @return the zone number of this USNG coordinate. */
   int getZoneNumber();

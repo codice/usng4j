@@ -59,7 +59,8 @@ final class UtmCoordinateImpl implements UtmCoordinate {
     this.zoneNumber = zoneNumber;
     this.easting = easting;
     this.northing = northing;
-    this.precision = CoordinatePrecision.forEastNorth((int) easting, (int) northing);
+    this.precision =
+        CoordinatePrecision.forEastNorth(Double.toString(easting), Double.toString(northing));
     this.nsIndicator = NORTH;
   }
 

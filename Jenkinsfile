@@ -52,7 +52,7 @@ pipeline {
                 expression { env.CHANGE_ID == null } 
             }
             options {
-                timeout(time: 3, unit: 'HOURS')
+                timeout(time: 1, unit: 'HOURS')
             }
             steps {
                 withMaven(maven: 'maven-latest', globalMavenSettingsConfig:  '51e52749-c47a-4e11-9c58-0adf485626f5', mavenSettingsConfig: 'feca3f61-1da1-4887-a9ad-dd4a41fd4423', mavenOpts: '${LARGE_MVN_OPTS} ${LINUX_MVN_RANDOM}') {
@@ -66,7 +66,7 @@ pipeline {
                 expression { env.CHANGE_ID == null } 
             }
             options {
-                timeout(time: 3, unit: 'HOURS')
+                timeout(time: 1, unit: 'HOURS')
             }
             steps {
                 withMaven(maven: 'maven-latest', mavenSettingsConfig: 'feca3f61-1da1-4887-a9ad-dd4a41fd4423', mavenOpts: '${LARGE_MVN_OPTS} ${LINUX_MVN_RANDOM}') {

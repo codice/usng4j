@@ -27,7 +27,7 @@ pipeline {
         LINUX_MVN_RANDOM = '-Djava.security.egd=file:/dev/./urandom'
         GITHUB_USERNAME = 'codice'
         GITHUB_TOKEN = credentials('github-api-cred')
-        GITHUB_REPONAME = 'ddf-support'
+        GITHUB_REPONAME = 'usng4j'
     }
     stages {
         stage('Setup') {
@@ -70,7 +70,7 @@ pipeline {
             }
             steps {
                 withMaven(maven: 'maven-latest', mavenSettingsConfig: 'feca3f61-1da1-4887-a9ad-dd4a41fd4423', mavenOpts: '${LARGE_MVN_OPTS} ${LINUX_MVN_RANDOM}') {
-                    sh 'clean install -T 1C'
+                    sh 'mvn clean install -T 1C'
                 }
             }
         }

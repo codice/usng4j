@@ -19,7 +19,7 @@
     <commons-lang3.version>3.5</commons-lang3.version>
 	<maven.deploy.plugin.version>3.0.0-M1</maven.deploy.plugin.version>
     <maven-jacoco-plugin.version>0.8.1</maven-jacoco-plugin.version>
-    <maven.release.plugin.version>3.0.0-M1</maven.deploy.plugin.version>
+    <maven.release.plugin.version>3.0.0-M1</maven.release.plugin.version>
   </properties>
 
   <distributionManagement>

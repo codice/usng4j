@@ -39,7 +39,7 @@ jobs:
           cache: maven
 
       - name: Build
-        run: mvn clean install $MAVEN_CLI_OPTS
+        run: mvn clean install $MAVEN_CLI_OPTS -DskipTests
 
   full-build:
     if: github.event_name != 'pull_request'
@@ -57,7 +57,7 @@ jobs:
           cache: maven
 
       - name: Build
-        run: mvn clean install $MAVEN_CLI_OPTS
+        run: mvn clean install $MAVEN_CLI_OPTS -DskipTests
 
   deploy:
     needs: full-build

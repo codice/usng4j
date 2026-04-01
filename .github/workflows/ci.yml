@@ -67,7 +67,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     permissions:
-      packages: write
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,25 +80,46 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Configure Maven settings
-        uses: s4u/maven-settings-action@v3.0.0
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          servers: |
-            [{
-              "id": "releases",
-              "username": "${{ github.actor }}",
-              "password": "${{ secrets.GITHUB_TOKEN }}"
-            },
-            {
-              "id": "snapshots",
-              "username": "${{ github.actor }}",
-              "password": "${{ secrets.GITHUB_TOKEN }}"
-            }]
+          role-to-assume: arn:aws:iam::072882638589:role/github-actions-codeartifact
+          aws-region: us-east-1
+
+      - name: Get CodeArtifact token
+        run: |
+          CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
+            --domain codice \
+            --domain-owner 072882638589 \
+            --query authorizationToken \
+            --output text)
+          echo "CODEARTIFACT_AUTH_TOKEN=$CODEARTIFACT_AUTH_TOKEN" >> $GITHUB_ENV
+
+      - name: Create Maven Settings
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << 'EOF'
+          <settings>
+            <servers>
+              <server>
+                <id>releases</id>
+                <username>aws</username>
+                <password>${env.CODEARTIFACT_AUTH_TOKEN}</password>
+              </server>
+              <server>
+                <id>snapshots</id>
+                <username>aws</username>
+                <password>${env.CODEARTIFACT_AUTH_TOKEN}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
 
       - name: Deploy
         run: |
+          CODEARTIFACT_URL=https://codice-072882638589.d.codeartifact.us-east-1.amazonaws.com/maven
           mvn deploy $MAVEN_CLI_OPTS \
             -DskipTests=true \
             -DretryFailedDeploymentCount=10 \
-            -Dreleases.repository.url=https://maven.pkg.github.com/codice/usng4j \
-            -Dsnapshots.repository.url=https://maven.pkg.github.com/codice/usng4j
+            -Dreleases.repository.url="${CODEARTIFACT_URL}/releases/" \
+            -Dsnapshots.repository.url="${CODEARTIFACT_URL}/snapshots/"

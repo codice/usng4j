@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  packages: write
+  id-token: write
 jobs:
   deploy:
-    uses: codice/release-pipelines/.github/workflows/maven-manual-deploy.yml@main
+    uses: codice/release-pipelines/.github/workflows/maven-manual-deploy.yml@aws-codeartifact
